@@ -7,25 +7,25 @@ namespace csdl.Structs;
 /// Represents a list of files contained within a torrent.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct TorrentFileList
+public readonly struct TorrentFileList
 {
-    public int Length;
-    public IntPtr Items;
+    public readonly int Length;
+    public readonly IntPtr Items;
 }
 
 /// <summary>
 /// Represents a file contained within a torrent.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct TorrentFile
+public readonly struct TorrentFile
 {
-    public int Index;
+    public readonly int Index;
 
     [MarshalAs(UnmanagedType.LPUTF8Str)]
-    public string FileName;
+    public readonly string FileName;
     
     [MarshalAs(UnmanagedType.LPUTF8Str)]
-    public string FilePath;
+    public readonly string FilePath;
 
-    public long FileSize;
+    public readonly long FileSize;
 }

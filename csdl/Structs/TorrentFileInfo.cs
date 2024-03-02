@@ -3,19 +3,19 @@ using System.Runtime.InteropServices;
 namespace csdl.Structs;
 
 [StructLayout(LayoutKind.Sequential)]
-public struct TorrentFileInfo
+public readonly struct TorrentFileInfo
 {
     [MarshalAs(UnmanagedType.LPUTF8Str)]
-    public string Name;
+    public readonly string Name;
 
     [MarshalAs(UnmanagedType.LPUTF8Str)]
-    public string Author;
+    public readonly string Author;
 
     [MarshalAs(UnmanagedType.LPUTF8Str)]
-    public string Comment;
+    public readonly string Comment;
 
-    public int TotalFiles;
-    public long TotalSize;
+    public readonly int TotalFiles;
+    public readonly long TotalSize;
 
-    public long CreationEpoch;
+    public readonly long CreationEpoch;
 }
