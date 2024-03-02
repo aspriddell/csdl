@@ -17,7 +17,7 @@ Functionality is currently added on an as-needed basis, and more can be added if
 
 ## Requirements
 ### macOS
-libtorrent can be installed via Homebrew. The development files are automatically included when using homebrew.
+libtorrent can be installed via Homebrew. The development files are automatically included.
 
 ```bash
 brew install libtorrent-rasterbar
