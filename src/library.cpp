@@ -147,7 +147,7 @@ extern "C" {
         const auto& files = torrent->files();
 
         auto num_files = files.num_files();
-        auto list = new torrent_file_entry[num_files];
+        auto list = new torrent_file_information[num_files];
 
         for (lt::file_index_t i(0); i != files.end_file(); i++) {
             auto name = files.file_name(i);
@@ -159,7 +159,7 @@ extern "C" {
             std::copy(name.begin(), name.end(), file_name);
             std::copy(path.begin(), path.end(), file_path);
 
-            list[i] = torrent_file_entry{i, file_name, file_path, files.file_size(i)};
+            list[i] = torrent_file_information{i, file_name, file_path, files.file_size(i)};
         }
 
         file_list->files = list;
@@ -196,19 +196,19 @@ extern "C" {
     }
 
     // get the progress of a torrent.
-    void get_torrent_progress(lt::torrent_handle* torrent, torrent_state* status) {
+    void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_status) {
         auto s = torrent->status();
 
-        status->state = static_cast<int>(s.state);
-        status->progress = s.progress;
+        torrent_status->state = static_cast<int>(s.state);
+        torrent_status->progress = s.progress;
 
-        status->count_peers = s.num_peers;
-        status->count_seeds = s.num_seeds;
+        torrent_status->count_peers = s.num_peers;
+        torrent_status->count_seeds = s.num_seeds;
 
-        status->bytes_uploaded = s.total_payload_upload;
-        status->bytes_downloaded = s.total_payload_download;
+        torrent_status->bytes_uploaded = s.total_payload_upload;
+        torrent_status->bytes_downloaded = s.total_payload_download;
 
-        status->upload_rate = s.upload_payload_rate;
-        status->download_rate = s.download_payload_rate;
+        torrent_status->upload_rate = s.upload_payload_rate;
+        torrent_status->download_rate = s.download_payload_rate;
     }
 }

@@ -21,14 +21,14 @@ extern "C" {
         int max_connections;
     } session_config;
 
-    typedef struct cs_file_information {
+    typedef struct cs_torrent_file_information {
         lt::file_index_t index;
 
         char* file_name;
         char* file_path;
 
         long file_size;
-    } torrent_file_entry;
+    } torrent_file_information;
 
     typedef struct cs_torrent_meta {
         char* name;
@@ -41,7 +41,7 @@ extern "C" {
         time_t creation_date;
     } torrent_metadata;
 
-    typedef struct cs_torrent_state {
+    typedef struct cs_torrent_status {
         int state;
 
         float progress;
@@ -54,11 +54,11 @@ extern "C" {
 
         long upload_rate;
         long download_rate;
-    } torrent_state;
+    } torrent_status;
 
     typedef struct cs_torrent_file_list {
         int length;
-        torrent_file_entry* files;
+        torrent_file_information* files;
     } torrent_file_list;
 }
 

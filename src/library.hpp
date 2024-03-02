@@ -43,7 +43,7 @@ extern "C" {
     CSDL_EXPORT void start_dl(lt::torrent_handle* torrent);
     CSDL_EXPORT void stop_dl(lt::torrent_handle* torrent);
 
-    CSDL_EXPORT void get_torrent_progress(lt::torrent_handle* torrent, torrent_state* torrent_status);
+    CSDL_EXPORT void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_status);
 
 #ifdef __cplusplus
 }
