@@ -28,8 +28,8 @@ extern "C" {
     CSDL_EXPORT void detach_torrent(lt::session* session, lt::torrent_handle* torrent);
 
     // torrent info
-    CSDL_EXPORT torrent_file_info* get_torrent_info(lt::torrent_info* torrent);
-    CSDL_EXPORT void destroy_torrent_info(torrent_file_info* info);
+    CSDL_EXPORT torrent_metadata* get_torrent_info(lt::torrent_info* torrent);
+    CSDL_EXPORT void destroy_torrent_info(torrent_metadata* info);
 
     // file listing
     CSDL_EXPORT void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_list);
@@ -43,7 +43,7 @@ extern "C" {
     CSDL_EXPORT void start_dl(lt::torrent_handle* torrent);
     CSDL_EXPORT void stop_dl(lt::torrent_handle* torrent);
 
-    CSDL_EXPORT void get_torrent_progress(lt::torrent_handle* torrent, download_status* torrent_status);
+    CSDL_EXPORT void get_torrent_progress(lt::torrent_handle* torrent, torrent_state* torrent_status);
 
 #ifdef __cplusplus
 }

@@ -108,7 +108,7 @@ extern "C" {
 
     // get the info for a torrent.
     // the torrent_info struct is allocated on the heap and must be freed with a call to destroy_torrent_info.
-    torrent_file_info* get_torrent_info(libtorrent::torrent_info* torrent) {
+    torrent_metadata* get_torrent_info(libtorrent::torrent_info* torrent) {
         auto name = torrent->name();
         auto author = torrent->creator();
         auto comment = torrent->comment();
@@ -121,7 +121,7 @@ extern "C" {
         std::copy(author.begin(), author.end(), torrent_author);
         std::copy(comment.begin(), comment.end(), torrent_comment);
 
-        auto info = new torrent_file_info();
+        auto info = new torrent_metadata();
 
         info->name = torrent_name;
         info->author = torrent_author;
@@ -134,7 +134,7 @@ extern "C" {
         return info;
     }
 
-    void destroy_torrent_info(torrent_file_info* info) {
+    void destroy_torrent_info(torrent_metadata* info) {
         delete[] info->name;
         delete[] info->author;
         delete[] info->comment;
@@ -147,7 +147,7 @@ extern "C" {
         const auto& files = torrent->files();
 
         auto num_files = files.num_files();
-        auto list = new file_info[num_files];
+        auto list = new torrent_file_entry[num_files];
 
         for (lt::file_index_t i(0); i != files.end_file(); i++) {
             auto name = files.file_name(i);
@@ -159,7 +159,7 @@ extern "C" {
             std::copy(name.begin(), name.end(), file_name);
             std::copy(path.begin(), path.end(), file_path);
 
-            list[i] = file_info{i, file_name, file_path, files.file_size(i)};
+            list[i] = torrent_file_entry{i, file_name, file_path, files.file_size(i)};
         }
 
         file_list->files = list;
@@ -196,7 +196,7 @@ extern "C" {
     }
 
     // get the progress of a torrent.
-    void get_torrent_progress(lt::torrent_handle* torrent, download_status* status) {
+    void get_torrent_progress(lt::torrent_handle* torrent, torrent_state* status) {
         auto s = torrent->status();
 
         status->state = static_cast<int>(s.state);

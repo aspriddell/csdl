@@ -28,9 +28,9 @@ extern "C" {
         char* file_path;
 
         long file_size;
-    } file_info;
+    } torrent_file_entry;
 
-    typedef struct cs_torrent_info {
+    typedef struct cs_torrent_meta {
         char* name;
         char* author;
         char* comment;
@@ -39,9 +39,9 @@ extern "C" {
         long total_size;
 
         time_t creation_date;
-    } torrent_file_info;
+    } torrent_metadata;
 
-    typedef struct cs_download_status {
+    typedef struct cs_torrent_state {
         int state;
 
         float progress;
@@ -54,11 +54,11 @@ extern "C" {
 
         long upload_rate;
         long download_rate;
-    } download_status;
+    } torrent_state;
 
     typedef struct cs_torrent_file_list {
         int length;
-        file_info* files;
+        torrent_file_entry* files;
     } torrent_file_list;
 }
 
