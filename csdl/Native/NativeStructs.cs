@@ -6,6 +6,25 @@ namespace csdl;
 internal static class NativeStructs
 {
     /// <summary>
+    /// Holds configuration information relating to a session.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct SessionConfig
+    {
+        [MarshalAs(UnmanagedType.LPStr)]
+        public string user_agent;
+
+        [MarshalAs(UnmanagedType.LPStr)]
+        public string fingerprint;
+
+        public bool private_mode;
+        public bool block_seeding;
+        public bool force_encryption;
+
+        public int max_connections;
+    }
+    
+    /// <summary>
     /// Represents a file contained within a torrent.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]

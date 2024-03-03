@@ -15,7 +15,7 @@ internal static partial class NativeMethods
     /// <param name="config">The configuration to apply</param>
     /// <returns>A handle to the session</returns>
     [DllImport(LibraryName, EntryPoint = "create_session")]
-    public static extern IntPtr CreateSession(in SessionConfig config);
+    public static extern IntPtr CreateSession(in NativeStructs.SessionConfig config);
 
     /// <summary>
     /// Releases the unmanaged resources associated with a session.
@@ -76,7 +76,7 @@ internal static partial class NativeMethods
     /// Gets the torrent info from the torrent handle.
     /// </summary>
     /// <param name="torrentHandle">The handle of the torrent</param>
-    /// <returns>A handle to a <see cref="TorrentFile"/> struct (torrent metadata handle)</returns>
+    /// <returns>A handle to a <see cref="NativeStructs.TorrentFile"/> struct (torrent metadata handle)</returns>
     /// <remarks>A call to FreeTorrentInfo is needed to release unmanaged resources after usage has finished.</remarks>
     [LibraryImport(LibraryName, EntryPoint = "get_torrent_info")]
     public static partial IntPtr GetTorrentInfo(IntPtr torrentHandle);
@@ -92,12 +92,12 @@ internal static partial class NativeMethods
     /// Request a list of files contained within a torrent.
     /// </summary>
     /// <param name="torrentHandle">Handle of the torrent file to get info for</param>
-    /// <param name="files">Location of the <see cref="TorrentFileList"/> to populate</param>
+    /// <param name="files">Location of the <see cref="NativeStructs.TorrentFileList"/> to populate</param>
     [LibraryImport(LibraryName, EntryPoint = "get_torrent_file_list")]
     public static partial void GetTorrentFileList(IntPtr torrentHandle, out NativeStructs.TorrentFileList files);
     
     /// <summary>
-    /// Release the unmanaged resources associated with a <see cref="TorrentFileList"/>.
+    /// Release the unmanaged resources associated with a <see cref="NativeStructs.TorrentFileList"/>.
     /// </summary>
     /// <param name="files">The file list to release</param>
     [LibraryImport(LibraryName, EntryPoint = "destroy_torrent_file_list")]

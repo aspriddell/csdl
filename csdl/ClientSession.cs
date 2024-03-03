@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using csdl.Structs;
 
 namespace csdl;
 
@@ -15,13 +14,21 @@ public class ClientSession : IDisposable
     private readonly ConcurrentDictionary<IntPtr, TorrentManager> _attachedManagers = new();
 
     public ClientSession()
-        : this(new SessionConfig())
+        : this(new ClientSessionConfig())
     {
     }
     
-    public ClientSession(SessionConfig config)
+    public ClientSession(ClientSessionConfig config)
     {
-        _handle = NativeMethods.CreateSession(config);
+        _handle = NativeMethods.CreateSession(new NativeStructs.SessionConfig
+        {
+            user_agent = config.UserAgent,
+            fingerprint = config.Fingerprint,
+            private_mode = config.PrivateMode,
+            block_seeding = config.BlockSeeding,
+            force_encryption = config.ForceEncryption,
+            max_connections = config.MaxConnections
+        });
 
         if (_handle <= IntPtr.Zero)
         {
