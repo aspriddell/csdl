@@ -111,7 +111,14 @@ public class ClientSession : IDisposable
     {
         foreach (var session in ActiveTorrents)
         {
-            Detach(session);
+            try
+            {
+                Detach(session);
+            }
+            catch
+            {
+                // ignore
+            }
         }
         
         NativeMethods.FreeSession(_handle);
