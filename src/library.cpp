@@ -169,19 +169,22 @@ extern "C" {
             auto name = files.file_name(i);
             auto path = files.file_path(i);
 
+            char* file_name = new char[name.size() + 1]();
+            char* file_path = new char[path.size() + 1]();
+
             list[i] = torrent_file_information {
                 i,
                 files.file_offset(i),
                 files.file_size(i),
                 files.mtime(i),
-                new char[name.size() + 1](),
-                new char[path.size() + 1](),
+                file_name,
+                file_path,
                 files.file_absolute_path(i),
                 files.pad_file_at(i)
             };
 
-            std::copy(name.begin(), name.end(), list[i].file_name);
-            std::copy(path.begin(), path.end(), list[i].file_path);
+            std::copy(name.begin(), name.end(), file_name);
+            std::copy(path.begin(), path.end(), file_path);
         }
 
         file_list->files = list;
