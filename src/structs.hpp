@@ -34,9 +34,6 @@ extern "C" {
 
         bool file_path_is_absolute;
         bool pad_file;
-
-        uint8_t file_hash_sha1[20];
-        uint8_t file_hash_sha256[32];
     } torrent_file_information;
 
     typedef struct cs_torrent_meta {

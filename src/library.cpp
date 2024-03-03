@@ -168,8 +168,6 @@ extern "C" {
         for (lt::file_index_t i(0); i != files.end_file(); i++) {
             auto name = files.file_name(i);
             auto path = files.file_path(i);
-            auto hash = files.hash(i);
-            auto root = files.root(i);
 
             list[i] = torrent_file_information {
                 i,
@@ -184,8 +182,6 @@ extern "C" {
 
             std::copy(name.begin(), name.end(), list[i].file_name);
             std::copy(path.begin(), path.end(), list[i].file_path);
-            std::copy(hash.begin(), hash.end(), list[i].file_hash_sha1);
-            std::copy(root.begin(), root.end(), list[i].file_hash_sha256);
         }
 
         file_list->files = list;
