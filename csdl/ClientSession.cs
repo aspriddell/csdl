@@ -60,7 +60,7 @@ public class ClientSession : IDisposable
     /// <param name="savePath">The path to save/read data from</param>
     /// <returns>A <see cref="TorrentManager"/> allowing the torrent to be controlled.</returns>
     /// <exception cref="InvalidOperationException">The torrent was unable to be attached to the underlying session</exception>
-    public TorrentManager Attach(TorrentInfo torrent, string savePath = null)
+    public TorrentManager AttachTorrent(TorrentInfo torrent, string savePath = null)
     {
         savePath ??= DefaultDownloadPath;
 
@@ -93,7 +93,7 @@ public class ClientSession : IDisposable
     /// Detaches a torrent from the session, stopping any ongoing transfers.
     /// </summary>
     /// <param name="manager">The manager to detach</param>
-    public void Detach(TorrentManager manager)
+    public void DetachTorrent(TorrentManager manager)
     {
         if (!_attachedManagers.TryRemove(manager.TorrentSessionHandle, out _))
         {
@@ -113,7 +113,7 @@ public class ClientSession : IDisposable
         {
             try
             {
-                Detach(session);
+                DetachTorrent(session);
             }
             catch
             {
