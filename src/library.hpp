@@ -40,8 +40,8 @@ extern "C" {
     CSDL_EXPORT void set_file_dl_priority(lt::torrent_handle* torrent, lt::file_index_t file_index, lt::download_priority_t priority);
 
     // download control
-    CSDL_EXPORT void start_dl(lt::torrent_handle* torrent);
-    CSDL_EXPORT void stop_dl(lt::torrent_handle* torrent);
+    CSDL_EXPORT void start_torrent(lt::torrent_handle* torrent);
+    CSDL_EXPORT void stop_torrent(lt::torrent_handle* torrent);
 
     CSDL_EXPORT void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_status);
 

@@ -212,12 +212,12 @@ extern "C" {
     }
 
     // start and stop the download of a torrent.
-    void start_dl(lt::torrent_handle* torrent) {
+    void start_torrent(lt::torrent_handle* torrent) {
         torrent->resume();
     }
 
     // start and stop the download of a torrent.
-    void stop_dl(lt::torrent_handle* torrent) {
+    void stop_torrent(lt::torrent_handle* torrent) {
         torrent->pause();
     }
 
