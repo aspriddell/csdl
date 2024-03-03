@@ -14,6 +14,8 @@ public class ClientSession : IDisposable
     private readonly IntPtr _handle;
     private readonly ConcurrentDictionary<IntPtr, TorrentManager> _attachedManagers = new();
 
+    private bool _disposed;
+    
     public ClientSession()
         : this(new ClientSessionConfig())
     {
@@ -62,6 +64,13 @@ public class ClientSession : IDisposable
     /// <exception cref="InvalidOperationException">The torrent was unable to be attached to the underlying session</exception>
     public TorrentManager AttachTorrent(TorrentInfo torrent, string savePath = null)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        
+        if (_attachedManagers.ContainsKey(torrent.InfoHandle))
+        {
+            throw new InvalidOperationException("Torrent is already attached to this session.");
+        }
+        
         savePath ??= DefaultDownloadPath;
 
         // relative paths will be combined with the default download path
@@ -95,6 +104,8 @@ public class ClientSession : IDisposable
     /// <param name="manager">The manager to detach</param>
     public void DetachTorrent(TorrentManager manager)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        
         if (!_attachedManagers.TryRemove(manager.TorrentSessionHandle, out _))
         {
             throw new InvalidOperationException("Unable to detach torrent from session. Ensure the torrent is attached to this session.");
@@ -109,6 +120,11 @@ public class ClientSession : IDisposable
 
     public void Dispose()
     {
+        if (_disposed)
+        {
+            return;
+        }
+        
         foreach (var session in ActiveTorrents)
         {
             try
@@ -123,5 +139,7 @@ public class ClientSession : IDisposable
         
         NativeMethods.FreeSession(_handle);
         GC.SuppressFinalize(this);
+
+        _disposed = true;
     }
 }
