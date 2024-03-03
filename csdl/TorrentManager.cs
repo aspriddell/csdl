@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using csdl.Enums;
+using csdl.Native;
 
 namespace csdl;
 
@@ -98,8 +99,8 @@ public class TorrentManager
         /// </summary>
         public FileDownloadPriority Priority
         {
-            get => Native.NativeMethods.GetFilePriority(_torrentSessionHandle, Info.Index);
-            set => Native.NativeMethods.SetFilePriority(_torrentSessionHandle, Info.Index, value);
+            get => NativeMethods.GetFilePriority(_torrentSessionHandle, Info.Index);
+            set => NativeMethods.SetFilePriority(_torrentSessionHandle, Info.Index, value);
         }
     }
 }
