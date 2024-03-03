@@ -41,7 +41,7 @@ extern "C" {
 
     typedef struct cs_torrent_meta {
         char* name;
-        char* author;
+        char* creator;
         char* comment;
 
         int total_files;

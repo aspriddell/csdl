@@ -124,7 +124,7 @@ extern "C" {
         auto info = new torrent_metadata();
 
         info->name = torrent_name;
-        info->author = torrent_author;
+        info->creator = torrent_author;
         info->comment = torrent_comment;
 
         info->total_files = torrent->num_files();
@@ -152,7 +152,7 @@ extern "C" {
 
     void destroy_torrent_info(torrent_metadata* info) {
         delete[] info->name;
-        delete[] info->author;
+        delete[] info->creator;
         delete[] info->comment;
 
         delete info;
