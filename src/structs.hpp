@@ -8,7 +8,10 @@
 
 #include <libtorrent/session.hpp>
 
+#ifdef __cplusplus
 extern "C" {
+#endif
+
     typedef struct cs_session_config {
         // see https://www.libtorrent.org/reference-Settings.html#settings_pack
         char* user_agent;
@@ -69,6 +72,9 @@ extern "C" {
         int length;
         torrent_file_information* files;
     } torrent_file_list;
+
+#ifdef __cplusplus
 }
+#endif
 
 #endif //CSDL_STRUCTS_HPP
