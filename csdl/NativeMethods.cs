@@ -39,7 +39,7 @@ internal static partial class NativeMethods
     /// <param name="length">The size of the array</param>
     /// <returns>A handle to the torrent or <see cref="IntPtr.Zero"/> if there an error occurred</returns>
     [LibraryImport(LibraryName, EntryPoint = "create_torrent_bytes")]
-    public static partial IntPtr CreateTorrentFromBytes([MarshalAs(UnmanagedType.LPArray)] byte[] content, long length);
+    public static partial IntPtr CreateTorrentFromBytes(Span<byte> content, long length);
     
     /// <summary>
     /// Releases the unmanaged resources associated with a torrent.
@@ -94,14 +94,14 @@ internal static partial class NativeMethods
     /// <param name="torrentHandle">Handle of the torrent file to get info for</param>
     /// <param name="files">Location of the <see cref="TorrentFileList"/> to populate</param>
     [LibraryImport(LibraryName, EntryPoint = "get_torrent_file_list")]
-    public static partial void GetTorrentFileList(IntPtr torrentHandle, out TorrentFileList files);
+    public static partial void GetTorrentFileList(IntPtr torrentHandle, out NativeStructs.TorrentFileList files);
     
     /// <summary>
     /// Release the unmanaged resources associated with a <see cref="TorrentFileList"/>.
     /// </summary>
     /// <param name="files">The file list to release</param>
     [LibraryImport(LibraryName, EntryPoint = "destroy_torrent_file_list")]
-    public static partial void FreeTorrentFileList(ref TorrentFileList files);
+    public static partial void FreeTorrentFileList(ref NativeStructs.TorrentFileList files);
     
     /// <summary>
     /// Get the download priority of a file within a torrent.
@@ -125,14 +125,14 @@ internal static partial class NativeMethods
     /// </summary>
     /// <param name="torrentSessionHandle">The torrent session handle to start</param>
     [LibraryImport(LibraryName, EntryPoint = "start_dl")]
-    public static partial void StartDownload(IntPtr torrentSessionHandle);
+    public static partial void StartTorrent(IntPtr torrentSessionHandle);
     
     /// <summary>
     /// Stops a torrent download
     /// </summary>
     /// <param name="torrentSessionHandle">The torrent session handle to stop</param>
     [LibraryImport(LibraryName, EntryPoint = "stop_dl")]
-    public static partial void StopDownload(IntPtr torrentSessionHandle);
+    public static partial void StopTorrent(IntPtr torrentSessionHandle);
     
     /// <summary>
     /// Gets the status of a torrent.
