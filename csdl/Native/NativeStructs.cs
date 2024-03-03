@@ -32,13 +32,25 @@ internal static class NativeStructs
     {
         public readonly int index;
 
+        public readonly long offset;
+        public readonly long file_size;
+
+        public readonly long modified_time;
+
         [MarshalAs(UnmanagedType.LPUTF8Str)]
         public readonly string file_name;
     
         [MarshalAs(UnmanagedType.LPUTF8Str)]
         public readonly string file_path;
 
-        public readonly long file_size;
+        public readonly bool file_path_is_absolute;
+        public readonly bool pad_file;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+        public readonly byte[] file_hash_sha1;
+        
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public readonly byte[] file_hash_sha256;
     }
     
     /// <summary>
@@ -70,5 +82,11 @@ internal static class NativeStructs
         public readonly long total_size;
 
         public readonly long creation_epoch;
+        
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+        public readonly byte[] info_hash_sha1;
+        
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public readonly byte[] info_hash_sha256;
     }
 }

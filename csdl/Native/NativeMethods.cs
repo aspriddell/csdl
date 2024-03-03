@@ -123,14 +123,14 @@ internal static partial class NativeMethods
     /// Starts or resumes a torrent download
     /// </summary>
     /// <param name="torrentSessionHandle">The torrent session handle to start</param>
-    [LibraryImport(LibraryName, EntryPoint = "start_dl")]
+    [LibraryImport(LibraryName, EntryPoint = "start_torrent")]
     public static partial void StartTorrent(IntPtr torrentSessionHandle);
     
     /// <summary>
     /// Stops a torrent download
     /// </summary>
     /// <param name="torrentSessionHandle">The torrent session handle to stop</param>
-    [LibraryImport(LibraryName, EntryPoint = "stop_dl")]
+    [LibraryImport(LibraryName, EntryPoint = "stop_torrent")]
     public static partial void StopTorrent(IntPtr torrentSessionHandle);
     
     /// <summary>
