@@ -21,7 +21,7 @@ public class ClientSession : IDisposable
     
     public ClientSession(ClientSessionConfig config)
     {
-        _handle = Native.NativeMethods.CreateSession(new NativeStructs.SessionConfig
+        _handle = NativeMethods.CreateSession(new NativeStructs.SessionConfig
         {
             user_agent = config.UserAgent,
             fingerprint = config.Fingerprint,
@@ -76,7 +76,7 @@ public class ClientSession : IDisposable
             Directory.CreateDirectory(savePath);
         }
         
-        var handle = Native.NativeMethods.AttachTorrent(_handle, torrent.Handle, savePath);
+        var handle = NativeMethods.AttachTorrent(_handle, torrent.InfoHandle, savePath);
         
         if (handle <= IntPtr.Zero)
         {
@@ -101,7 +101,7 @@ public class ClientSession : IDisposable
         }
         
         manager.Stop();
-        Native.NativeMethods.DetachTorrent(_handle, manager.TorrentSessionHandle);
+        NativeMethods.DetachTorrent(_handle, manager.TorrentSessionHandle);
         
         // mark as disposed/detached to stop usage of any remaining references to the manager
         manager.MarkAsDetached();
@@ -114,7 +114,7 @@ public class ClientSession : IDisposable
             Detach(session);
         }
         
-        Native.NativeMethods.FreeSession(_handle);
+        NativeMethods.FreeSession(_handle);
         GC.SuppressFinalize(this);
     }
 }

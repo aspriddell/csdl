@@ -21,7 +21,7 @@ public record TorrentMetadata(string Name, string Creator, string Comment, int T
 /// </summary>
 public class TorrentInfo
 {
-    internal readonly IntPtr Handle;
+    internal readonly IntPtr InfoHandle;
 
     private TorrentMetadata _metadata;
     private IReadOnlyCollection<TorrentFileInfo> _files;
@@ -39,9 +39,9 @@ public class TorrentInfo
             throw new FileNotFoundException("The specified file does not exist.", fileName);
         }
 
-        Handle = Native.NativeMethods.CreateTorrentFromFile(fileName);
+        InfoHandle = NativeMethods.CreateTorrentFromFile(fileName);
 
-        if (Handle <= IntPtr.Zero)
+        if (InfoHandle <= IntPtr.Zero)
         {
             throw new InvalidOperationException("Failed to create torrent from file provided.");
         }
@@ -54,9 +54,9 @@ public class TorrentInfo
     /// <exception cref="InvalidOperationException">The provided data was invalid</exception>
     public TorrentInfo(Span<byte> fileBytes)
     {
-        Handle = Native.NativeMethods.CreateTorrentFromBytes(fileBytes, fileBytes.Length);
+        InfoHandle = NativeMethods.CreateTorrentFromBytes(fileBytes, fileBytes.Length);
 
-        if (Handle <= IntPtr.Zero)
+        if (InfoHandle <= IntPtr.Zero)
         {
             throw new InvalidOperationException("Failed to create torrent from bytes provided.");
         }
@@ -66,7 +66,7 @@ public class TorrentInfo
     // and instead letting the garbage collector handle it
     ~TorrentInfo()
     {
-        Native.NativeMethods.FreeTorrent(Handle);
+        NativeMethods.FreeTorrent(InfoHandle);
     }
     
     /// <summary>
@@ -81,7 +81,7 @@ public class TorrentInfo
 
     private TorrentMetadata GetInfo()
     {
-        var infoHandle = Native.NativeMethods.GetTorrentInfo(Handle);
+        var infoHandle = NativeMethods.GetTorrentInfo(InfoHandle);
 
         if (infoHandle == IntPtr.Zero)
         {
@@ -100,13 +100,13 @@ public class TorrentInfo
         }
         finally
         {
-            Native.NativeMethods.FreeTorrentInfo(infoHandle);
+            NativeMethods.FreeTorrentInfo(infoHandle);
         }
     }
 
     private IReadOnlyCollection<TorrentFileInfo> GetFiles()
     {
-        Native.NativeMethods.GetTorrentFileList(Handle, out var list);
+        NativeMethods.GetTorrentFileList(InfoHandle, out var list);
 
         try
         {
@@ -123,7 +123,7 @@ public class TorrentInfo
         }
         finally
         {
-            Native.NativeMethods.FreeTorrentFileList(ref list);
+            NativeMethods.FreeTorrentFileList(ref list);
         }
     }
 }
