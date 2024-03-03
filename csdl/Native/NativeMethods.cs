@@ -38,7 +38,7 @@ internal static partial class NativeMethods
     /// <param name="length">The size of the region</param>
     /// <returns>A handle to the torrent or <see cref="IntPtr.Zero"/> if there an error occurred</returns>
     [LibraryImport(LibraryName, EntryPoint = "create_torrent_bytes")]
-    public static partial IntPtr CreateTorrentFromBytes(Memory<byte> content, long length);
+    public static partial IntPtr CreateTorrentFromBytes(byte[] content, long length);
     
     /// <summary>
     /// Releases the unmanaged resources associated with a torrent.

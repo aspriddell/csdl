@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using csdl.Native;
 
@@ -9,12 +10,12 @@ namespace csdl;
 /// <summary>
 /// Represents a file contained within a torrent.
 /// </summary>
-public record TorrentFileInfo(int Index, string Name, string Path, long FileSize);
+public record TorrentFileInfo(int Index, long Offset, string Name, string Path, long FileSize, bool PathIsAbsolute, bool IsPadFile, string Sha1Hash, string Sha256Hash);
 
 /// <summary>
 /// Contains metadata related to a torrent file.
 /// </summary>
-public record TorrentMetadata(string Name, string Creator, string Comment, int TotalFiles, long TotalSize, DateTimeOffset CreatedAt);
+public record TorrentMetadata(string Name, string Creator, string Comment, int TotalFiles, long TotalSize, DateTimeOffset CreatedAt, string InfoHash, string InfoHashV2);
 
 /// <summary>
 /// Represents a .torrent file.
@@ -52,7 +53,7 @@ public class TorrentInfo
     /// </summary>
     /// <param name="fileBytes">The contents of a .torrent file, as a block of memory</param>
     /// <exception cref="InvalidOperationException">The provided data was invalid</exception>
-    public TorrentInfo(Memory<byte> fileBytes)
+    public TorrentInfo(byte[] fileBytes)
     {
         InfoHandle = NativeMethods.CreateTorrentFromBytes(fileBytes, fileBytes.Length);
 
@@ -96,7 +97,9 @@ public class TorrentInfo
                 info.comment,
                 info.total_files,
                 info.total_size,
-                DateTimeOffset.FromUnixTimeSeconds(info.creation_epoch));
+                DateTimeOffset.FromUnixTimeSeconds(info.creation_epoch),
+                info.info_hash_sha1.All(b => b == 0) ? null : Convert.ToHexString(info.info_hash_sha1),
+                info.info_hash_sha256.All(b => b == 0) ? null : Convert.ToHexString(info.info_hash_sha256));
         }
         finally
         {
@@ -115,8 +118,18 @@ public class TorrentInfo
 
             for (var i = 0; i < list.length; i++)
             {
-                var file = Marshal.PtrToStructure<NativeStructs.TorrentFile>(list.items + size * i);
-                files.Add(new TorrentFileInfo(file.index, file.file_name, file.file_path, file.file_size));
+                var nativeFile = Marshal.PtrToStructure<NativeStructs.TorrentFile>(list.items + size * i);
+                var fileInfo = new TorrentFileInfo(nativeFile.index,
+                nativeFile.offset,
+                nativeFile.file_name, 
+                nativeFile.file_path,
+                nativeFile.file_size,
+                nativeFile.file_path_is_absolute,
+                nativeFile.pad_file,
+                nativeFile.file_hash_sha1.All(x => x == 0) ? null : Convert.ToHexString(nativeFile.file_hash_sha1),
+                nativeFile.file_hash_sha256.All(x => x == 0) ? null : Convert.ToHexString(nativeFile.file_hash_sha256));
+                
+                files.Add(fileInfo);
             }
 
             return files;
