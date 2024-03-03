@@ -50,9 +50,9 @@ public class TorrentInfo
     /// <summary>
     /// Creates a new instance of <see cref="TorrentInfo"/> using the contents of a .torrent file from memory.
     /// </summary>
-    /// <param name="fileBytes">The contents of a .torrent file, as a span of bytes</param>
+    /// <param name="fileBytes">The contents of a .torrent file, as a block of memory</param>
     /// <exception cref="InvalidOperationException">The provided data was invalid</exception>
-    public TorrentInfo(Span<byte> fileBytes)
+    public TorrentInfo(Memory<byte> fileBytes)
     {
         InfoHandle = NativeMethods.CreateTorrentFromBytes(fileBytes, fileBytes.Length);
 

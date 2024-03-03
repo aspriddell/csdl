@@ -34,11 +34,11 @@ internal static partial class NativeMethods
     /// <summary>
     /// Create a torrent file from a byte array
     /// </summary>
-    /// <param name="content">The byte array containing the torrent file</param>
-    /// <param name="length">The size of the array</param>
+    /// <param name="content">The memory region containing the torrent file</param>
+    /// <param name="length">The size of the region</param>
     /// <returns>A handle to the torrent or <see cref="IntPtr.Zero"/> if there an error occurred</returns>
     [LibraryImport(LibraryName, EntryPoint = "create_torrent_bytes")]
-    public static partial IntPtr CreateTorrentFromBytes(Span<byte> content, long length);
+    public static partial IntPtr CreateTorrentFromBytes(Memory<byte> content, long length);
     
     /// <summary>
     /// Releases the unmanaged resources associated with a torrent.
