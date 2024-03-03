@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using csdl.Enums;
 
-namespace csdl.Structs;
+namespace csdl;
 
 /// <summary>
 /// Contains information about the current state of an attached torrent.

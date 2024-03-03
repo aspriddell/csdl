@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using csdl.Enums;
-using csdl.Structs;
 
 namespace csdl;
 
@@ -41,7 +40,7 @@ public class TorrentManager
         get
         {
             ObjectDisposedException.ThrowIf(_detached, this);
-            NativeMethods.GetTorrentStatus(TorrentSessionHandle, out var status);
+            Native.NativeMethods.GetTorrentStatus(TorrentSessionHandle, out var status);
 
             return status;
         }
@@ -53,7 +52,7 @@ public class TorrentManager
     public void Start()
     {
         ObjectDisposedException.ThrowIf(_detached, this);
-        NativeMethods.StartTorrent(TorrentSessionHandle);
+        Native.NativeMethods.StartTorrent(TorrentSessionHandle);
     }
     
     /// <summary>
@@ -62,7 +61,7 @@ public class TorrentManager
     public void Stop()
     {
         ObjectDisposedException.ThrowIf(_detached, this);
-        NativeMethods.StopTorrent(TorrentSessionHandle);
+        Native.NativeMethods.StopTorrent(TorrentSessionHandle);
     }
 
     // internal method to trigger a detached status, essentially making the object functionally unusable.
@@ -99,8 +98,8 @@ public class TorrentManager
         /// </summary>
         public FileDownloadPriority Priority
         {
-            get => NativeMethods.GetFilePriority(_torrentSessionHandle, Info.Index);
-            set => NativeMethods.SetFilePriority(_torrentSessionHandle, Info.Index, value);
+            get => Native.NativeMethods.GetFilePriority(_torrentSessionHandle, Info.Index);
+            set => Native.NativeMethods.SetFilePriority(_torrentSessionHandle, Info.Index, value);
         }
     }
 }

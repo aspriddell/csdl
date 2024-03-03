@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using csdl.Native;
 
 namespace csdl;
 
@@ -38,7 +39,7 @@ public class TorrentInfo
             throw new FileNotFoundException("The specified file does not exist.", fileName);
         }
 
-        Handle = NativeMethods.CreateTorrentFromFile(fileName);
+        Handle = Native.NativeMethods.CreateTorrentFromFile(fileName);
 
         if (Handle <= IntPtr.Zero)
         {
@@ -53,7 +54,7 @@ public class TorrentInfo
     /// <exception cref="InvalidOperationException">The provided data was invalid</exception>
     public TorrentInfo(Span<byte> fileBytes)
     {
-        Handle = NativeMethods.CreateTorrentFromBytes(fileBytes, fileBytes.Length);
+        Handle = Native.NativeMethods.CreateTorrentFromBytes(fileBytes, fileBytes.Length);
 
         if (Handle <= IntPtr.Zero)
         {
@@ -65,7 +66,7 @@ public class TorrentInfo
     // and instead letting the garbage collector handle it
     ~TorrentInfo()
     {
-        NativeMethods.FreeTorrent(Handle);
+        Native.NativeMethods.FreeTorrent(Handle);
     }
     
     /// <summary>
@@ -80,7 +81,7 @@ public class TorrentInfo
 
     private TorrentMetadata GetInfo()
     {
-        var infoHandle = NativeMethods.GetTorrentInfo(Handle);
+        var infoHandle = Native.NativeMethods.GetTorrentInfo(Handle);
 
         if (infoHandle == IntPtr.Zero)
         {
@@ -99,13 +100,13 @@ public class TorrentInfo
         }
         finally
         {
-            NativeMethods.FreeTorrentInfo(infoHandle);
+            Native.NativeMethods.FreeTorrentInfo(infoHandle);
         }
     }
 
     private IReadOnlyCollection<TorrentFileInfo> GetFiles()
     {
-        NativeMethods.GetTorrentFileList(Handle, out var list);
+        Native.NativeMethods.GetTorrentFileList(Handle, out var list);
 
         try
         {
@@ -122,7 +123,7 @@ public class TorrentInfo
         }
         finally
         {
-            NativeMethods.FreeTorrentFileList(ref list);
+            Native.NativeMethods.FreeTorrentFileList(ref list);
         }
     }
 }

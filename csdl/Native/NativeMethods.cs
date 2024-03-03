@@ -1,9 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
 using csdl.Enums;
-using csdl.Structs;
 
-namespace csdl;
+namespace csdl.Native;
 
 internal static partial class NativeMethods
 {
@@ -97,7 +96,7 @@ internal static partial class NativeMethods
     public static partial void GetTorrentFileList(IntPtr torrentHandle, out NativeStructs.TorrentFileList files);
     
     /// <summary>
-    /// Release the unmanaged resources associated with a <see cref="NativeStructs.TorrentFileList"/>.
+    /// Release the unmanaged resources associated with a <see cref="files"/>.
     /// </summary>
     /// <param name="files">The file list to release</param>
     [LibraryImport(LibraryName, EntryPoint = "destroy_torrent_file_list")]

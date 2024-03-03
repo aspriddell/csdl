@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using csdl.Native;
 
 namespace csdl;
 
@@ -20,7 +21,7 @@ public class ClientSession : IDisposable
     
     public ClientSession(ClientSessionConfig config)
     {
-        _handle = NativeMethods.CreateSession(new NativeStructs.SessionConfig
+        _handle = Native.NativeMethods.CreateSession(new NativeStructs.SessionConfig
         {
             user_agent = config.UserAgent,
             fingerprint = config.Fingerprint,
@@ -75,7 +76,7 @@ public class ClientSession : IDisposable
             Directory.CreateDirectory(savePath);
         }
         
-        var handle = NativeMethods.AttachTorrent(_handle, torrent.Handle, savePath);
+        var handle = Native.NativeMethods.AttachTorrent(_handle, torrent.Handle, savePath);
         
         if (handle <= IntPtr.Zero)
         {
@@ -100,7 +101,7 @@ public class ClientSession : IDisposable
         }
         
         manager.Stop();
-        NativeMethods.DetachTorrent(_handle, manager.TorrentSessionHandle);
+        Native.NativeMethods.DetachTorrent(_handle, manager.TorrentSessionHandle);
         
         // mark as disposed/detached to stop usage of any remaining references to the manager
         manager.MarkAsDetached();
@@ -113,7 +114,7 @@ public class ClientSession : IDisposable
             Detach(session);
         }
         
-        NativeMethods.FreeSession(_handle);
+        Native.NativeMethods.FreeSession(_handle);
         GC.SuppressFinalize(this);
     }
 }
