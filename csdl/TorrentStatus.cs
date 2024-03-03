@@ -10,7 +10,6 @@ namespace csdl;
 public readonly struct TorrentStatus
 {
     public readonly TorrentState State;
-
     public readonly float Progress;
 
     public readonly int PeerCount;
