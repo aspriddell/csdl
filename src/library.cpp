@@ -131,6 +131,22 @@ extern "C" {
         info->total_size = torrent->total_size();
         info->creation_date = torrent->creation_date();
 
+        auto hash = torrent->info_hashes();
+
+        // fill in the info hash
+        if (hash.has_v1()) {
+            std::copy(hash.v1.begin(), hash.v1.end(), info->info_hash_v1);
+        } else {
+            std::fill(info->info_hash_v1, info->info_hash_v1 + 20, 0);
+        }
+
+        // fill in the info hash v2
+        if (hash.has_v2()) {
+            std::copy(hash.v2.begin(), hash.v2.end(), info->info_hash_v2);
+        } else {
+            std::fill(info->info_hash_v2, info->info_hash_v2 + 32, 0);
+        }
+
         return info;
     }
 
@@ -152,14 +168,24 @@ extern "C" {
         for (lt::file_index_t i(0); i != files.end_file(); i++) {
             auto name = files.file_name(i);
             auto path = files.file_path(i);
+            auto hash = files.hash(i);
+            auto root = files.root(i);
 
-            char* file_name = new char[name.size() + 1]();
-            char* file_path = new char[path.size() + 1]();
+            list[i] = torrent_file_information {
+                i,
+                files.file_offset(i),
+                files.file_size(i),
+                files.mtime(i),
+                new char[name.size() + 1](),
+                new char[path.size() + 1](),
+                files.file_absolute_path(i),
+                files.pad_file_at(i)
+            };
 
-            std::copy(name.begin(), name.end(), file_name);
-            std::copy(path.begin(), path.end(), file_path);
-
-            list[i] = torrent_file_information{i, file_name, file_path, files.file_size(i)};
+            std::copy(name.begin(), name.end(), list[i].file_name);
+            std::copy(path.begin(), path.end(), list[i].file_path);
+            std::copy(hash.begin(), hash.end(), list[i].file_hash_sha1);
+            std::copy(root.begin(), root.end(), list[i].file_hash_sha256);
         }
 
         file_list->files = list;

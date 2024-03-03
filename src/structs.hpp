@@ -24,10 +24,19 @@ extern "C" {
     typedef struct cs_torrent_file_information {
         lt::file_index_t index;
 
+        long offset;
+        long file_size;
+
+        time_t modified_time;
+
         char* file_name;
         char* file_path;
 
-        long file_size;
+        bool file_path_is_absolute;
+        bool pad_file;
+
+        uint8_t file_hash_sha1[20];
+        uint8_t file_hash_sha256[32];
     } torrent_file_information;
 
     typedef struct cs_torrent_meta {
@@ -39,6 +48,9 @@ extern "C" {
         long total_size;
 
         time_t creation_date;
+
+        uint8_t info_hash_v1[20];
+        uint8_t info_hash_v2[32];
     } torrent_metadata;
 
     typedef struct cs_torrent_status {
