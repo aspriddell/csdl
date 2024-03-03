@@ -10,7 +10,7 @@ namespace csdl;
 /// <summary>
 /// Represents a file contained within a torrent.
 /// </summary>
-public record TorrentFileInfo(int Index, long Offset, string Name, string Path, long FileSize, bool PathIsAbsolute, bool IsPadFile, string Sha1Hash, string Sha256Hash);
+public record TorrentFileInfo(int Index, long Offset, string Name, string Path, long FileSize, bool PathIsAbsolute, bool IsPadFile);
 
 /// <summary>
 /// Contains metadata related to a torrent file.
@@ -118,16 +118,14 @@ public class TorrentInfo
 
             for (var i = 0; i < list.length; i++)
             {
-                var nativeFile = Marshal.PtrToStructure<NativeStructs.TorrentFile>(list.items + size * i);
+                var nativeFile = Marshal.PtrToStructure<NativeStructs.TorrentFile>(list.items + (size * i));
                 var fileInfo = new TorrentFileInfo(nativeFile.index,
                 nativeFile.offset,
                 nativeFile.file_name, 
                 nativeFile.file_path,
                 nativeFile.file_size,
                 nativeFile.file_path_is_absolute,
-                nativeFile.pad_file,
-                nativeFile.file_hash_sha1.All(x => x == 0) ? null : Convert.ToHexString(nativeFile.file_hash_sha1),
-                nativeFile.file_hash_sha256.All(x => x == 0) ? null : Convert.ToHexString(nativeFile.file_hash_sha256));
+                nativeFile.pad_file);
                 
                 files.Add(fileInfo);
             }

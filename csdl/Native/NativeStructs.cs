@@ -45,12 +45,6 @@ internal static class NativeStructs
 
         public readonly bool file_path_is_absolute;
         public readonly bool pad_file;
-
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
-        public readonly byte[] file_hash_sha1;
-        
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
-        public readonly byte[] file_hash_sha256;
     }
     
     /// <summary>
