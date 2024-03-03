@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -10,16 +11,19 @@ namespace csdl;
 /// <summary>
 /// Represents a file contained within a torrent.
 /// </summary>
+[DebuggerDisplay("{Path} ({FileSize} bytes)")]
 public record TorrentFileInfo(int Index, long Offset, string Name, string Path, long FileSize, bool PathIsAbsolute, bool IsPadFile);
 
 /// <summary>
 /// Contains metadata related to a torrent file.
 /// </summary>
+[DebuggerDisplay("{Name}")]
 public record TorrentMetadata(string Name, string Creator, string Comment, int TotalFiles, long TotalSize, DateTimeOffset CreatedAt, string InfoHash, string InfoHashV2);
 
 /// <summary>
 /// Represents a .torrent file.
 /// </summary>
+[DebuggerDisplay("{Metadata.Name} ({Files.Count} Files)")]
 public class TorrentInfo
 {
     internal readonly IntPtr InfoHandle;
