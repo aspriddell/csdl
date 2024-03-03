@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace csdl.Structs;
@@ -6,29 +7,54 @@ namespace csdl.Structs;
 /// Holds configuration information relating to a session.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public struct SessionConfig
+[SuppressMessage("ReSharper", "ConvertToAutoProperty")]
+public class SessionConfig
 {
-    public SessionConfig()
+    [MarshalAs(UnmanagedType.LPStr)]
+    private string user_agent;
+
+    [MarshalAs(UnmanagedType.LPStr)]
+    private string fingerprint;
+
+    private bool private_mode;
+    private bool block_seeding;
+    private bool force_encryption;
+
+    private int max_connections = 200;
+
+    public string UserAgent
     {
-        UserAgent = null;
-        Fingerprint = null;
-
-        PrivateMode = false;
-        BlockSeeding = false;
-        ForceEncryption = true;
-
-        MaxConnections = 200;
+        get => user_agent;
+        set => user_agent = value;
     }
 
-    [MarshalAs(UnmanagedType.LPStr)]
-    public string UserAgent;
-
-    [MarshalAs(UnmanagedType.LPStr)]
-    public string Fingerprint;
-
-    public bool PrivateMode;
-    public bool BlockSeeding;
-    public bool ForceEncryption;
-
-    public int MaxConnections;
+    public string Fingerprint
+    {
+        get => fingerprint;
+        set => fingerprint = value;
+    }
+    
+    public bool PrivateMode
+    {
+        get => private_mode;
+        set => private_mode = value;
+    }
+    
+    public bool BlockSeeding
+    {
+        get => block_seeding;
+        set => block_seeding = value;
+    }
+    
+    public bool ForceEncryption
+    {
+        get => force_encryption;
+        set => force_encryption = value;
+    }
+    
+    public int MaxConnections
+    {
+        get => max_connections;
+        set => max_connections = value;
+    }
 }
