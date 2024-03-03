@@ -91,7 +91,7 @@ public class TorrentManager
         /// <summary>
         /// The full path to the file on disk.
         /// </summary>
-        public string Path => System.IO.Path.Combine(_savePath, Info.Path);
+        public string Path => Info.PathIsAbsolute ? Info.Path : System.IO.Path.Combine(_savePath, Info.Path);
 
         /// <summary>
         /// The download priority of the file.
