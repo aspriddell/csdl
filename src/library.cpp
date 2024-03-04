@@ -60,7 +60,7 @@ extern "C" {
         delete session;
     }
 
-    void set_event_callback(lt::session* session, void (*callback)(void* alert)) {
+    void set_event_callback(lt::session* session, alert_callback callback) {
         // convert callback to std::function
         auto callback_fn = std::function<void()>([session, &callback] () -> void {
             on_events_available(session, callback);

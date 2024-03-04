@@ -25,7 +25,7 @@ void populate_peer_alert(cs_peer_alert* peer_alert, lt::peer_alert* alert, cs_pe
     std::copy(v6_mapped_addr.begin(), v6_mapped_addr.end(), peer_alert->ipv6_address);
 }
 
-void on_events_available(lt::session* session, void (*callback)(void* alert)) {
+void on_events_available(lt::session* session, alert_callback callback) {
     static std::mutex mutex;
 
     // try to take lock, return if failed
