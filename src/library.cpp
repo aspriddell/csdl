@@ -60,7 +60,18 @@ extern "C" {
         delete session;
     }
 
+    void set_event_callback(lt::session* session, void (*callback)(void* alert)) {
+        // convert callback to std::function
+        auto callback_fn = std::function<void()>([&session, &callback]() {
+            on_events_available(session, callback);
+        });
 
+        session->set_alert_notify(callback_fn);
+    }
+
+    void clear_event_callback(lt::session *session) {
+        session->set_alert_notify(nullptr);
+    }
 
     lt::torrent_info* create_torrent_bytes(const char* data, long length) {
         lt::span<char const> buffer(data, length);

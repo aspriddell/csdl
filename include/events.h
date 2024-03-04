@@ -6,11 +6,16 @@
 #ifndef CS_NATIVE_EVENTS_H
 #define CS_NATIVE_EVENTS_H
 
+#include "lib_export.h"
+
 #include <ctime>
 #include <libtorrent/alert.hpp>
 #include <libtorrent/error_code.hpp>
 #include <libtorrent/torrent_status.hpp>
 #include <libtorrent/torrent_handle.hpp>
+
+// used internally in main library, not intended for public use
+CSDL_NO_EXPORT void on_events_available(lt::session* session, void (*callback)(void* alert));
 
 #ifdef __cplusplus
 extern "C" {

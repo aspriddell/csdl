@@ -20,7 +20,7 @@ extern "C" {
     CSDL_EXPORT lt::session* create_session(session_config* config);
     CSDL_EXPORT void destroy_session(lt::session* session);
 
-    CSDL_EXPORT void set_event_callback(lt::session* session, void (*callback)(cs_alert* alert));
+    CSDL_EXPORT void set_event_callback(lt::session* session, void (*callback)(void* alert));
     CSDL_EXPORT void clear_event_callback(lt::session* session);
 
     // torrent control
