@@ -28,6 +28,7 @@ void on_events_available(lt::session* session, void (*callback)(void* alert)) {
     static std::mutex mutex;
 
     // try to take lock, return if failed
+    // shouldn't be needed but just in case
     if (!mutex.try_lock()) {
         return;
     }
@@ -125,7 +126,13 @@ void on_events_available(lt::session* session, void (*callback)(void* alert)) {
             }
 
             default:
+            {
+                cs_alert generic_alert;
+
+                fill_event_info(&generic_alert, alert);
+                callback(&generic_alert);
                 break;
+            }
         }
     }
 
