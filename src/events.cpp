@@ -17,8 +17,9 @@ void fill_event_info(cs_alert* alert, lt::alert* lt_alert) {
 
 void populate_peer_alert(cs_peer_alert* peer_alert, lt::peer_alert* alert, cs_peer_alert_type alert_type) {
     fill_event_info(&peer_alert->alert, alert);
-    peer_alert->handle = &alert->handle;
+
     peer_alert->type = alert_type;
+    peer_alert->handle = &alert->handle;
 
     auto v6_mapped_addr = alert->endpoint.address().to_v6().to_bytes();
     std::copy(v6_mapped_addr.begin(), v6_mapped_addr.end(), peer_alert->ipv6_address);
@@ -122,6 +123,17 @@ void on_events_available(lt::session* session, void (*callback)(void* alert)) {
 
                 populate_peer_alert(&peer_unsnubbed, peer_alert, cs_peer_alert_type::unsnubbed);
                 callback(&peer_unsnubbed);
+                break;
+            }
+
+            // peer errored
+            case lt::peer_error_alert::alert_type:
+            {
+                auto peer_alert = lt::alert_cast<lt::peer_error_alert>(alert);
+                cs_peer_alert peer_errored;
+
+                populate_peer_alert(&peer_errored, peer_alert, cs_peer_alert_type::errored);
+                callback(&peer_errored);
                 break;
             }
 

@@ -8,6 +8,7 @@
 
 #include <ctime>
 #include <libtorrent/alert.hpp>
+#include <libtorrent/error_code.hpp>
 #include <libtorrent/torrent_status.hpp>
 #include <libtorrent/torrent_handle.hpp>
 
@@ -47,6 +48,7 @@ extern "C" {
         banned = 3,
         snubbed = 4,
         unsnubbed = 5,
+        errored = 6
     };
 
     struct cs_peer_alert {
