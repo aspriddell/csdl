@@ -22,7 +22,7 @@ extern "C" {
 
         time_t epoch;
 
-        char* message;
+        const char* message;
     };
 
     struct cs_torrent_status_alert {
