@@ -15,8 +15,8 @@
 #include <libtorrent/torrent_handle.hpp>
 
 // used internally in main library, not intended for public use
-typedef void (__cdecl *alert_callback)(void* alert);
-CSDL_NO_EXPORT void on_events_available(lt::session* session, alert_callback callback);
+typedef void (__cdecl *cs_alert_callback)(void* alert);
+CSDL_NO_EXPORT void on_events_available(lt::session* session, cs_alert_callback callback);
 
 #ifdef __cplusplus
 extern "C" {
