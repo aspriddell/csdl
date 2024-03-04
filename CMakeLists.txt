@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 set(CMAKE_CXX_STANDARD 20)
 
 include(GenerateExportHeader)
-include_directories(${CMAKE_BINARY_DIR}/include)
+include_directories(${CMAKE_BINARY_DIR}/include ${CMAKE_SOURCE_DIR}/include)
 
 project(cs_native VERSION 0.1 LANGUAGES CXX)
 
