@@ -62,7 +62,7 @@ extern "C" {
 
     void set_event_callback(lt::session* session, void (*callback)(void* alert)) {
         // convert callback to std::function
-        auto callback_fn = std::function<void()>([&session, &callback] () -> void {
+        auto callback_fn = std::function<void()>([session, &callback] () -> void {
             on_events_available(session, callback);
         });
 
