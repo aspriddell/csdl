@@ -90,7 +90,7 @@ extern "C" {
 
     // attach a torrent to the session, returning a handle that can be used to control the download.
     // the torrent info handle is copied, and can be freed after the call to attach_torrent with a call to destroy_torrent_info.
-    lt::torrent_handle* attach_torrent(libtorrent::session* session, libtorrent::torrent_info *torrent, const char* save_path) {
+    lt::torrent_handle* attach_torrent(libtorrent::session* session, libtorrent::torrent_info* torrent, const char* save_path) {
         lt::add_torrent_params params;
         std::string save_path_copy(save_path);
 
