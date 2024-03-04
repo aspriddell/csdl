@@ -8,6 +8,9 @@ internal static partial class NativeMethods
 {
     private const string LibraryName = "csdl";
 
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    public delegate void SessionEventCallback(IntPtr alertPtr);
+
     /// <summary>
     /// Creates a session with the given configuration.
     /// </summary>
@@ -22,6 +25,21 @@ internal static partial class NativeMethods
     /// <param name="sessionHandle">The session to invalidate</param>
     [LibraryImport(LibraryName, EntryPoint = "destroy_session")]
     public static partial void FreeSession(IntPtr sessionHandle);
+    
+    /// <summary>
+    /// Sets the event callback for a session.
+    /// </summary>
+    /// <param name="sessionHandle">The handle for the session to add the callback to</param>
+    /// <param name="callback">The callback to run when an event is posted</param>
+    [LibraryImport(LibraryName, EntryPoint = "set_event_callback")]
+    public static partial void SetEventCallback(IntPtr sessionHandle, [MarshalAs(UnmanagedType.FunctionPtr)] SessionEventCallback callback);
+    
+    /// <summary>
+    /// Clears the currently set event callback.
+    /// </summary>
+    /// <param name="sessionHandle">The session handle to remove the registered callback from</param>
+    [LibraryImport(LibraryName, EntryPoint = "clear_event_callback")]
+    public static partial void ClearEventCallback(IntPtr sessionHandle);
     
     /// <summary>
     /// Create a torrent from a file on the local disk
