@@ -6,7 +6,7 @@ include_directories(${CMAKE_BINARY_DIR}/include)
 
 project(cs_native VERSION 0.1 LANGUAGES CXX)
 
-add_library(csdl SHARED src/library.cpp)
+add_library(csdl SHARED src/library.cpp src/events.cpp)
 
 set_property(TARGET csdl PROPERTY VERSION 0.1)
 set_property(TARGET csdl PROPERTY SOVERSION 0.1)

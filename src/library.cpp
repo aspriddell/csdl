@@ -3,7 +3,7 @@
 // Created by Albie on 29/02/2024.
 //
 
-#include "library.h"
+#include "../include/library.h"
 
 #include <libtorrent/fingerprint.hpp>
 #include <libtorrent/torrent_handle.hpp>
