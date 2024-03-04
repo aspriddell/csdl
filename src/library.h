@@ -6,7 +6,7 @@
 #ifndef CSDL_LIBRARY_HPP
 #define CSDL_LIBRARY_HPP
 
-#include "structs.hpp"
+#include "structs.h"
 #include "lib_export.h"
 
 #include <libtorrent/torrent_handle.hpp>
