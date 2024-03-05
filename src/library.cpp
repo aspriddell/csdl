@@ -27,11 +27,10 @@ extern "C" {
 
         // fingerprint
         auto fingerprint = std::string(config->fingerprint);
-        if (fingerprint.empty()) {
-            fingerprint = lt::generate_fingerprint("CS", 2);
+        if (!fingerprint.empty()) {
+            pack.set_str(lt::settings_pack::peer_fingerprint, fingerprint);
         }
 
-        pack.set_str(lt::settings_pack::peer_fingerprint, fingerprint);
         pack.set_bool(lt::settings_pack::anonymous_mode, config->private_mode);
 
         // disable seeding
