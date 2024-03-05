@@ -45,7 +45,7 @@ extern "C" {
         char* comment;
 
         int32_t total_files;
-        uint64_t total_size;
+        int64_t total_size;
 
         time_t creation_date;
 
@@ -61,8 +61,8 @@ extern "C" {
         int32_t count_peers;
         int32_t count_seeds;
 
-        uint64_t bytes_uploaded;
-        uint64_t bytes_downloaded;
+        int64_t bytes_uploaded;
+        int64_t bytes_downloaded;
 
         int64_t upload_rate;
         int64_t download_rate;
