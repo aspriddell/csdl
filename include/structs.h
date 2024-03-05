@@ -21,14 +21,14 @@ extern "C" {
         bool block_seeding;
         bool encrypted_peers_only;
 
-        int max_connections;
+        int32_t max_connections;
     } session_config;
 
     typedef struct cs_torrent_file_information {
         lt::file_index_t index;
 
-        long offset;
-        long file_size;
+        int64_t offset;
+        int64_t file_size;
 
         time_t modified_time;
 
@@ -44,8 +44,8 @@ extern "C" {
         char* creator;
         char* comment;
 
-        int total_files;
-        long total_size;
+        int32_t total_files;
+        uint64_t total_size;
 
         time_t creation_date;
 
@@ -54,22 +54,22 @@ extern "C" {
     } torrent_metadata;
 
     typedef struct cs_torrent_status {
-        int state;
+        int32_t state;
+        
+        float_t progress;
 
-        float progress;
+        int32_t count_peers;
+        int32_t count_seeds;
 
-        int count_peers;
-        int count_seeds;
+        uint64_t bytes_uploaded;
+        uint64_t bytes_downloaded;
 
-        long bytes_uploaded;
-        long bytes_downloaded;
-
-        long upload_rate;
-        long download_rate;
+        int64_t upload_rate;
+        int64_t download_rate;
     } torrent_status;
 
     typedef struct cs_torrent_file_list {
-        int length;
+        int32_t length;
         torrent_file_information* files;
     } torrent_file_list;
 
