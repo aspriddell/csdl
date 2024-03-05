@@ -216,13 +216,13 @@ extern "C" {
     }
 
     // set the download priority for a file in a torrent.
-    void set_file_dl_priority(lt::torrent_handle* torrent, const lt::file_index_t file_index, const lt::download_priority_t priority) {
-        torrent->file_priority(file_index, priority);
+    void set_file_dl_priority(lt::torrent_handle* torrent, const lt::file_index_t file_index, const uint8_t priority) {
+        torrent->file_priority(file_index, (lt::download_priority_t)priority);
     }
 
     // get the download priority for a file in a torrent.
-    lt::download_priority_t get_file_dl_priority(lt::torrent_handle* torrent, const lt::file_index_t file_index) {
-        return torrent->file_priority(file_index);
+    uint8_t get_file_dl_priority(lt::torrent_handle* torrent, const lt::file_index_t file_index) {
+        return (uint8_t)torrent->file_priority(file_index);
     }
 
     // start and stop the download of a torrent.

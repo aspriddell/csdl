@@ -40,8 +40,8 @@ extern "C" {
     CSDL_EXPORT void destroy_torrent_file_list(torrent_file_list* file_list);
 
     // priority control
-    CSDL_EXPORT lt::download_priority_t get_file_dl_priority(lt::torrent_handle* torrent, lt::file_index_t file_index);
-    CSDL_EXPORT void set_file_dl_priority(lt::torrent_handle* torrent, lt::file_index_t file_index, lt::download_priority_t priority);
+    CSDL_EXPORT uint8_t get_file_dl_priority(lt::torrent_handle* torrent, lt::file_index_t file_index);
+    CSDL_EXPORT void set_file_dl_priority(lt::torrent_handle* torrent, lt::file_index_t file_index, const uint8_t priority);
 
     // download control
     CSDL_EXPORT void start_torrent(lt::torrent_handle* torrent);
