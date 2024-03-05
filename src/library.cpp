@@ -178,6 +178,8 @@ extern "C" {
         auto num_files = files.num_files();
         auto list = new torrent_file_information[num_files];
 
+
+
         for (lt::file_index_t i(0); i != files.end_file(); i++) {
             auto name = files.file_name(i);
             auto path = files.file_path(i);
@@ -185,15 +187,15 @@ extern "C" {
             char* file_name = new char[name.size() + 1]();
             char* file_path = new char[path.size() + 1]();
 
-            list[i] = torrent_file_information {
-                i,
-                files.file_offset(i),
-                files.file_size(i),
-                files.mtime(i),
-                file_name,
-                file_path,
-                files.file_absolute_path(i),
-                files.pad_file_at(i)
+            list[(int)i] = {
+                    i,
+                    files.file_offset(i),
+                    files.file_size(i),
+                    files.mtime(i),
+                    file_name,
+                    file_path,
+                    files.file_absolute_path(i),
+                    files.pad_file_at(i)
             };
 
             std::copy(name.begin(), name.end(), file_name);
