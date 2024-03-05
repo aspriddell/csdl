@@ -90,7 +90,7 @@ extern "C" {
 
     // attach a torrent to the session, returning a handle that can be used to control the download.
     // the torrent info handle is copied, and can be freed after the call to attach_torrent with a call to destroy_torrent_info.
-    lt::torrent_handle* attach_torrent(libtorrent::session* session, libtorrent::torrent_info* torrent, const char* save_path) {
+    lt::torrent_handle* attach_torrent(lt::session* session, lt::torrent_info* torrent, const char* save_path) {
         lt::add_torrent_params params;
         std::string save_path_copy(save_path);
 
@@ -112,7 +112,7 @@ extern "C" {
 
     // after detaching the torrent, the torrent handle is no longer valid.
     // additionally, a call to destroy_torrent is not needed.
-    void detach_torrent(libtorrent::session* session, libtorrent::torrent_handle* torrent) {
+    void detach_torrent(lt::session* session, lt::torrent_handle* torrent) {
         torrent->pause();
         session->remove_torrent(*torrent);
 
@@ -121,7 +121,7 @@ extern "C" {
 
     // get the info for a torrent.
     // the torrent_info struct is allocated on the heap and must be freed with a call to destroy_torrent_info.
-    torrent_metadata* get_torrent_info(libtorrent::torrent_info* torrent) {
+    torrent_metadata* get_torrent_info(lt::torrent_info* torrent) {
         auto name = torrent->name();
         auto author = torrent->creator();
         auto comment = torrent->comment();
@@ -172,13 +172,11 @@ extern "C" {
     }
 
     // given a torrent handle, get the list of files in the torrent.
-    void get_torrent_file_list(libtorrent::torrent_info* torrent, torrent_file_list* file_list) {
+    void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_list) {
         const auto& files = torrent->files();
 
         auto num_files = files.num_files();
         auto list = new torrent_file_information[num_files];
-
-
 
         for (lt::file_index_t i(0); i != files.end_file(); i++) {
             auto name = files.file_name(i);
