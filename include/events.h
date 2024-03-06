@@ -37,8 +37,8 @@ extern "C" {
 
         lt::torrent_handle* handle;
 
-        lt::torrent_status::state_t old_state;
-        lt::torrent_status::state_t new_state;
+        uint32_t old_state;
+        uint32_t new_state;
     };
 
     struct cs_client_performance_alert {
