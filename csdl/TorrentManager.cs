@@ -41,7 +41,7 @@ public class TorrentManager
         get
         {
             ObjectDisposedException.ThrowIf(_detached, this);
-            Native.NativeMethods.GetTorrentStatus(TorrentSessionHandle, out var status);
+            NativeMethods.GetTorrentStatus(TorrentSessionHandle, out var status);
 
             return status;
         }
@@ -53,7 +53,7 @@ public class TorrentManager
     public void Start()
     {
         ObjectDisposedException.ThrowIf(_detached, this);
-        Native.NativeMethods.StartTorrent(TorrentSessionHandle);
+        NativeMethods.StartTorrent(TorrentSessionHandle);
     }
     
     /// <summary>
@@ -62,7 +62,7 @@ public class TorrentManager
     public void Stop()
     {
         ObjectDisposedException.ThrowIf(_detached, this);
-        Native.NativeMethods.StopTorrent(TorrentSessionHandle);
+        NativeMethods.StopTorrent(TorrentSessionHandle);
     }
 
     // internal method to trigger a detached status, essentially making the object functionally unusable.
