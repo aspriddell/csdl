@@ -1,6 +1,6 @@
 namespace csdl.Enums;
 
-public enum FileDownloadPriority
+public enum FileDownloadPriority : byte
 {
     DoNotDownload = 0,
     Low = 1,
