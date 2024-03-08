@@ -1,6 +1,6 @@
 namespace csdl;
 
-public class ClientSessionConfig
+public class TorrentClientConfig
 {
     public string UserAgent { get; set; }
 
