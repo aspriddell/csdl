@@ -22,11 +22,17 @@ CSDL_NO_EXPORT void on_events_available(lt::session* session, cs_alert_callback 
 extern "C" {
 #endif
 
+    enum cs_alert_type : int32_t {
+        generic = 0,
+        torrent_status = 1,
+        client_performance = 2,
+        peer_notification = 3,
+    };
+
     // base format for all alerts
     struct cs_alert {
-        int type;
-        lt::alert_category_t category;
-
+        cs_alert_type type;
+        uint32_t category;
         time_t epoch;
 
         const char* message;
