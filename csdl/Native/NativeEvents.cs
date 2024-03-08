@@ -7,13 +7,13 @@ namespace csdl.Native;
 internal static class NativeEvents
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct EventBase
+    public struct AlertBase
     {
-        public int type;
+        public AlertType type;
+
         public int category;
-        
         public long timestamp;
-        
+
         [MarshalAs(UnmanagedType.LPStr)]
         public string message;
     }
@@ -22,10 +22,10 @@ internal static class NativeEvents
     public struct TorrentStatusAlert
     {
         [MarshalAs(UnmanagedType.Struct)]
-        public EventBase info;
-
-        public IntPtr handle;
+        public AlertBase info;
         
+        public IntPtr handle;
+
         public TorrentState old_state;
         public TorrentState new_state;
     }
@@ -34,7 +34,7 @@ internal static class NativeEvents
     public struct PerformanceWarningAlert
     {
         [MarshalAs(UnmanagedType.Struct)]
-        public EventBase info;
+        public AlertBase info;
         
         public PerformanceWarningType warning_code;
     }
@@ -43,7 +43,7 @@ internal static class NativeEvents
     public struct PeerAlert
     {
         [MarshalAs(UnmanagedType.Struct)]
-        public EventBase info;
+        public AlertBase info;
         
         public IntPtr handle;
         public PeerAlertType alert_type;
