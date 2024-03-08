@@ -14,7 +14,7 @@ internal static class NativeEvents
         public int category;
         public long timestamp;
 
-        [MarshalAs(UnmanagedType.LPStr)]
+        [MarshalAs(UnmanagedType.LPUTF8Str)]
         public string message;
     }
 
