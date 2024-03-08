@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using csdl.Enums;
 using csdl.Native;
 
@@ -21,6 +22,7 @@ public class TorrentClient : IDisposable
     // need to keep a reference to the delegate to prevent GC invalidating it
     private NativeMethods.SessionEventCallback _eventCallback;
     private EventHandler<SessionAlert> _alertEvent;
+    private int _alertSubscriptionCount;
 
     public TorrentClient()
         : this(new TorrentClientConfig())
@@ -59,26 +61,26 @@ public class TorrentClient : IDisposable
         add
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
+            _alertEvent += value;
 
-            if (_alertEvent.GetInvocationList().Length == 0)
+            if (Interlocked.Increment(ref _alertSubscriptionCount) != 1)
             {
-                _eventCallback = ProxyRaisedEvent;
-                NativeMethods.SetEventCallback(_handle, _eventCallback);
+                return;
             }
 
-            _alertEvent += value;
+            _eventCallback = ProxyRaisedEvent;
+            NativeMethods.SetEventCallback(_handle, _eventCallback);
         }
         remove
         {
             _alertEvent -= value;
 
-            if (_alertEvent.GetInvocationList().Length != 0)
+            if (Interlocked.Decrement(ref _alertSubscriptionCount) != 0)
             {
                 return;
             }
 
             _eventCallback = null;
-
             if (!_disposed)
             {
                 NativeMethods.ClearEventCallback(_handle);
@@ -150,7 +152,8 @@ public class TorrentClient : IDisposable
 
         if (!_attachedManagers.TryRemove(manager.TorrentSessionHandle, out _))
         {
-            throw new InvalidOperationException("Unable to detach torrent from session. Ensure the torrent is attached to this session.");
+            throw new InvalidOperationException(
+                "Unable to detach torrent from session. Ensure the torrent is attached to this session.");
         }
 
         manager.Stop();
@@ -214,7 +217,7 @@ public class TorrentClient : IDisposable
         {
             return;
         }
-        
+
         _alertEvent.Invoke(this, forwardAlert);
     }
 
