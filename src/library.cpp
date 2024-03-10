@@ -244,7 +244,36 @@ extern "C" {
     void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_status) {
         auto s = torrent->status();
 
-        torrent_status->state = static_cast<int>(s.state);
+        if (s.errc != lt::error_code()) {
+            torrent_status->state = cs_torrent_state::torrent_error;
+        } else {
+            switch (s.state) {
+                case lt::torrent_status::state_t::checking_files:
+                    torrent_status->state = cs_torrent_state::torrent_checking;
+                    break;
+
+                case lt::torrent_status::state_t::checking_resume_data:
+                    torrent_status->state = cs_torrent_state::torrent_checking_resume;
+                    break;
+
+                case lt::torrent_status::state_t::downloading_metadata:
+                    torrent_status->state = cs_torrent_state::torrent_metadata_downloading;
+                    break;
+
+                case lt::torrent_status::state_t::downloading:
+                    torrent_status->state = cs_torrent_state::torrent_downloading;
+                    break;
+
+                case lt::torrent_status::state_t::seeding:
+                    torrent_status->state = cs_torrent_state::torrent_seeding;
+                    break;
+
+                case lt::torrent_status::state_t::finished:
+                    torrent_status->state = cs_torrent_state::torrent_finished;
+                    break;
+            }
+        }
+
         torrent_status->progress = s.progress;
 
         torrent_status->count_peers = s.num_peers;
