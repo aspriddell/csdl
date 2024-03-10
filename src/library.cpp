@@ -97,6 +97,10 @@ extern "C" {
             params.save_path = save_path_copy;
         }
 
+        // enable paused-by-default, disable auto-management
+        params.flags |= lt::torrent_flags::paused;
+        params.flags &= ~lt::torrent_flags::auto_managed;
+
         // set torrent info - make_shared creates a copy
         params.ti = std::make_shared<lt::torrent_info>(*torrent);
         auto handle = new lt::torrent_handle(session->add_torrent(params));
