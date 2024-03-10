@@ -54,7 +54,7 @@ extern "C" {
         return new lt::session(params);
     }
 
-    void destroy_session(lt::session *session) {
+    void destroy_session(lt::session* session) {
         session->abort();
         delete session;
     }
@@ -68,7 +68,7 @@ extern "C" {
         session->set_alert_notify(callback_fn);
     }
 
-    void clear_event_callback(lt::session *session) {
+    void clear_event_callback(lt::session* session) {
         session->set_alert_notify(nullptr);
     }
 
@@ -203,7 +203,7 @@ extern "C" {
         file_list->length = num_files;
     }
 
-    void destroy_torrent_file_list(torrent_file_list *file_list) {
+    void destroy_torrent_file_list(torrent_file_list* file_list) {
         for (int i = 0; i < file_list->length; i++) {
             delete[] file_list->files[i].file_name;
             delete[] file_list->files[i].file_path;
