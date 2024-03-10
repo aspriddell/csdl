@@ -36,15 +36,16 @@ public class TorrentManager
     /// <summary>
     /// Gets the current status of the torrent.
     /// </summary>
-    public TorrentStatus Status
+    /// <remarks>
+    /// Every time this is called, an unmanaged call is made to the underlying system.
+    /// Where possible, cache the result of this method to avoid unnecessary overhead.
+    /// </remarks>
+    public TorrentStatus GetCurrentStatus()
     {
-        get
-        {
-            ObjectDisposedException.ThrowIf(_detached, this);
-            NativeMethods.GetTorrentStatus(TorrentSessionHandle, out var status);
+        ObjectDisposedException.ThrowIf(_detached, this);
+        NativeMethods.GetTorrentStatus(TorrentSessionHandle, out var status);
 
-            return status;
-        }
+        return status;
     }
     
     /// <summary>
