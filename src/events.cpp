@@ -17,7 +17,7 @@ void fill_event_info(cs_alert* alert, lt::alert* lt_alert, cs_alert_type alert_t
 }
 
 void populate_peer_alert(cs_peer_alert* peer_alert, lt::peer_alert* alert, cs_peer_alert_type alert_type) {
-    fill_event_info(&peer_alert->alert, alert, cs_alert_type::peer_notification);
+    fill_event_info(&peer_alert->alert, alert, cs_alert_type::alert_peer_notification);
 
     peer_alert->type = alert_type;
     peer_alert->handle = &alert->handle;
@@ -52,7 +52,7 @@ void on_events_available(lt::session* session, cs_alert_callback callback) {
                 status_alert.new_state = state_alert->state;
                 status_alert.old_state = state_alert->prev_state;
 
-                fill_event_info(&status_alert.alert, alert, cs_alert_type::torrent_status);
+                fill_event_info(&status_alert.alert, alert, cs_alert_type::alert_torrent_status);
                 callback(&status_alert);
                 break;
             }
@@ -65,7 +65,7 @@ void on_events_available(lt::session* session, cs_alert_callback callback) {
 
                 perf_warning.warning_type = perf_alert->warning_code;
 
-                fill_event_info(&perf_warning.alert, alert, cs_alert_type::client_performance);
+                fill_event_info(&perf_warning.alert, alert, cs_alert_type::alert_client_performance);
                 callback(&perf_warning);
                 break;
             }
@@ -142,7 +142,7 @@ void on_events_available(lt::session* session, cs_alert_callback callback) {
             {
                 cs_alert generic_alert{};
 
-                fill_event_info(&generic_alert, alert, cs_alert_type::generic);
+                fill_event_info(&generic_alert, alert, cs_alert_type::alert_generic);
                 callback(&generic_alert);
                 break;
             }

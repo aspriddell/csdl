@@ -23,10 +23,10 @@ extern "C" {
 #endif
 
     enum cs_alert_type : int32_t {
-        generic = 0,
-        torrent_status = 1,
-        client_performance = 2,
-        peer_notification = 3,
+        alert_generic = 0,
+        alert_torrent_status = 1,
+        alert_client_performance = 2,
+        alert_peer_notification = 3,
     };
 
     // base format for all alerts
