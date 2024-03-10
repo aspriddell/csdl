@@ -118,7 +118,7 @@ public class TorrentClient : IDisposable
         savePath ??= DefaultDownloadPath;
 
         // relative paths will be combined with the default download path
-        if (Path.IsPathRooted(savePath))
+        if (!Path.IsPathRooted(savePath))
         {
             savePath = Path.Combine(DefaultDownloadPath, savePath);
         }
