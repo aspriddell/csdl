@@ -39,8 +39,7 @@ lt::session* create_session(session_config* config) {
 
     // disable seeding
     if (config->block_seeding) {
-        pack.set_bool(lt::settings_pack::enable_incoming_tcp, false);
-        pack.set_bool(lt::settings_pack::enable_incoming_utp, false);
+        pack.set_bool(lt::settings_pack::seeding_outgoing_connections, false);
     }
 
     // max connections
