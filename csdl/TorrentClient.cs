@@ -152,8 +152,7 @@ public class TorrentClient : IDisposable
 
         if (!_attachedManagers.TryRemove(manager.TorrentSessionHandle, out _))
         {
-            throw new InvalidOperationException(
-                "Unable to detach torrent from session. Ensure the torrent is attached to this session.");
+            throw new InvalidOperationException("Unable to detach torrent from session. Ensure the torrent is attached to this session.");
         }
 
         manager.Stop();
@@ -164,7 +163,7 @@ public class TorrentClient : IDisposable
     }
 
     /// <summary>
-    /// Marshals raised unmanaged events to managed equivalents, and forwards them to the <see cref="AlertEvent"/> event.
+    /// Marshals raised unmanaged events to managed equivalents, and forwards them to the <see cref="AlertRaised"/> event.
     /// These events are raised and proxied by the unmanaged library, and are automatically destroyed once the callback returns.
     /// </summary>
     /// <param name="eventPtr">A <see cref="IntPtr"/> to the underlying event (see <c>event.h</c>)</param>
