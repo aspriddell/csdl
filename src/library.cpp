@@ -271,6 +271,10 @@ void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_sta
             case lt::torrent_status::state_t::finished:
                 torrent_status->state = cs_torrent_state::torrent_finished;
                 break;
+
+            default:
+                torrent_status->state = cs_torrent_state::torrent_state_unknown;
+                break;
         }
     }
 

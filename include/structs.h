@@ -59,6 +59,7 @@ typedef struct cs_torrent_file_list {
 } torrent_file_list;
 
 enum cs_torrent_state : int32_t {
+    torrent_state_unknown = 0,
     torrent_checking = 1,
     torrent_checking_resume = 2,
     torrent_metadata_downloading = 3,
