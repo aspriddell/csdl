@@ -12,66 +12,76 @@
 extern "C" {
 #endif
 
-    typedef struct cs_session_config {
-        // see https://www.libtorrent.org/reference-Settings.html#settings_pack
-        char* user_agent;
-        char* fingerprint;
+typedef struct cs_session_config {
+    // see https://www.libtorrent.org/reference-Settings.html#settings_pack
+    char* user_agent;
+    char* fingerprint;
 
-        bool private_mode;
-        bool block_seeding;
-        bool encrypted_peers_only;
+    bool private_mode;
+    bool block_seeding;
+    bool encrypted_peers_only;
 
-        int32_t max_connections;
-    } session_config;
+    int32_t max_connections;
+} session_config;
 
-    typedef struct cs_torrent_file_information {
-        lt::file_index_t index;
+typedef struct cs_torrent_file_information {
+    lt::file_index_t index;
 
-        int64_t offset;
-        int64_t file_size;
+    int64_t offset;
+    int64_t file_size;
 
-        time_t modified_time;
+    time_t modified_time;
 
-        char* file_name;
-        char* file_path;
+    char* file_name;
+    char* file_path;
 
-        bool file_path_is_absolute;
-        bool pad_file;
-    } torrent_file_information;
+    bool file_path_is_absolute;
+    bool pad_file;
+} torrent_file_information;
 
-    typedef struct cs_torrent_meta {
-        char* name;
-        char* creator;
-        char* comment;
+typedef struct cs_torrent_meta {
+    char* name;
+    char* creator;
+    char* comment;
 
-        int32_t total_files;
-        int64_t total_size;
+    int32_t total_files;
+    int64_t total_size;
 
-        time_t creation_date;
+    time_t creation_date;
 
-        uint8_t info_hash_v1[20];
-        uint8_t info_hash_v2[32];
-    } torrent_metadata;
+    uint8_t info_hash_v1[20];
+    uint8_t info_hash_v2[32];
+} torrent_metadata;
 
-    typedef struct cs_torrent_status {
-        int32_t state;
-        
-        float_t progress;
+typedef struct cs_torrent_file_list {
+    int32_t length;
+    torrent_file_information* files;
+} torrent_file_list;
 
-        int32_t count_peers;
-        int32_t count_seeds;
+enum cs_torrent_state : int32_t {
+    torrent_checking = 1,
+    torrent_checking_resume = 2,
+    torrent_metadata_downloading = 3,
+    torrent_downloading = 4,
+    torrent_seeding = 5,
+    torrent_finished = 6,
+    torrent_error = 7
+};
 
-        int64_t bytes_uploaded;
-        int64_t bytes_downloaded;
+typedef struct cs_torrent_status {
+    cs_torrent_state state;
 
-        int64_t upload_rate;
-        int64_t download_rate;
-    } torrent_status;
+    float_t progress;
 
-    typedef struct cs_torrent_file_list {
-        int32_t length;
-        torrent_file_information* files;
-    } torrent_file_list;
+    int32_t count_peers;
+    int32_t count_seeds;
+
+    int64_t bytes_uploaded;
+    int64_t bytes_downloaded;
+
+    int64_t upload_rate;
+    int64_t download_rate;
+} torrent_status;
 
 #ifdef __cplusplus
 }
