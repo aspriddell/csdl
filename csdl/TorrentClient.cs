@@ -124,7 +124,6 @@ public class TorrentClient : IDisposable
     /// </summary>
     public string DefaultDownloadPath { get; set; } = Path.Combine(Environment.CurrentDirectory, "downloads");
 
-
     /// <summary>
     /// Attaches a torrent to the session, allowing it to be downloaded/uploaded.
     /// </summary>
