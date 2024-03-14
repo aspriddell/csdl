@@ -18,6 +18,7 @@ public class TorrentClient : IDisposable
     private readonly ConcurrentDictionary<IntPtr, TorrentManager> _attachedManagers = new();
 
     private bool _disposed;
+    private bool _includeUnmappedEvents;
 
     // need to keep a reference to the delegate to prevent GC invalidating it
     private NativeMethods.SessionEventCallback _eventCallback;
@@ -69,7 +70,7 @@ public class TorrentClient : IDisposable
             }
 
             _eventCallback = ProxyRaisedEvent;
-            NativeMethods.SetEventCallback(_handle, _eventCallback);
+            NativeMethods.SetEventCallback(_handle, _eventCallback, _includeUnmappedEvents);
         }
         remove
         {
@@ -81,9 +82,38 @@ public class TorrentClient : IDisposable
             }
 
             _eventCallback = null;
+
             if (!_disposed)
             {
                 NativeMethods.ClearEventCallback(_handle);
+            }
+        }
+    }
+    
+    /// <summary>
+    /// Gets the active torrents currently attached to the session.
+    /// </summary>
+    public IEnumerable<TorrentManager> ActiveTorrents => _attachedManagers.Values;
+    
+    /// <summary>
+    /// Whether to include events that only produce a <see cref="SessionAlert"/> with no additional data.
+    /// </summary>
+    /// <remarks>
+    /// Changing this value after subscribing will cause the event callback to be reset.
+    /// </remarks>
+    public bool IncludeUnmappedEvents
+    {
+        get => _includeUnmappedEvents;
+        set
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            _includeUnmappedEvents = value;
+
+            // reset event callback if set
+            if (_eventCallback != null)
+            {
+                NativeMethods.ClearEventCallback(_handle);
+                NativeMethods.SetEventCallback(_handle, _eventCallback, value);
             }
         }
     }
@@ -94,10 +124,6 @@ public class TorrentClient : IDisposable
     /// </summary>
     public string DefaultDownloadPath { get; set; } = Path.Combine(Environment.CurrentDirectory, "downloads");
 
-    /// <summary>
-    /// Gets the active torrents currently attached to the session.
-    /// </summary>
-    public IEnumerable<TorrentManager> ActiveTorrents => _attachedManagers.Values;
 
     /// <summary>
     /// Attaches a torrent to the session, allowing it to be downloaded/uploaded.
