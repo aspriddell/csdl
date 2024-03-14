@@ -27,6 +27,7 @@ extern "C" {
         alert_torrent_status = 1,
         alert_client_performance = 2,
         alert_peer_notification = 3,
+        alert_torrent_removed = 4
     };
 
     // base format for all alerts
@@ -45,6 +46,12 @@ extern "C" {
 
         uint32_t old_state;
         uint32_t new_state;
+    };
+
+    struct cs_torrent_remove_alert {
+        cs_alert alert;
+
+        lt::torrent_handle* handle;
     };
 
     struct cs_client_performance_alert {

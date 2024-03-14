@@ -57,6 +57,19 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
                 break;
             }
 
+            // torrent removed
+            case lt::torrent_removed_alert::alert_type:
+            {
+                auto removed_alert = lt::alert_cast<lt::torrent_removed_alert>(alert);
+                cs_torrent_remove_alert removed_torrent{};
+
+                removed_torrent.handle = &removed_alert->handle;
+
+                fill_event_info(&removed_torrent.alert, alert, cs_alert_type::alert_torrent_removed);
+                callback(&removed_torrent);
+                break;
+            }
+
             // performance warning
             case lt::performance_alert::alert_type:
             {
