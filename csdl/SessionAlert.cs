@@ -40,6 +40,17 @@ public class TorrentStatusAlert : SessionAlert
     public TorrentState NewState { get; }
 }
 
+public class TorrentRemovedAlert : SessionAlert
+{
+    internal TorrentRemovedAlert(NativeEvents.TorrentRemovedAlert alert, TorrentManager subject)
+        : base(alert.info)
+    {
+        Subject = subject;
+    }
+
+    public TorrentManager Subject { get; }
+}
+
 public class PerformanceWarningAlert : SessionAlert
 {
     internal PerformanceWarningAlert(NativeEvents.PerformanceWarningAlert alert)

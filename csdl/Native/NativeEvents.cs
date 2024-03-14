@@ -31,6 +31,15 @@ internal static class NativeEvents
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct TorrentRemovedAlert
+    {
+        [MarshalAs(UnmanagedType.Struct)]
+        public AlertBase info;
+        
+        public IntPtr handle;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct PerformanceWarningAlert
     {
         [MarshalAs(UnmanagedType.Struct)]

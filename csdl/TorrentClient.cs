@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using csdl.Enums;
 using csdl.Native;
 
@@ -22,8 +21,6 @@ public class TorrentClient : IDisposable
 
     // need to keep a reference to the delegate to prevent GC invalidating it
     private NativeMethods.SessionEventCallback _eventCallback;
-    private EventHandler<SessionAlert> _alertEvent;
-    private int _alertSubscriptionCount;
 
     public TorrentClient()
         : this(new TorrentClientConfig())
@@ -32,6 +29,7 @@ public class TorrentClient : IDisposable
 
     public TorrentClient(TorrentClientConfig config)
     {
+        _eventCallback = ProxyRaisedEvent;
         _handle = NativeMethods.CreateSession(new NativeStructs.SessionConfig
         {
             user_agent = config.UserAgent,
@@ -46,6 +44,8 @@ public class TorrentClient : IDisposable
         {
             throw new InvalidOperationException("Failed to create session.");
         }
+        
+        NativeMethods.SetEventCallback(_handle, _eventCallback, _includeUnmappedEvents);
     }
 
     ~TorrentClient()
@@ -57,38 +57,7 @@ public class TorrentClient : IDisposable
     /// Event invoked when a session alert is raised.
     /// The underlying event collection system is unmanaged, and is started/shutdown on the first/last subscription to this event.
     /// </summary>
-    public event EventHandler<SessionAlert> AlertRaised
-    {
-        add
-        {
-            ObjectDisposedException.ThrowIf(_disposed, this);
-            _alertEvent += value;
-
-            if (Interlocked.Increment(ref _alertSubscriptionCount) != 1)
-            {
-                return;
-            }
-
-            _eventCallback = ProxyRaisedEvent;
-            NativeMethods.SetEventCallback(_handle, _eventCallback, _includeUnmappedEvents);
-        }
-        remove
-        {
-            _alertEvent -= value;
-
-            if (Interlocked.Decrement(ref _alertSubscriptionCount) != 0)
-            {
-                return;
-            }
-
-            _eventCallback = null;
-
-            if (!_disposed)
-            {
-                NativeMethods.ClearEventCallback(_handle);
-            }
-        }
-    }
+    public event EventHandler<SessionAlert> AlertRaised;
     
     /// <summary>
     /// Gets the active torrents currently attached to the session.
@@ -235,6 +204,21 @@ public class TorrentClient : IDisposable
                 forwardAlert = new PeerAlert(peerAlert, peerSubject);
                 break;
             }
+
+            case AlertType.TorrentRemoved:
+            {
+                var removedAlert = Marshal.PtrToStructure<NativeEvents.TorrentRemovedAlert>(eventPtr);
+                if (!_attachedManagers.TryRemove(removedAlert.handle, out var manager))
+                {
+                    return;
+                }
+                
+                // mark as detached to prevent further usage
+                manager.MarkAsDetached();
+
+                forwardAlert = new TorrentRemovedAlert(removedAlert, manager);
+                break;
+            }
         }
 
         if (forwardAlert == null)
@@ -242,7 +226,7 @@ public class TorrentClient : IDisposable
             return;
         }
 
-        _alertEvent.Invoke(this, forwardAlert);
+        AlertRaised?.Invoke(this, forwardAlert);
     }
 
     public void Dispose()
