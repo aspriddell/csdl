@@ -26,7 +26,7 @@ void populate_peer_alert(cs_peer_alert* peer_alert, lt::peer_alert* alert, cs_pe
     std::copy(v6_mapped_addr.begin(), v6_mapped_addr.end(), peer_alert->ipv6_address);
 }
 
-void on_events_available(lt::session* session, cs_alert_callback callback) {
+void on_events_available(lt::session* session, cs_alert_callback callback, bool include_unmapped) {
     static std::mutex mutex;
 
     // try to take lock, return if failed
@@ -140,6 +140,10 @@ void on_events_available(lt::session* session, cs_alert_callback callback) {
 
             default:
             {
+                if (!include_unmapped) {
+                    break;
+                }
+
                 cs_alert generic_alert{};
 
                 fill_event_info(&generic_alert, alert, cs_alert_type::alert_generic);

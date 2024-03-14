@@ -62,10 +62,10 @@ void destroy_session(lt::session* session) {
     delete session;
 }
 
-void set_event_callback(lt::session* session, cs_alert_callback callback) {
+void set_event_callback(lt::session* session, cs_alert_callback callback, bool include_unmapped_events) {
     // convert callback to std::function
-    auto callback_fn = std::function<void()>([session, &callback] () -> void {
-        on_events_available(session, callback);
+    auto callback_fn = std::function<void()>([session, &callback, include_unmapped_events] () -> void {
+        on_events_available(session, callback, include_unmapped_events);
     });
 
     session->set_alert_notify(callback_fn);
