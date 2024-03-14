@@ -25,14 +25,15 @@ internal static partial class NativeMethods
     /// <param name="sessionHandle">The session to invalidate</param>
     [LibraryImport(LibraryName, EntryPoint = "destroy_session")]
     public static partial void FreeSession(IntPtr sessionHandle);
-    
+
     /// <summary>
     /// Sets the event callback for a session.
     /// </summary>
     /// <param name="sessionHandle">The handle for the session to add the callback to</param>
     /// <param name="callback">The callback to run when an event is posted</param>
+    /// <param name="includeUnmappedEvents">Whether to run the <see cref="callback"/> for events that aren't mapped, that only produce <see cref="NativeEvents.AlertBase"/> values with no additional data</param>
     [LibraryImport(LibraryName, EntryPoint = "set_event_callback")]
-    public static partial void SetEventCallback(IntPtr sessionHandle, [MarshalAs(UnmanagedType.FunctionPtr)] SessionEventCallback callback);
+    public static partial void SetEventCallback(IntPtr sessionHandle, [MarshalAs(UnmanagedType.FunctionPtr)] SessionEventCallback callback, bool includeUnmappedEvents);
     
     /// <summary>
     /// Clears the currently set event callback.
