@@ -43,16 +43,16 @@ extern "C" {
     struct cs_torrent_status_alert {
         cs_alert alert;
 
-        lt::torrent_handle* handle;
-
         uint32_t old_state;
         uint32_t new_state;
+
+        char info_hash[20];
     };
 
     struct cs_torrent_remove_alert {
         cs_alert alert;
 
-        lt::torrent_handle* handle;
+        char info_hash[20];
     };
 
     struct cs_client_performance_alert {
@@ -77,7 +77,8 @@ extern "C" {
         lt::torrent_handle* handle;
         cs_peer_alert_type type;
 
-        uint8_t ipv6_address[16];
+        char info_hash[20];
+        char ipv6_address[16];
     };
 
 #ifdef __cplusplus
