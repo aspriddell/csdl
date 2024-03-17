@@ -49,12 +49,12 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
     }
 
     std::vector<lt::alert*> events;
+    std::string message_temp;
+
     session->pop_alerts(&events);
 
     handle_events:
     for (auto &alert: events) {
-        std::string message_temp;
-
         switch (alert->type()) {
 
             // torrent state changed
