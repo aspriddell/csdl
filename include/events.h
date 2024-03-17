@@ -33,8 +33,9 @@ extern "C" {
     // base format for all alerts
     struct cs_alert {
         cs_alert_type type;
-        uint32_t category;
-        time_t epoch;
+
+        int32_t category;
+        int64_t epoch;
 
         const char* message;
     };
