@@ -11,7 +11,7 @@ public class SessionAlert : EventArgs
     {
         Type = alert.type;
         Category = alert.category;
-        Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(alert.timestamp);
+        Timestamp = DateTimeOffset.FromUnixTimeSeconds(alert.timestamp);
         Message = alert.message;
     }
 
