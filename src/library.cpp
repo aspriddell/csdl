@@ -12,6 +12,10 @@ extern "C" {
 
 // given a config, create a session
 lt::session* create_session(session_config* config) {
+    if (config == nullptr) {
+        return nullptr;
+    }
+
     auto params = lt::session_params();
     auto pack = lt::settings_pack();
 
