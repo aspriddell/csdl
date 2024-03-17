@@ -17,6 +17,7 @@ typedef struct cs_session_config {
     char* user_agent;
     char* fingerprint;
 
+    bool all_events;
     bool private_mode;
     bool block_seeding;
     bool encrypted_peers_only;

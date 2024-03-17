@@ -12,10 +12,6 @@ extern "C" {
 
 // given a config, create a session
 lt::session* create_session(session_config* config) {
-    if (config == nullptr) {
-        return new lt::session();
-    }
-
     auto params = lt::session_params();
     auto pack = lt::settings_pack();
 
@@ -33,6 +29,15 @@ lt::session* create_session(session_config* config) {
         if (!fingerprint.empty()) {
             pack.set_str(lt::settings_pack::peer_fingerprint, fingerprint);
         }
+    }
+
+    // events
+    if (config->all_events) {
+        auto mask = lt::alert_category::all;
+        pack.set_int(lt::settings_pack::alert_mask, mask);
+    } else {
+        auto mask = lt::alert::peer_notification | lt::alert::performance_warning | lt::alert::status_notification | lt::alert::error_notification;
+        pack.set_int(lt::settings_pack::alert_mask, mask);
     }
 
     pack.set_bool(lt::settings_pack::anonymous_mode, config->private_mode);
@@ -63,12 +68,9 @@ void destroy_session(lt::session* session) {
 }
 
 void set_event_callback(lt::session* session, cs_alert_callback callback, bool include_unmapped_events) {
-    // convert callback to std::function
-    auto callback_fn = std::function<void()>([session, &callback, include_unmapped_events] () -> void {
+    session->set_alert_notify([session, callback, include_unmapped_events] () -> void {
         on_events_available(session, callback, include_unmapped_events);
     });
-
-    session->set_alert_notify(callback_fn);
 }
 
 void clear_event_callback(lt::session* session) {
