@@ -3,6 +3,12 @@
 // Created by Albie on 04/03/2024.
 //
 
+#ifdef _MSC_VER
+#define CALL_CONV __cdecl
+#else
+#define CALL_CONV
+#endif
+
 #ifndef CS_NATIVE_EVENTS_H
 #define CS_NATIVE_EVENTS_H
 
@@ -15,7 +21,7 @@
 #include <libtorrent/torrent_handle.hpp>
 
 // used internally in main library, not intended for public use
-typedef void (__cdecl *cs_alert_callback)(void* alert);
+typedef void (CALL_CONV *cs_alert_callback)(void* alert);
 CSDL_NO_EXPORT void on_events_available(lt::session* session, cs_alert_callback callback, bool include_unmapped);
 
 #ifdef __cplusplus
