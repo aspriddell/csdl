@@ -8,9 +8,17 @@
     
     <PropertyGroup>
         <IsPackable>true</IsPackable>
-        <Title>csdl Native Libraries</Title>
         <PackageId>csdl.Native</PackageId>
+
+        <Authors>Albie Spriddell</Authors>
+        <Title>csdl Native Libraries</Title>
         <Description>Native libraries for csdl (libcsdl+libtorrent)</Description>
+
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
+        <PackageLicenseFile>license.md</PackageLicenseFile>    
+
+        <ProjectUrl>https://github.com/aspriddell/csdl</ProjectUrl>
+        <RepositoryUrl>https://github.com/aspriddell/csdl</RepositoryUrl>
     </PropertyGroup>
     
     <ItemGroup>
@@ -26,5 +34,6 @@
         </None>
     
         <None Include="readme.md" Pack="true" PackagePath="docs" Visible="false"/>
+        <None Include="license.md" Pack="true" PackagePath="docs" Visible="false"/>
     </ItemGroup>
 </Project>

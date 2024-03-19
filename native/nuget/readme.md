@@ -9,9 +9,12 @@ csdl requires two native libraries to function as-expected, `libcsdl` and `libto
 
 For 99% of cases, this library should not be referenced directly and csdl should be used instead.
 
-## Requirements
+### Requirements
 libcsdl and libtorrent are built to work on as many systems as possible. All builds produce an `x86_64` and `arm64` edition.
 
 - macOS: Big Sur 11 or later
 - Linux: Ubuntu 20.04 or later
 - Windows: Windows 10.0.14393.6796 or later
+
+### License
+`libcsdl` is provided under the Apache 2.0 license, while `libtorrent` used BSD 3-Clause. Please refer to [license.md](license.md) for more information.
