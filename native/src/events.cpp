@@ -5,6 +5,7 @@
 
 #include "events.h"
 
+#include <time.h>
 #include <libtorrent/session.hpp>
 #include <libtorrent/alert_types.hpp>
 
@@ -20,8 +21,8 @@ void fill_info_hash(const lt::torrent_handle& handle, char* buffer) {
 void fill_event_info(cs_alert* alert, lt::alert* lt_alert, cs_alert_type alert_type, std::string* message_temp) {
     alert->type = alert_type;
 
+    alert->epoch = time(0);
     alert->category = (int32_t)static_cast<uint32_t>(lt_alert->category());
-    alert->epoch = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
     message_temp->append(lt_alert->message());
     alert->message = message_temp->c_str();
