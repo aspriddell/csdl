@@ -38,6 +38,7 @@ jobs:
           uses: actions/checkout@v4
           with:
             submodules: 'recursive'
+            fetch-depth: 0
 
         - name: Install Additional Packages (Ubuntu)
           if: matrix.buildos == 'ubuntu-20.04' && matrix.arch == 'aarch64'
