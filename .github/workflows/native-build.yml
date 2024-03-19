@@ -1,0 +1,118 @@
+name: Build Native Libs
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
+        description: Version number (package)
+
+permissions:
+  packages: write
+  contents: read
+
+jobs:
+    build-platforms:
+        name: ${{ matrix.targetname }}-${{ matrix.arch }}
+        runs-on: ${{ matrix.buildos }}-latest
+
+        env:
+          ARCHIVE_DIR: archive-${{ matrix.targetname }}
+          VCPKG_HOME: ${{ github.workspace }}/vcpkg
+          BUILD_DIR: build-${{ matrix.arch }}
+          MACOSX_DEPLOYMENT_TARGET: 11
+
+        strategy:
+          matrix:
+              include:
+                  - { targetname: windows, buildos: windows, arch: x86_64, suffix: dll, triplet: x64-windows-release }
+                  - { targetname: windows, buildos: windows,  arch: aarch64, suffix: dll, triplet: arm64-windows-release }
+                  - { targetname: osx, buildos: macos, arch: x86_64, suffix: dylib, triplet: x64-osx-release-dynamic }
+                  - { targetname: osx, buildos: macos, arch: aarch64, suffix: dylib, triplet: arm64-osx-release-dynamic }
+                  - { targetname: linux, buildos: ubuntu, arch: x86_64, suffix: so, triplet: x64-linux-release-dynamic, toolchain: native/build/linux-x64.cmake }
+                  - { targetname: linux, buildos: ubuntu, arch: aarch64, suffix: so, triplet: arm64-linux-release-dynamic, toolchain: native/build/linux-arm64.cmake }
+
+        steps:
+          - name: Checkout
+            uses: actions/checkout@v4
+            with:
+              submodules: 'recursive'
+
+          - name: Install Additional Packages (Ubuntu)
+            if: matrix.buildos == 'ubuntu'
+            run: |
+              sudo apt-get update
+              sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
+          - name: Copy Custom VCPKG Triplets
+            run: cp -r native/build/triplets/* ${{ env.VCPKG_HOME }}/triplets/community
+
+          - name: Setup VCPKG
+            uses: lukka/run-vcpkg@v10
+
+          - name: Setup CMake
+            run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+            env:
+              CMAKE_OSX_ARCHITECTURES: ${{ matrix.arch == 'aarch64' && 'arm64' || 'x86_64' }}
+              CMAKE_TOOLCHAIN_FILE: ${{ matrix.toolchain != null && matrix.toolchain || '${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake' }}
+               
+          - name: Build
+            run: cmake --build ${{ env.BUILD_DIR }} --config Release
+
+          - name: Prepare Files
+            run: |
+              mkdir ${{ env.ARCHIVE_DIR }}
+              cd ${{ env.ARCHIVE_DIR }}
+              cp ${{ env.BUILD_DIR }}/*.${{ matrix.suffix }} .
+              cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent*.${{ matrix.suffix }}* .
+
+          - name: Upload
+            uses: actions/upload-artifact@v4
+            with:
+              name: ${{ matrix.targetname }}-${{ matrix.arch }}
+              path: ${{ env.ARCHIVE_DIR }}/*
+
+    package:
+      name: Build Package
+      runs-on: ubuntu-latest
+
+      needs: [build-platforms]
+
+      steps:
+        - uses: actions/checkout@v4
+        - uses: actions/download-artifact@v4
+          with:
+            name: osx-x86_64
+            path: native/nuget/runtimes/osx-x64/native
+
+        - uses: actions/download-artifact@v4
+          with:
+            name: osx-aarch64
+            path: native/nuget/runtimes/osx-arm64/native
+
+        - uses: actions/download-artifact@v4
+          with:
+            name: windows-x86_64
+            path: native/nuget/runtimes/win-x64/native
+
+        - uses: actions/download-artifact@v4
+          with:
+            name: windows-aarch64
+            path: native/nuget/runtimes/win-arm64/native
+
+        - uses: actions/download-artifact@v4
+          with:
+            name: linux-x86_64
+            path: native/nuget/runtimes/linux-x64/native
+
+        - uses: actions/download-artifact@v4
+          with:
+            name: linux-aarch64
+            path: native/nuget/runtimes/linux-arm64/native
+
+        - name: Build Package
+          run: dotnet pack -c Release -p:Version=${{ github.event.inputs.version }} -o ./packages native/nuget
+
+        - name: Publish Package
+          run: dotnet nuget push -s https://nuget.pkg.github.com/aspriddell/index.json -k ${{ github.token }} ./packages/*.nupkg
