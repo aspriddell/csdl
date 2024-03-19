@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <AssemblyName>csdl.Native</AssemblyName>
+        <TargetFramework>net7.0</TargetFramework>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <IsPackable>true</IsPackable>
+        <Title>csdl Native Libraries</Title>
+        <PackageId>csdl.Native</PackageId>
+        <Description>Native libraries for csdl (libcsdl+libtorrent)</Description>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="runtimes\**\native\*">
+            <Pack>true</Pack>
+            <PackagePath>runtimes</PackagePath>
+        </None>
+
+        <None Include="_._">
+            <!-- https://docs.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu5128#scenario-2 -->
+            <Pack>true</Pack>
+            <PackagePath>lib\$(TargetFramework)</PackagePath>
+        </None>
+    
+        <None Include="readme.md" Pack="true" PackagePath="docs" Visible="false"/>
+    </ItemGroup>
+</Project>
