@@ -27,10 +27,10 @@ jobs:
           include:
               - { targetname: osx, buildos: macos-latest, arch: x86_64, suffix: dylib, triplet: x64-osx-release-dynamic }
               - { targetname: osx, buildos: macos-latest, arch: aarch64, suffix: dylib, triplet: arm64-osx-release-dynamic }
-              - { targetname: windows, buildos: windows-latest, arch: x86_64, suffix: dll, triplet: x64-windows-release }
-              - { targetname: windows, buildos: windows-latest,  arch: aarch64, suffix: dll, triplet: arm64-windows-release }
               - { targetname: linux, buildos: ubuntu-20.04, arch: x86_64, suffix: so, triplet: x64-linux-release-dynamic, toolchain: native/build/linux-x64.cmake }
               - { targetname: linux, buildos: ubuntu-20.04, arch: aarch64, suffix: so, triplet: arm64-linux-release-dynamic, toolchain: native/build/linux-arm64.cmake }
+              - { targetname: windows, buildos: windows-latest, arch: x86_64, suffix: dll, triplet: x64-windows-release, toolchain: native/build/windows-x64.cmake }
+              - { targetname: windows, buildos: windows-latest,  arch: aarch64, suffix: dll, triplet: arm64-windows-release, toolchain: native/build/windows-arm64.cmake }
 
       steps:
         - name: Checkout
@@ -54,7 +54,6 @@ jobs:
         - name: Setup CMake
           run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
-            PROCESSOR_ARCHITECTURE: ${{ matrix.arch == 'aarch64' && 'ARM64' || 'AMD64' }}
             CMAKE_OSX_ARCHITECTURES: ${{ matrix.arch == 'aarch64' && 'arm64' || 'x86_64' }}
             CMAKE_TOOLCHAIN_FILE: ${{ matrix.toolchain != null && matrix.toolchain || format('{0}/scripts/buildsystems/vcpkg.cmake', env.VCPKG_ROOT) }}
               

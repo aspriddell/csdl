@@ -3,5 +3,4 @@ set(CMAKE_SYSTEM_VERSION 10.0)
 set(CMAKE_SYSTEM_PROCESSOR ARM64)
 set(CMAKE_GENERATOR_PLATFORM ARM64 CACHE INTERNAL "")
 
-set(VCPKG_TARGET_TRIPLET arm64-windows-release)
 include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
