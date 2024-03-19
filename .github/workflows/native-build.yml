@@ -18,9 +18,9 @@ jobs:
       runs-on: ${{ matrix.buildos }}
 
       env:
-        ARCHIVE_DIR: archive-${{ matrix.targetname }}
+        ARCHIVE_DIR: ${{ github.workspace }}/archive-${{ matrix.targetname }}
+        BUILD_DIR: ${{ github.workspace }}/build-${{ matrix.arch }}
         VCPKG_HOME: ${{ github.workspace }}/vcpkg
-        BUILD_DIR: build-${{ matrix.arch }}
         MACOSX_DEPLOYMENT_TARGET: 11
 
       strategy:
@@ -66,7 +66,7 @@ jobs:
             mkdir ${{ env.ARCHIVE_DIR }}
             cd ${{ env.ARCHIVE_DIR }}
             cp ${{ env.BUILD_DIR }}/*.${{ matrix.suffix }} .
-            cp ${{ format('{0}/vcpkg_installed/{1}/lib/libtorrent*.{2}* .', env.BUILD_DIR, matrix.triplet, matrix.suffix) }}
+            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent* .
 
         - name: Upload
           uses: actions/upload-artifact@v4
