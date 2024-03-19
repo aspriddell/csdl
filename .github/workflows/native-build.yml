@@ -54,6 +54,7 @@ jobs:
         - name: Setup CMake
           run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
+            PROCESSOR_ARCHITECTURE: ${{ matrix.arch == 'aarch64' && 'ARM64' || 'AMD64' }}
             CMAKE_OSX_ARCHITECTURES: ${{ matrix.arch == 'aarch64' && 'arm64' || 'x86_64' }}
             CMAKE_TOOLCHAIN_FILE: ${{ matrix.toolchain != null && matrix.toolchain || format('{0}/scripts/buildsystems/vcpkg.cmake', env.VCPKG_ROOT) }}
               
