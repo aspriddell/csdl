@@ -14,4 +14,4 @@ set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 set(VCPKG_TARGET_TRIPLET x64-linux-release-dynamic)
-include($ENV{VCPKG_HOME}/scripts/buildsystems/vcpkg.cmake)
+include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
