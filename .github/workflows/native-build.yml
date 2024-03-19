@@ -43,7 +43,7 @@ jobs:
           if: matrix.buildos == 'ubuntu-20.04' && matrix.arch == 'aarch64'
           run: |
             sudo apt-get update
-            sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+            sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu gcc-multilib g++-multilib
 
         - name: Setup VCPKG
           uses: lukka/run-vcpkg@v10
