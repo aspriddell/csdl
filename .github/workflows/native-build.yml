@@ -43,7 +43,7 @@ jobs:
           if: matrix.buildos == 'ubuntu-20.04' && matrix.arch == 'aarch64'
           run: |
             sudo apt-get update
-            sudo apt-get install -y libc-dev-arm64-cross
+            sudo apt-get install -y libc++-dev libc-dev-arm64-cross binutils-aarch64-linux-gnu
 
         - name: Setup VCPKG
           uses: lukka/run-vcpkg@v10
