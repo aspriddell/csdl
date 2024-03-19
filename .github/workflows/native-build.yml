@@ -40,16 +40,16 @@ jobs:
             submodules: 'recursive'
 
         - name: Install Additional Packages (Ubuntu)
-          if: matrix.buildos == 'ubuntu-20.04'
+          if: matrix.buildos == 'ubuntu-20.04' && matrix.arch == 'aarch64'
           run: |
             sudo apt-get update
             sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 
-        - name: Copy Custom VCPKG Triplets
-          run: cp -r native/build/triplets/* ${{ env.VCPKG_HOME }}/triplets/community
-
         - name: Setup VCPKG
           uses: lukka/run-vcpkg@v10
+
+        - name: Copy Custom VCPKG Triplets
+          run: cp -r native/build/triplets/* ${{ env.VCPKG_HOME }}/triplets/community
 
         - name: Setup CMake
           run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
@@ -57,7 +57,7 @@ jobs:
             CMAKE_OSX_ARCHITECTURES: ${{ matrix.arch == 'aarch64' && 'arm64' || 'x86_64' }}
             CMAKE_TOOLCHAIN_FILE: ${{ matrix.toolchain != null && matrix.toolchain || '${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake' }}
               
-        - name: Build
+        - name: Build Library
           run: cmake --build ${{ env.BUILD_DIR }} --config Release
 
         - name: Prepare Files
