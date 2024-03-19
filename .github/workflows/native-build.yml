@@ -65,7 +65,7 @@ jobs:
             mkdir ${{ env.ARCHIVE_DIR }}
             cd ${{ env.ARCHIVE_DIR }}
             cp ${{ env.BUILD_DIR }}/*.${{ matrix.suffix }} .
-            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent* .
+            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent*.${{ matrix.suffix }} .
 
         - name: Upload
           uses: actions/upload-artifact@v4
