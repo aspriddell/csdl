@@ -20,7 +20,6 @@ jobs:
       env:
         ARCHIVE_DIR: ${{ github.workspace }}/archive-${{ matrix.targetname }}
         BUILD_DIR: ${{ github.workspace }}/build-${{ matrix.arch }}
-        VCPKG_HOME: ${{ github.workspace }}/vcpkg
         MACOSX_DEPLOYMENT_TARGET: 11
 
       strategy:
@@ -50,13 +49,13 @@ jobs:
           uses: lukka/run-vcpkg@v10
 
         - name: Copy Custom VCPKG Triplets
-          run: cp -r native/build/triplets/* ${{ env.VCPKG_HOME }}/triplets/community
+          run: cp -r native/build/triplets/* ${{ env.VCPKG_ROOT }}/triplets/community
 
         - name: Setup CMake
           run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
             CMAKE_OSX_ARCHITECTURES: ${{ matrix.arch == 'aarch64' && 'arm64' || 'x86_64' }}
-            CMAKE_TOOLCHAIN_FILE: ${{ matrix.toolchain != null && matrix.toolchain || format('{0}/scripts/buildsystems/vcpkg.cmake', env.VCPKG_HOME) }}
+            CMAKE_TOOLCHAIN_FILE: ${{ matrix.toolchain != null && matrix.toolchain || format('{0}/scripts/buildsystems/vcpkg.cmake', env.VCPKG_ROOT) }}
               
         - name: Build Library
           run: cmake --build ${{ env.BUILD_DIR }} --config Release
