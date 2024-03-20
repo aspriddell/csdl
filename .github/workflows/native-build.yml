@@ -71,11 +71,20 @@ jobs:
           run: cmake --build ${{ env.BUILD_DIR }} --config Release
 
         - name: Prepare Files
+          if: matrix.targetname == 'linux' || matrix.targetname == 'windows'
           run: |
             mkdir ${{ env.ARCHIVE_DIR }}
             cd ${{ env.ARCHIVE_DIR }}
             cp ${{ env.BUILD_DIR }}/*.${{ matrix.suffix }} .
             cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent*.${{ matrix.suffix }} .
+
+        - name: Prepare Files (macOS)
+          if: matrix.targetname == 'osx'
+          run: |
+            mkdir ${{ env.ARCHIVE_DIR }}
+            cd ${{ env.ARCHIVE_DIR }}
+            cp ${{ env.BUILD_DIR }}/Release/*.${{ matrix.suffix }} .
+            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.dylib .
 
         - name: Upload
           uses: actions/upload-artifact@v4
