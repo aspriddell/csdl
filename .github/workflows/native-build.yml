@@ -20,17 +20,16 @@ jobs:
       env:
         ARCHIVE_DIR: ${{ github.workspace }}/archive-${{ matrix.targetname }}
         BUILD_DIR: ${{ github.workspace }}/build-${{ matrix.arch }}
-        MACOSX_DEPLOYMENT_TARGET: 11
 
       strategy:
         matrix:
           include:
               - { targetname: osx, buildos: macos-latest, arch: x86_64, suffix: dylib, triplet: x64-osx-release-dynamic }
-              - { targetname: osx, buildos: macos-latest, arch: aarch64, suffix: dylib, triplet: arm64-osx-release-dynamic }
-              - { targetname: linux, buildos: ubuntu-20.04, arch: x86_64, suffix: so, triplet: x64-linux-release-dynamic, toolchain: native/build/linux-x64.cmake }
-              - { targetname: linux, buildos: ubuntu-20.04, arch: aarch64, suffix: so, triplet: arm64-linux-release-dynamic, toolchain: native/build/linux-arm64.cmake }
-              - { targetname: windows, buildos: windows-latest, arch: x86_64, suffix: dll, triplet: x64-windows-release, toolchain: native/build/windows-x64.cmake }
-              - { targetname: windows, buildos: windows-latest,  arch: aarch64, suffix: dll, triplet: arm64-windows-release, toolchain: native/build/windows-arm64.cmake }
+              - { targetname: osx, buildos: macos-latest, arch: arm64, suffix: dylib, triplet: arm64-osx-release-dynamic }
+              - { targetname: windows, buildos: windows-latest, arch: x86_64, suffix: dll, triplet: x64-windows-release }
+              - { targetname: windows, buildos: windows-latest,  arch: arm64, suffix: dll, triplet: arm64-windows-release }
+              - { targetname: linux, buildos: ubuntu-20.04, arch: x86_64, suffix: so, triplet: x64-linux-release-dynamic }
+              - { targetname: linux, buildos: ubuntu-20.04, arch: arm64, suffix: so, triplet: arm64-linux-release-dynamic }
 
       steps:
         - name: Checkout
@@ -40,7 +39,7 @@ jobs:
             fetch-depth: 0
 
         - name: Install Additional Packages (Ubuntu)
-          if: matrix.buildos == 'ubuntu-20.04' && matrix.arch == 'aarch64'
+          if: matrix.buildos == 'ubuntu-20.04' && matrix.arch == 'arm64'
           run: |
             sudo apt-get update
             sudo apt-get install -y binutils-aarch64-linux-gnu g++-aarch64-linux-gnu gcc-aarch64-linux-gnu
@@ -51,13 +50,24 @@ jobs:
         - name: Copy Custom VCPKG Triplets
           run: cp -r native/build/triplets/* ${{ env.VCPKG_ROOT }}/triplets/community
 
-        - name: Setup CMake
-          run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+        - name: Setup CMake (Linux)
+          if: matrix.targetos == 'linux'
+          run: cmake -B ${{ env.BUILD_DIR }} -S . -DCMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
-            CMAKE_OSX_ARCHITECTURES: ${{ matrix.arch == 'aarch64' && 'arm64' || 'x86_64' }}
-            CMAKE_TOOLCHAIN_FILE: ${{ matrix.toolchain != null && matrix.toolchain || format('{0}/scripts/buildsystems/vcpkg.cmake', env.VCPKG_ROOT) }}
+            CMAKE_TOOLCHAIN_FILE: native/build/linux-${{ matrix.arch }}.cmake
+
+        - name: Setup CMake (Windows)
+          if: matrix.targetos == 'windows'
+          run: cmake -B ${{ env.BUILD_DIR }} -G "Visual Studio 17 2022" -A ${{ matrix.arch == 'arm64' && 'ARM64' || 'AMD64' }} -S . -DCMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
               
-        - name: Build Library
+        - name: Setup CMake (macOS)
+          if: matrix.targetos == 'osx'
+          run: cmake -B ${{ env.BUILD_DIR }} -G "Xcode" -S . -DCMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+          env:
+            CMAKE_OSX_ARCHITECTURES: ${{ matrix.arch == 'arm64' && 'arm64' || 'x86_64' }}
+            MACOSX_DEPLOYMENT_TARGET: 11
+
+        - name: Build
           run: cmake --build ${{ env.BUILD_DIR }} --config Release
 
         - name: Prepare Files
@@ -88,7 +98,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: osx-aarch64
+          name: osx-arm64
           path: native/nuget/runtimes/osx-arm64/native
 
       - uses: actions/download-artifact@v4
@@ -98,7 +108,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: windows-aarch64
+          name: windows-arm64
           path: native/nuget/runtimes/win-arm64/native
 
       - uses: actions/download-artifact@v4
@@ -108,7 +118,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: linux-aarch64
+          name: linux-arm64
           path: native/nuget/runtimes/linux-arm64/native
 
       - name: Build Package
