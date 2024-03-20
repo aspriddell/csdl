@@ -1,4 +1,0 @@
-set(VCPKG_TARGET_ARCHITECTURE x64)
-set(VCPKG_PLATFORM_TOOLSET v143)
-
-include("${CMAKE_CURRENT_LIST_DIR}/triplet-common.cmake")
