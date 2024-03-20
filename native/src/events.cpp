@@ -14,7 +14,7 @@ void fill_info_hash(const lt::torrent_handle& handle, char* buffer) {
     if (info_hash.has_v1()) {
         std::copy(info_hash.v1.begin(), info_hash.v1.end(), buffer);
     } else {
-        std::copy(info_hash.v2.begin(), info_hash.v2.end() + 20, buffer);
+        std::fill(info_hash.v2.begin(), info_hash.v2.begin() + 20, 0);
     }
 }
 
