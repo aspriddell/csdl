@@ -31,8 +31,8 @@ jobs:
           include:
             - { targetname: osx, buildos: macos-latest, arch: x64, suffix: dylib, triplet: release-osx-x64 }
             - { targetname: osx, buildos: macos-latest, arch: arm64, suffix: dylib, triplet: release-osx-arm64 }
-            - { targetname: linux, buildos: ubuntu-20.04, arch: x64, suffix: so, triplet: x64-linux-release-dynamic }
-            - { targetname: linux, buildos: ubuntu-20.04, arch: arm64, suffix: so, triplet: arm64-linux-release-dynamic }
+            - { targetname: linux, buildos: ubuntu-20.04, arch: x64, suffix: so, triplet: release-linux-x64 }
+            - { targetname: linux, buildos: ubuntu-20.04, arch: arm64, suffix: so,  triplet: release-linux-arm64 }
             - { targetname: windows, buildos: windows-latest, arch: x64, suffix: dll, triplet: release-windows-x64 }
             - { targetname: windows, buildos: windows-latest,  arch: arm64, suffix: dll, triplet: release-windows-arm64 }
 
@@ -51,9 +51,6 @@ jobs:
 
         - name: Setup VCPKG
           uses: lukka/run-vcpkg@v11
-
-        - name: Copy Custom VCPKG Triplets
-          run: cp -r native/build/triplets/* ${{ env.VCPKG_ROOT }}/triplets/community
 
         - name: Setup CMake (Linux)
           if: matrix.targetname == 'linux'
