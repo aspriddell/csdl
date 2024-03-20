@@ -33,7 +33,7 @@ jobs:
             - { targetname: osx, buildos: macos-latest, arch: arm64, triplet: release-osx-arm64 }
             - { targetname: linux, buildos: ubuntu-20.04, arch: x64, triplet: release-linux-x64 }
             - { targetname: linux, buildos: ubuntu-20.04, arch: arm64, triplet: release-linux-arm64 }
-            - { targetname: windows, buildos: windows-latest, arch: x64, triplet: release-windows-x64 }
+            - { targetname: windows, buildos: windows-latest, arch: x64, triplet: x64-windows-release }
             - { targetname: windows, buildos: windows-latest,  arch: arm64, triplet: release-windows-arm64 }
 
       steps:
@@ -91,9 +91,7 @@ jobs:
 
         - name: Prepare Files (Windows)
           if: matrix.targetname == 'windows'
-          run: |
-            cp ${{ env.BUILD_DIR }}/Release/csdl.dll ${{ env.ARCHIVE_DIR }}
-            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.dll ${{ env.ARCHIVE_DIR }}
+          run: cp ${{ env.BUILD_DIR }}/Release/*.dll ${{ env.ARCHIVE_DIR }}
 
         - name: Upload
           uses: actions/upload-artifact@v4
