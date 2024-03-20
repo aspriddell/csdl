@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
+
 set(CMAKE_CXX_STANDARD 20)
+set(MACOSX_DEPLOYMENT_TARGET 11)
 
 include(GenerateExportHeader)
 include_directories(${CMAKE_BINARY_DIR}/include ${CMAKE_SOURCE_DIR}/native/include)
