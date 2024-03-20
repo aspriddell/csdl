@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.21)
-
 set(CMAKE_CXX_STANDARD 20)
-set(MACOSX_DEPLOYMENT_TARGET 11)
+
+if(${CMAKE_SYSTEM_NAME} MATCH "Windows")
+  set(CMAKE_SYSTEM_VERSION 10.0 CACHE TYPE INTERNAL FORCE)
+elseif(${CMAKE_SYSTEM_NAME} MATCH "Darwin")
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 11)
+endif()
 
 include(GenerateExportHeader)
 include_directories(${CMAKE_BINARY_DIR}/include ${CMAKE_SOURCE_DIR}/native/include)
