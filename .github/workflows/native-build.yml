@@ -18,10 +18,9 @@ jobs:
       runs-on: ${{ matrix.buildos }}
 
       env:
-        VCPKG_OVERLAY_TRIPLETS: ${{ github.workspace }}/native/build/triplets
-        VCPKG_TARGET_TRIPLET: ${{ matrix.triplet }}
         CMAKE_BUILD_TYPE: Release
 
+        TRIPLETS_DIR: ${{ github.workspace }}/native/build/triplets
         ARCHIVE_DIR: ${{ github.workspace }}/archive-${{ matrix.targetname }}
         BUILD_DIR: ${{ github.workspace }}/build-${{ matrix.arch }}
 
@@ -54,19 +53,19 @@ jobs:
 
         - name: Setup CMake (Linux)
           if: matrix.targetname == 'linux'
-          run: cmake -B ${{ env.BUILD_DIR }} -S .
+          run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
             CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/native/build/linux-${{ matrix.arch }}.cmake
 
         - name: Setup CMake (Windows)
           if: matrix.targetname == 'windows'
-          run: cmake -B ${{ env.BUILD_DIR }} -G "Visual Studio 17 2022" -A ${{ matrix.arch == 'arm64' && 'ARM64' || 'x64' }} -S .
+          run: cmake -B ${{ env.BUILD_DIR }} -G "Visual Studio 17 2022" -A ${{ matrix.arch == 'arm64' && 'ARM64' || 'x64' }} -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
             CMAKE_TOOLCHAIN_FILE: ${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
               
         - name: Setup CMake (macOS)
           if: matrix.targetname == 'osx'
-          run: cmake -B ${{ env.BUILD_DIR }} -G "Xcode" -S .
+          run: cmake -B ${{ env.BUILD_DIR }} -G "Xcode" -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
             CMAKE_TOOLCHAIN_FILE: ${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
             CMAKE_OSX_ARCHITECTURES: ${{ matrix.arch == 'arm64' && 'arm64' || 'x86_64' }}
@@ -81,13 +80,13 @@ jobs:
           if: matrix.targetname == 'linux'
           run: |
             cp ${{ env.BUILD_DIR }}/libcsdl.so ${{ env.ARCHIVE_DIR }}
-            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.so.2.0 ${{ env.ARCHIVE_DIR }}
+            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.so ${{ env.ARCHIVE_DIR }}/libtorrent-rasterbar.so.2.0
 
         - name: Prepare Files (macOS)
           if: matrix.targetname == 'osx'
           run: |
             cp ${{ env.BUILD_DIR }}/Release/libcsdl.dylib ${{ env.ARCHIVE_DIR }}
-            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.2.0.dylib ${{ env.ARCHIVE_DIR }}
+            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.dylib ${{ env.ARCHIVE_DIR }}/libtorrent-rasterbar.2.0.dylib
 
         - name: Prepare Files (Windows)
           if: matrix.targetname == 'windows'
