@@ -29,12 +29,12 @@ jobs:
         fail-fast: false
         matrix:
           include:
-            - { targetname: osx, buildos: macos-latest, arch: x64, suffix: dylib, triplet: release-osx-x64 }
-            - { targetname: osx, buildos: macos-latest, arch: arm64, suffix: dylib, triplet: release-osx-arm64 }
-            - { targetname: linux, buildos: ubuntu-20.04, arch: x64, suffix: so, triplet: release-linux-x64 }
-            - { targetname: linux, buildos: ubuntu-20.04, arch: arm64, suffix: so,  triplet: release-linux-arm64 }
-            - { targetname: windows, buildos: windows-latest, arch: x64, suffix: dll, triplet: release-windows-x64 }
-            - { targetname: windows, buildos: windows-latest,  arch: arm64, suffix: dll, triplet: release-windows-arm64 }
+            - { targetname: osx, buildos: macos-latest, arch: x64, triplet: release-osx-x64 }
+            - { targetname: osx, buildos: macos-latest, arch: arm64, triplet: release-osx-arm64 }
+            - { targetname: linux, buildos: ubuntu-20.04, arch: x64, triplet: release-linux-x64 }
+            - { targetname: linux, buildos: ubuntu-20.04, arch: arm64, triplet: release-linux-arm64 }
+            - { targetname: windows, buildos: windows-latest, arch: x64, triplet: release-windows-x64 }
+            - { targetname: windows, buildos: windows-latest,  arch: arm64, triplet: release-windows-arm64 }
 
       steps:
         - name: Checkout
@@ -77,17 +77,23 @@ jobs:
         - name: Prepare Directory
           run: mkdir ${{ env.ARCHIVE_DIR }}
 
-        - name: Prepare Files
+        - name: Prepare Files (Linux)
           if: matrix.targetname == 'linux'
           run: |
-            cp ${{ env.BUILD_DIR }}/*.${{ matrix.suffix }} ${{ env.ARCHIVE_DIR }}
-            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent*.${{ matrix.suffix }} ${{ env.ARCHIVE_DIR }}
+            cp ${{ env.BUILD_DIR }}/libcsdl.so ${{ env.ARCHIVE_DIR }}
+            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.so.2.0 ${{ env.ARCHIVE_DIR }}
 
-        - name: Prepare Files (Release Folder)
-          if: matrix.targetname == 'osx' || matrix.targetname == 'windows'
+        - name: Prepare Files (macOS)
+          if: matrix.targetname == 'osx'
           run: |
-            cp ${{ env.BUILD_DIR }}/Release/*.${{ matrix.suffix }} ${{ env.ARCHIVE_DIR }}
-            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.${{ matrix.suffix }} ${{ env.ARCHIVE_DIR }}
+            cp ${{ env.BUILD_DIR }}/Release/libcsdl.dylib ${{ env.ARCHIVE_DIR }}
+            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.2.0.dylib ${{ env.ARCHIVE_DIR }}
+
+        - name: Prepare Files (Windows)
+          if: matrix.targetname == 'windows'
+          run: |
+            cp ${{ env.BUILD_DIR }}/Release/csdl.dll ${{ env.ARCHIVE_DIR }}
+            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.dll ${{ env.ARCHIVE_DIR }}
 
         - name: Upload
           uses: actions/upload-artifact@v4
