@@ -22,6 +22,7 @@ jobs:
         BUILD_DIR: ${{ github.workspace }}/build-${{ matrix.arch }}
 
       strategy:
+        fail-fast: false
         matrix:
           include:
               - { targetname: osx, buildos: macos-latest, arch: x86_64, suffix: dylib, triplet: x64-osx-release-dynamic }
@@ -58,7 +59,7 @@ jobs:
 
         - name: Setup CMake (Windows)
           if: matrix.targetname == 'windows'
-          run: cmake -B ${{ env.BUILD_DIR }} -G "Visual Studio 17 2022" -A ${{ matrix.arch == 'arm64' && 'ARM64' || 'AMD64' }} -S . -DCMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }} -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
+          run: cmake -B ${{ env.BUILD_DIR }} -G "Visual Studio 17 2022" -A ${{ matrix.arch == 'arm64' && 'ARM64' || 'x64' }} -S . -DCMAKE_BUILD_TYPE=Release -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }} -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
               
         - name: Setup CMake (macOS)
           if: matrix.targetname == 'osx'
