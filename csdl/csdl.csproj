@@ -5,4 +5,8 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="csdl.Native" Version="0.1.0" />
+    </ItemGroup>
+
 </Project>
