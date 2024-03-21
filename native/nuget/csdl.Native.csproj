@@ -14,7 +14,7 @@
         <Title>csdl Native Libraries</Title>
         <Description>Native libraries for csdl (libcsdl+libtorrent)</Description>
 
-        <PackageReadmeFile>readme.md</PackageReadmeFile>
+        <PackageReadmeFile>docs/readme.md</PackageReadmeFile>
         <PackageLicenseFile>docs/license.md</PackageLicenseFile>    
 
         <ProjectUrl>https://github.com/aspriddell/csdl</ProjectUrl>
