@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace csdl.Tests;
@@ -24,11 +25,11 @@ public class TorrentInfoTests
 
         // file count
         Assert.Equal(expectedFileCount, torrentFromFile.Files.Count);
-        
+
         // file equality
-        foreach (var torrentFile in torrentFromFile.Files)
-        {
-            Assert.Contains(torrentFile, torrentFromBytes.Files);
-        }
+        var fromFileNames = torrentFromFile.Files.Select(x => x.Path).ToHashSet();
+        var fromBytesNames = torrentFromBytes.Files.Select(x => x.Path).ToHashSet();
+        
+        Assert.True(fromFileNames.SetEquals(fromBytesNames));
     }
 }
