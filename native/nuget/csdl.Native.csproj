@@ -14,7 +14,7 @@
         <Title>csdl Native Libraries</Title>
         <Description>Native libraries for csdl (libcsdl+libtorrent)</Description>
 
-        <PackageIcon>icon.jpg</PackageIcon>
+        <PackageIcon>icon.png</PackageIcon>
         <PackageReadmeFile>docs/readme.md</PackageReadmeFile>
         <PackageLicenseFile>docs/license.md</PackageLicenseFile>    
 
