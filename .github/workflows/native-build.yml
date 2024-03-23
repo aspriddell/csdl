@@ -9,7 +9,7 @@ on:
         description: Version number (package)
       nuget:
         type: boolean
-        description: Whether to publish the package to NuGet. If not set, the package will be published to GitHub Packages.
+        description: Publish Package to NuGet
 
 permissions:
   packages: write
