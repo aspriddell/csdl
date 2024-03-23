@@ -1,12 +1,39 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <AssemblyName>csdl-net</AssemblyName>
         <TargetFramework>net7.0</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="csdl.Native" Version="0.1.0" />
-    </ItemGroup>
+    <PropertyGroup>
+        <Title>csdl</Title>
+        <PackageId>csdl</PackageId>
+        <IsPackable>true</IsPackable>
+        <Authors>Albie Spriddell</Authors>
+        <Description>A .NET wrapper for libtorrent.</Description>
 
+        <PackageIcon>icon.jpg</PackageIcon>
+        <PackageTags>libtorrent, torrent, csdl</PackageTags>
+        <PackageReadmeFile>docs/readme.md</PackageReadmeFile>
+        <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+        <RepositoryType>Git</RepositoryType>
+        <RepositoryUrl>https://github.com/aspriddell/csdl</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/aspriddell/csdl</PackageProjectUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\icon.png" Pack="true" PackagePath="." Visible="false" />
+        <None Include="..\readme.md" Pack="true" PackagePath="docs" Visible="false"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="csdl.Native" Version="1.0.0"/>
+    </ItemGroup>
+    
 </Project>
