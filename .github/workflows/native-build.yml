@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   build-platforms:
-      name: ${{ matrix.targetname }}-${{ matrix.arch }}
+      name: Build ${{ matrix.targetname }}-${{ matrix.arch }}
       runs-on: ${{ matrix.buildos }}
 
       env:
