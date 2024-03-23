@@ -7,6 +7,9 @@ on:
         type: string
         required: true
         description: Version number (package)
+      nuget:
+        type: boolean
+        description: Whether to publish the package to NuGet. If not set, the package will be published to GitHub Packages.
 
 permissions:
   packages: write
@@ -139,5 +142,10 @@ jobs:
       - name: Build Package
         run: dotnet pack -c Release -p:Version=${{ github.event.inputs.version }} -o ./packages native/nuget
 
-      - name: Publish Package
+      - name: Publish Package (NuGet)
+        if: github.event.inputs.nuget == true
+        run: dotnet nuget push "*.nupkg" -k ${{ secrets.NUGET_KEY }} --skip-duplicate -s https://api.nuget.org/v3/index.json
+
+      - name: Publish Package (GitHub)
+        if: github.event.inputs.nuget == false
         run: dotnet nuget push -s https://nuget.pkg.github.com/aspriddell/index.json -k ${{ github.token }} ./packages/*.nupkg
