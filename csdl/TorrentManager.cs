@@ -15,7 +15,7 @@ public class TorrentManager
     internal readonly IntPtr TorrentSessionHandle;
 
     private bool _detached;
-    private IReadOnlyCollection<TorrentManagerFile> _files;
+    private IReadOnlyList<TorrentManagerFile> _files;
 
     internal TorrentManager(IntPtr torrentSessionHandle, string savePath, TorrentInfo info)
     {
@@ -33,7 +33,7 @@ public class TorrentManager
     /// <summary>
     /// Information about the files contained within the torrent, with additional properties including file priorities and target save paths.
     /// </summary>
-    public IReadOnlyCollection<TorrentManagerFile> Files => _files ??= Info.Files.Select(x => new TorrentManagerFile(TorrentSessionHandle, _savePath, x)).ToList();
+    public IReadOnlyList<TorrentManagerFile> Files => _files ??= Info.Files.Select(x => new TorrentManagerFile(TorrentSessionHandle, _savePath, x)).ToList();
 
     /// <summary>
     /// Gets the current status of the torrent.
