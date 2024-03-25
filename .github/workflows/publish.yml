@@ -18,11 +18,11 @@ jobs:
         run: dotnet build -c Release -v normal -p:Version=${{ github.event.release.tag_name }} csdl/csdl.csproj
 
       - name: Pack (Beta)
-        run: dotnet pack -c Release --no-build -o . -p:PackageVersion=${{ github.event.release.tag_name }}-beta csdl/csdl.csproj
+        run: dotnet pack -c Release --no-build -o ./packages -p:PackageVersion=${{ github.event.release.tag_name }}-beta csdl/csdl.csproj
         if: "github.event.release.prerelease"
 
       - name: Pack (Stable)
-        run: dotnet pack -c Release --no-build -o . -p:PackageVersion=${{ github.event.release.tag_name }} csdl/csdl.csproj
+        run: dotnet pack -c Release --no-build -o ./packages -p:PackageVersion=${{ github.event.release.tag_name }} csdl/csdl.csproj
         if: "!github.event.release.prerelease"
 
       - name: Publish
