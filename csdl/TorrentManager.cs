@@ -76,17 +76,14 @@ public class TorrentManager
 
     public class TorrentManagerFile
     {
-        private readonly string _savePath;
         private readonly IntPtr _torrentSessionHandle;
-
-        private string _fullPath;
 
         internal TorrentManagerFile(IntPtr torrentSessionHandle, string savePath, TorrentFileInfo info)
         {
             _torrentSessionHandle = torrentSessionHandle;
-            _savePath = savePath;
 
             Info = info;
+            Path = System.IO.Path.IsPathRooted(Info.Path) ? Info.Path : System.IO.Path.Combine(savePath, Info.Path);
         }
 
         /// <summary>
@@ -97,9 +94,7 @@ public class TorrentManager
         /// <summary>
         /// The full path to the file on disk.
         /// </summary>
-        public string Path => _fullPath ??= System.IO.Path.IsPathRooted(Info.Path)
-            ? Info.Path
-            : System.IO.Path.Combine(_savePath, Info.Path);
+        public string Path { get; }
 
         /// <summary>
         /// The download priority of the file.
