@@ -15,7 +15,7 @@ namespace csdl;
 /// Represents a file contained within a torrent.
 /// </summary>
 [DebuggerDisplay("{Path} ({FileSize} bytes)")]
-public record TorrentFileInfo(int Index, long Offset, string Name, string Path, long FileSize, bool PathIsAbsolute, bool IsPadFile);
+public record TorrentFileInfo(int Index, long Offset, string Name, string Path, long FileSize, bool IsPadFile);
 
 /// <summary>
 /// Contains metadata related to a torrent file.
@@ -159,7 +159,6 @@ public class TorrentInfo
                     nativeFile.file_name,
                     nativeFile.file_path,
                     nativeFile.file_size,
-                    nativeFile.file_path_is_absolute,
                     nativeFile.pad_file);
 
                 files.Add(fileInfo);
