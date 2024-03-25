@@ -1,0 +1,29 @@
+﻿name: Publish
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build -c Release -v normal -p:Version=${{ github.event.release.tag_name }}
+
+      - name: Pack (Beta)
+        run: dotnet pack -c Release --no-build -o . -p:PackageVersion=${{ github.event.release.tag_name }}-beta
+        if: "github.event.release.prerelease"
+
+      - name: Pack (Stable)
+        run: dotnet pack -c Release --no-build -o . -p:PackageVersion=${{ github.event.release.tag_name }}
+        if: "!github.event.release.prerelease"
+
+      - name: Publish
+        run: dotnet nuget push -s https://api.nuget.org/v3/index.json --skip-duplicate -k ${{ secrets.NUGET_KEY }} ./packages/*.nupkg
