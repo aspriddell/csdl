@@ -1,3 +1,6 @@
+// csdl - a cross-platform libtorrent wrapper for .NET
+// Licensed under Apache-2.0 - see the license file for more information
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,13 +11,12 @@ namespace csdl;
 
 public class TorrentManager
 {
-    internal readonly IntPtr TorrentSessionHandle;
-    
     private readonly string _savePath;
-    private IReadOnlyCollection<TorrentManagerFile> _files;
+    internal readonly IntPtr TorrentSessionHandle;
 
     private bool _detached;
-    
+    private IReadOnlyList<TorrentManagerFile> _files;
+
     internal TorrentManager(IntPtr torrentSessionHandle, string savePath, TorrentInfo info)
     {
         Info = info;
@@ -22,7 +24,7 @@ public class TorrentManager
 
         _savePath = savePath;
     }
-    
+
     /// <summary>
     /// Information about the .torrent file
     /// </summary>
@@ -31,7 +33,7 @@ public class TorrentManager
     /// <summary>
     /// Information about the files contained within the torrent, with additional properties including file priorities and target save paths.
     /// </summary>
-    public IReadOnlyCollection<TorrentManagerFile> Files => _files ??= Info.Files.Select(x => new TorrentManagerFile(TorrentSessionHandle, _savePath, x)).ToList();
+    public IReadOnlyList<TorrentManagerFile> Files => _files ??= Info.Files.Select(x => new TorrentManagerFile(TorrentSessionHandle, _savePath, x)).ToList();
 
     /// <summary>
     /// Gets the current status of the torrent.
@@ -47,7 +49,7 @@ public class TorrentManager
 
         return status;
     }
-    
+
     /// <summary>
     /// Starts or resumes the torrent.
     /// </summary>
@@ -56,7 +58,7 @@ public class TorrentManager
         ObjectDisposedException.ThrowIf(_detached, this);
         NativeMethods.StartTorrent(TorrentSessionHandle);
     }
-    
+
     /// <summary>
     /// Stops the torrent.
     /// </summary>
@@ -74,8 +76,8 @@ public class TorrentManager
 
     public class TorrentManagerFile
     {
-        private readonly IntPtr _torrentSessionHandle;
         private readonly string _savePath;
+        private readonly IntPtr _torrentSessionHandle;
 
         internal TorrentManagerFile(IntPtr torrentSessionHandle, string savePath, TorrentFileInfo info)
         {
@@ -84,12 +86,12 @@ public class TorrentManager
 
             Info = info;
         }
-        
+
         /// <summary>
         /// File information, as provided by the .torrent file.
         /// </summary>
         public TorrentFileInfo Info { get; }
-        
+
         /// <summary>
         /// The full path to the file on disk.
         /// </summary>

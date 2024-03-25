@@ -14,6 +14,7 @@
         <Title>csdl Native Libraries</Title>
         <Description>Native libraries for csdl (libcsdl+libtorrent)</Description>
 
+        <PackageIcon>icon.png</PackageIcon>
         <PackageReadmeFile>docs/readme.md</PackageReadmeFile>
         <PackageLicenseFile>docs/license.md</PackageLicenseFile>    
 
@@ -35,5 +36,6 @@
     
         <None Include="readme.md" Pack="true" PackagePath="docs" Visible="false"/>
         <None Include="license.md" Pack="true" PackagePath="docs" Visible="false"/>
+        <None Include="..\..\icon.png" Pack="true" PackagePath="." Visible="false"/>
     </ItemGroup>
 </Project>

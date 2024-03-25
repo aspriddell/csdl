@@ -1,3 +1,6 @@
+// csdl - a cross-platform libtorrent wrapper for .NET
+// Licensed under Apache-2.0 - see the license file for more information
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -27,9 +30,9 @@ public record TorrentMetadata(string Name, string Creator, string Comment, int T
 public class TorrentInfo
 {
     internal readonly IntPtr InfoHandle;
+    private IReadOnlyCollection<TorrentFileInfo> _files;
 
     private TorrentMetadata _metadata;
-    private IReadOnlyCollection<TorrentFileInfo> _files;
 
     /// <summary>
     /// Creates a new instance of <see cref="TorrentInfo"/> using the contents of a .torrent file from disk.
@@ -66,23 +69,51 @@ public class TorrentInfo
             throw new InvalidOperationException("Failed to create torrent from bytes provided.");
         }
     }
-    
+
+    /// <summary>
+    /// Creates a new instance of <see cref="TorrentInfo"/> using the contents of a .torrent file from memory.
+    /// </summary>
+    /// <param name="memoryPtr">The pointer to the first byte of the file in memory</param>
+    /// <param name="length">The size of the file</param>
+    /// <exception cref="InvalidOperationException"></exception>
+    public TorrentInfo(IntPtr memoryPtr, int length)
+    {
+        InfoHandle = NativeMethods.CreateTorrentFromBytes(memoryPtr, length);
+
+        if (InfoHandle <= IntPtr.Zero)
+        {
+            throw new InvalidOperationException("Failed to create torrent from bytes provided.");
+        }
+    }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="TorrentInfo"/> using the contents of a .torrent file from memory.
+    /// </summary>
+    /// <param name="memoryPtr">The pointer to the first byte of the file in memory</param>
+    /// <param name="length">The size of the file</param>
+    /// <exception cref="InvalidOperationException"></exception>
+    [CLSCompliant(false)]
+    public unsafe TorrentInfo(void* memoryPtr, int length)
+        : this(new IntPtr(memoryPtr), length)
+    {
+    }
+
+    /// <summary>
+    /// Gets metadata related to the torrent file.
+    /// </summary>
+    public TorrentMetadata Metadata => _metadata ??= GetInfo();
+
+    /// <summary>
+    /// Gets a list of files contained within the torrent.
+    /// </summary>
+    public IReadOnlyCollection<TorrentFileInfo> Files => _files ??= GetFiles();
+
     // as TorrentInfo is shared a lot, we're not providing a dispose method
     // and instead letting the garbage collector handle it
     ~TorrentInfo()
     {
         NativeMethods.FreeTorrent(InfoHandle);
     }
-    
-    /// <summary>
-    /// Gets metadata related to the torrent file.
-    /// </summary>
-    public TorrentMetadata Metadata => _metadata ??= GetInfo();
-    
-    /// <summary>
-    /// Gets a list of files contained within the torrent.
-    /// </summary>
-    public IReadOnlyCollection<TorrentFileInfo> Files => _files ??= GetFiles();
 
     private TorrentMetadata GetInfo()
     {
@@ -92,7 +123,7 @@ public class TorrentInfo
         {
             throw new InvalidOperationException("Failed to retrieve torrent metadata.");
         }
-        
+
         try
         {
             var info = Marshal.PtrToStructure<NativeStructs.TorrentMetadata>(infoHandle);
@@ -124,13 +155,13 @@ public class TorrentInfo
             {
                 var nativeFile = Marshal.PtrToStructure<NativeStructs.TorrentFile>(list.items + (size * i));
                 var fileInfo = new TorrentFileInfo(nativeFile.index,
-                nativeFile.offset,
-                nativeFile.file_name, 
-                nativeFile.file_path,
-                nativeFile.file_size,
-                nativeFile.file_path_is_absolute,
-                nativeFile.pad_file);
-                
+                    nativeFile.offset,
+                    nativeFile.file_name,
+                    nativeFile.file_path,
+                    nativeFile.file_size,
+                    nativeFile.file_path_is_absolute,
+                    nativeFile.pad_file);
+
                 files.Add(fileInfo);
             }
 

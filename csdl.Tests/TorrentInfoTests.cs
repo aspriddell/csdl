@@ -1,3 +1,6 @@
+// csdl - a cross-platform libtorrent wrapper for .NET
+// Licensed under Apache-2.0 - see the license file for more information
+
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,13 +16,13 @@ public class TorrentInfoTests
     {
         var file = Path.GetFullPath(Path.Combine("files", fileName));
         var torrentBytes = await File.ReadAllBytesAsync(file);
-        
+
         var torrentFromFile = new TorrentInfo(file);
         var torrentFromBytes = new TorrentInfo(torrentBytes);
-        
+
         // name check
         Assert.Equal(expectedName, torrentFromFile.Metadata.Name);
-        
+
         // metadata check
         Assert.Equal(torrentFromFile.Metadata, torrentFromBytes.Metadata);
 
@@ -29,7 +32,7 @@ public class TorrentInfoTests
         // file equality
         var fromFileNames = torrentFromFile.Files.Select(x => x.Path).ToHashSet();
         var fromBytesNames = torrentFromBytes.Files.Select(x => x.Path).ToHashSet();
-        
+
         Assert.True(fromFileNames.SetEquals(fromBytesNames));
     }
 }

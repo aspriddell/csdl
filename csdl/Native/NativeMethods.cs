@@ -1,3 +1,6 @@
+// csdl - a cross-platform libtorrent wrapper for .NET
+// Licensed under Apache-2.0 - see the license file for more information
+
 using System;
 using System.Runtime.InteropServices;
 using csdl.Enums;
@@ -6,10 +9,10 @@ namespace csdl.Native;
 
 internal static partial class NativeMethods
 {
-    private const string LibraryName = "csdl";
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void SessionEventCallback(IntPtr alertPtr);
+
+    private const string LibraryName = "csdl";
 
     /// <summary>
     /// Creates a session with the given configuration.
@@ -34,14 +37,14 @@ internal static partial class NativeMethods
     /// <param name="includeUnmappedEvents">Whether to run the <see cref="callback"/> for events that aren't mapped, that only produce <see cref="NativeEvents.AlertBase"/> values with no additional data</param>
     [LibraryImport(LibraryName, EntryPoint = "set_event_callback")]
     public static partial void SetEventCallback(IntPtr sessionHandle, [MarshalAs(UnmanagedType.FunctionPtr)] SessionEventCallback callback, [MarshalAs(UnmanagedType.Bool)] bool includeUnmappedEvents);
-    
+
     /// <summary>
     /// Clears the currently set event callback.
     /// </summary>
     /// <param name="sessionHandle">The session handle to remove the registered callback from</param>
     [LibraryImport(LibraryName, EntryPoint = "clear_event_callback")]
     public static partial void ClearEventCallback(IntPtr sessionHandle);
-    
+
     /// <summary>
     /// Create a torrent from a file on the local disk
     /// </summary>
@@ -49,7 +52,7 @@ internal static partial class NativeMethods
     /// <returns>A handle to the torrent or <see cref="IntPtr.Zero"/> if there an error occurred</returns>
     [LibraryImport(LibraryName, EntryPoint = "create_torrent_file", StringMarshalling = StringMarshalling.Utf8)]
     public static partial IntPtr CreateTorrentFromFile([MarshalAs(UnmanagedType.LPUTF8Str)] string path);
-    
+
     /// <summary>
     /// Create a torrent file from a byte array
     /// </summary>
@@ -58,7 +61,16 @@ internal static partial class NativeMethods
     /// <returns>A handle to the torrent or <see cref="IntPtr.Zero"/> if there an error occurred</returns>
     [LibraryImport(LibraryName, EntryPoint = "create_torrent_bytes")]
     public static partial IntPtr CreateTorrentFromBytes(byte[] content, long length);
-    
+
+    /// <summary>
+    /// Create a torrent file from a byte array
+    /// </summary>
+    /// <param name="content">A byte pointer that locates the first byte of the torrent file</param>
+    /// <param name="length">The size of the region</param>
+    /// <returns>A handle to the torrent or <see cref="IntPtr.Zero"/> if there an error occurred</returns>
+    [LibraryImport(LibraryName, EntryPoint = "create_torrent_bytes")]
+    public static partial IntPtr CreateTorrentFromBytes(IntPtr content, long length);
+
     /// <summary>
     /// Releases the unmanaged resources associated with a torrent.
     /// </summary>
@@ -68,7 +80,7 @@ internal static partial class NativeMethods
     /// </param>
     [LibraryImport(LibraryName, EntryPoint = "destroy_torrent")]
     public static partial void FreeTorrent(IntPtr torrentHandle);
-    
+
     /// <summary>
     /// Attach a torrent to a session, allowing it to be downloaded
     /// </summary>
@@ -78,7 +90,7 @@ internal static partial class NativeMethods
     /// <returns>A torrent-session handle</returns>
     [LibraryImport(LibraryName, EntryPoint = "attach_torrent", StringMarshalling = StringMarshalling.Utf8)]
     public static partial IntPtr AttachTorrent(IntPtr sessionHandle, IntPtr torrentHandle, [MarshalAs(UnmanagedType.LPUTF8Str)] string savePath);
-    
+
     /// <summary>
     /// Detaches a torrent from a session, stopping the download.
     /// </summary>
@@ -89,7 +101,7 @@ internal static partial class NativeMethods
     /// </remarks>
     [LibraryImport(LibraryName, EntryPoint = "detach_torrent")]
     public static partial void DetachTorrent(IntPtr sessionHandle, IntPtr torrentSessionHandle);
-    
+
     /// <summary>
     /// Gets the torrent info from the torrent handle.
     /// </summary>
@@ -98,7 +110,7 @@ internal static partial class NativeMethods
     /// <remarks>A call to FreeTorrentInfo is needed to release unmanaged resources after usage has finished.</remarks>
     [LibraryImport(LibraryName, EntryPoint = "get_torrent_info")]
     public static partial IntPtr GetTorrentInfo(IntPtr torrentHandle);
-    
+
     /// <summary>
     /// Destroys a torrent info handle.
     /// </summary>
@@ -113,14 +125,14 @@ internal static partial class NativeMethods
     /// <param name="files">Location of the <see cref="NativeStructs.TorrentFileList"/> to populate</param>
     [LibraryImport(LibraryName, EntryPoint = "get_torrent_file_list")]
     public static partial void GetTorrentFileList(IntPtr torrentHandle, out NativeStructs.TorrentFileList files);
-    
+
     /// <summary>
     /// Release the unmanaged resources associated with a <see cref="files"/>.
     /// </summary>
     /// <param name="files">The file list to release</param>
     [LibraryImport(LibraryName, EntryPoint = "destroy_torrent_file_list")]
     public static partial void FreeTorrentFileList(ref NativeStructs.TorrentFileList files);
-    
+
     /// <summary>
     /// Get the download priority of a file within a torrent.
     /// </summary>
@@ -128,7 +140,7 @@ internal static partial class NativeMethods
     /// <param name="fileIndex">The index of the file to get the priority of</param>
     [LibraryImport(LibraryName, EntryPoint = "get_file_dl_priority")]
     public static partial FileDownloadPriority GetFilePriority(IntPtr torrentSessionHandle, int fileIndex);
-    
+
     /// <summary>
     /// Sets the download priority of a file within a torrent.
     /// </summary>
@@ -137,21 +149,21 @@ internal static partial class NativeMethods
     /// <param name="priority">The download priority to apply</param>
     [LibraryImport(LibraryName, EntryPoint = "set_file_dl_priority")]
     public static partial void SetFilePriority(IntPtr torrentSessionHandle, int fileIndex, FileDownloadPriority priority);
-    
+
     /// <summary>
     /// Starts or resumes a torrent download
     /// </summary>
     /// <param name="torrentSessionHandle">The torrent session handle to start</param>
     [LibraryImport(LibraryName, EntryPoint = "start_torrent")]
     public static partial void StartTorrent(IntPtr torrentSessionHandle);
-    
+
     /// <summary>
     /// Stops a torrent download
     /// </summary>
     /// <param name="torrentSessionHandle">The torrent session handle to stop</param>
     [LibraryImport(LibraryName, EntryPoint = "stop_torrent")]
     public static partial void StopTorrent(IntPtr torrentSessionHandle);
-    
+
     /// <summary>
     /// Gets the status of a torrent.
     /// </summary>
