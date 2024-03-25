@@ -10,6 +10,6 @@ public class PerformanceWarningAlert : SessionAlert
     {
         WarningCode = alert.warning_code;
     }
-    
+
     public PerformanceWarningType WarningCode { get; }
 }

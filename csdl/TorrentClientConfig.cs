@@ -5,7 +5,7 @@ public class TorrentClientConfig
     public string UserAgent { get; set; }
 
     public string Fingerprint { get; set; }
-    
+
     public bool IncludeAllAlertEvents { get; set; }
     public bool PrivateMode { get; set; }
     public bool BlockSeeding { get; set; }

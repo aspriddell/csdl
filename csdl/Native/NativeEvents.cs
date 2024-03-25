@@ -24,7 +24,7 @@ internal static class NativeEvents
     {
         [MarshalAs(UnmanagedType.Struct)]
         public AlertBase info;
-        
+
         public TorrentState old_state;
         public TorrentState new_state;
 
@@ -37,7 +37,7 @@ internal static class NativeEvents
     {
         [MarshalAs(UnmanagedType.Struct)]
         public AlertBase info;
-        
+
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
         public byte[] info_hash;
     }
@@ -47,7 +47,7 @@ internal static class NativeEvents
     {
         [MarshalAs(UnmanagedType.Struct)]
         public AlertBase info;
-        
+
         public PerformanceWarningType warning_code;
     }
 
@@ -56,13 +56,13 @@ internal static class NativeEvents
     {
         [MarshalAs(UnmanagedType.Struct)]
         public AlertBase info;
-        
+
         public IntPtr handle;
         public PeerAlertType alert_type;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
         public byte[] info_hash;
-        
+
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] v6_address;
     }

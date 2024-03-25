@@ -171,7 +171,7 @@ public class TorrentClient : IDisposable
         {
             return;
         }
-        
+
         SessionAlert forwardAlert = null;
         switch ((AlertType)(*(int*)eventPtr.ToPointer()))
         {

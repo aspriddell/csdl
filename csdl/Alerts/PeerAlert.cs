@@ -13,7 +13,7 @@ public class PeerAlert : SessionAlert
         AlertType = alert.alert_type;
         Address = new IPAddress(alert.v6_address);
     }
-    
+
     public TorrentManager Subject { get; }
 
     public PeerAlertType AlertType { get; }

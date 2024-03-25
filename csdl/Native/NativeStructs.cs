@@ -24,7 +24,7 @@ internal static class NativeStructs
 
         public int max_connections;
     }
-    
+
     /// <summary>
     /// Represents a file contained within a torrent.
     /// </summary>
@@ -40,14 +40,14 @@ internal static class NativeStructs
 
         [MarshalAs(UnmanagedType.LPUTF8Str)]
         public readonly string file_name;
-    
+
         [MarshalAs(UnmanagedType.LPUTF8Str)]
         public readonly string file_path;
 
         public readonly bool file_path_is_absolute;
         public readonly bool pad_file;
     }
-    
+
     /// <summary>
     /// Represents a list of files contained within a torrent.
     /// </summary>
@@ -57,7 +57,7 @@ internal static class NativeStructs
         public readonly int length;
         public readonly IntPtr items;
     }
-    
+
     /// <summary>
     /// Represents a single file contained within a torrent.
     /// </summary>
@@ -77,10 +77,10 @@ internal static class NativeStructs
         public readonly long total_size;
 
         public readonly long creation_epoch;
-        
+
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
         public readonly byte[] info_hash_sha1;
-        
+
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
         public readonly byte[] info_hash_sha256;
     }

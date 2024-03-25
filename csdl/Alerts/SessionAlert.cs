@@ -15,9 +15,9 @@ public class SessionAlert : EventArgs
     }
 
     public AlertType Type { get; }
-    
+
     public int Category { get; }
-    
+
     public DateTimeOffset Timestamp { get; }
 
     public string Message { get; }

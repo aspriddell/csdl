@@ -66,19 +66,19 @@ public class TorrentInfo
             throw new InvalidOperationException("Failed to create torrent from bytes provided.");
         }
     }
-    
+
     // as TorrentInfo is shared a lot, we're not providing a dispose method
     // and instead letting the garbage collector handle it
     ~TorrentInfo()
     {
         NativeMethods.FreeTorrent(InfoHandle);
     }
-    
+
     /// <summary>
     /// Gets metadata related to the torrent file.
     /// </summary>
     public TorrentMetadata Metadata => _metadata ??= GetInfo();
-    
+
     /// <summary>
     /// Gets a list of files contained within the torrent.
     /// </summary>
@@ -92,7 +92,7 @@ public class TorrentInfo
         {
             throw new InvalidOperationException("Failed to retrieve torrent metadata.");
         }
-        
+
         try
         {
             var info = Marshal.PtrToStructure<NativeStructs.TorrentMetadata>(infoHandle);
@@ -124,13 +124,13 @@ public class TorrentInfo
             {
                 var nativeFile = Marshal.PtrToStructure<NativeStructs.TorrentFile>(list.items + (size * i));
                 var fileInfo = new TorrentFileInfo(nativeFile.index,
-                nativeFile.offset,
-                nativeFile.file_name, 
-                nativeFile.file_path,
-                nativeFile.file_size,
-                nativeFile.file_path_is_absolute,
-                nativeFile.pad_file);
-                
+                    nativeFile.offset,
+                    nativeFile.file_name,
+                    nativeFile.file_path,
+                    nativeFile.file_size,
+                    nativeFile.file_path_is_absolute,
+                    nativeFile.pad_file);
+
                 files.Add(fileInfo);
             }
 

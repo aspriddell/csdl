@@ -9,12 +9,12 @@ namespace csdl;
 public class TorrentManager
 {
     internal readonly IntPtr TorrentSessionHandle;
-    
+
     private readonly string _savePath;
     private IReadOnlyCollection<TorrentManagerFile> _files;
 
     private bool _detached;
-    
+
     internal TorrentManager(IntPtr torrentSessionHandle, string savePath, TorrentInfo info)
     {
         Info = info;
@@ -22,7 +22,7 @@ public class TorrentManager
 
         _savePath = savePath;
     }
-    
+
     /// <summary>
     /// Information about the .torrent file
     /// </summary>
@@ -47,7 +47,7 @@ public class TorrentManager
 
         return status;
     }
-    
+
     /// <summary>
     /// Starts or resumes the torrent.
     /// </summary>
@@ -56,7 +56,7 @@ public class TorrentManager
         ObjectDisposedException.ThrowIf(_detached, this);
         NativeMethods.StartTorrent(TorrentSessionHandle);
     }
-    
+
     /// <summary>
     /// Stops the torrent.
     /// </summary>
@@ -84,12 +84,12 @@ public class TorrentManager
 
             Info = info;
         }
-        
+
         /// <summary>
         /// File information, as provided by the .torrent file.
         /// </summary>
         public TorrentFileInfo Info { get; }
-        
+
         /// <summary>
         /// The full path to the file on disk.
         /// </summary>

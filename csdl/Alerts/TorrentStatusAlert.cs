@@ -12,7 +12,7 @@ public class TorrentStatusAlert : SessionAlert
         OldState = alert.old_state;
         NewState = alert.new_state;
     }
-    
+
     public TorrentManager Subject { get; }
 
     public TorrentState OldState { get; }
