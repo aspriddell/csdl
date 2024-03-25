@@ -4,8 +4,9 @@
 //
 
 #include "events.h"
+#include "locks.hpp"
 
-#include <time.h>
+#include <ctime>
 #include <libtorrent/session.hpp>
 #include <libtorrent/alert_types.hpp>
 
@@ -42,10 +43,9 @@ void populate_peer_alert(cs_peer_alert* peer_alert, lt::peer_alert* alert, cs_pe
 
 void on_events_available(lt::session* session, cs_alert_callback callback, bool include_unmapped) {
     static std::mutex mutex;
+    lock l(mutex);
 
-    // try to take lock, return if failed
-    // shouldn't be needed but just in case
-    if (!mutex.try_lock()) {
+    if (!l.isLockTaken()) {
         return;
     }
 
@@ -73,7 +73,7 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
                 break;
             }
 
-            // torrent removed
+                // torrent removed
             case lt::torrent_removed_alert::alert_type:
             {
                 auto removed_alert = lt::alert_cast<lt::torrent_removed_alert>(alert);
@@ -85,7 +85,7 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
                 break;
             }
 
-            // performance warning
+                // performance warning
             case lt::performance_alert::alert_type:
             {
                 auto perf_alert = lt::alert_cast<lt::performance_alert>(alert);
@@ -98,7 +98,7 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
                 break;
             }
 
-            // peer connected
+                // peer connected
             case lt::peer_connect_alert::alert_type:
             {
                 auto peer_alert = lt::alert_cast<lt::peer_connect_alert>(alert);
@@ -111,7 +111,7 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
                 break;
             }
 
-            // peer disconnected
+                // peer disconnected
             case lt::peer_disconnected_alert::alert_type:
             {
                 auto peer_alert = lt::alert_cast<lt::peer_disconnected_alert>(alert);
@@ -122,7 +122,7 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
                 break;
             }
 
-            // peer banned
+                // peer banned
             case lt::peer_ban_alert::alert_type:
             {
                 auto peer_alert = lt::alert_cast<lt::peer_ban_alert>(alert);
@@ -133,7 +133,7 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
                 break;
             }
 
-            // peer snubbed
+                // peer snubbed
             case lt::peer_snubbed_alert::alert_type:
             {
                 auto peer_alert = lt::alert_cast<lt::peer_snubbed_alert>(alert);
@@ -144,7 +144,7 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
                 break;
             }
 
-            // peer unsnubbed
+                // peer unsnubbed
             case lt::peer_unsnubbed_alert::alert_type:
             {
                 auto peer_alert = lt::alert_cast<lt::peer_unsnubbed_alert>(alert);
@@ -155,7 +155,7 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
                 break;
             }
 
-            // peer errored
+                // peer errored
             case lt::peer_error_alert::alert_type:
             {
                 auto peer_alert = lt::alert_cast<lt::peer_error_alert>(alert);
@@ -187,7 +187,4 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
     if (!events.empty()) {
         goto handle_events;
     }
-
-    mutex.unlock();
 }
-

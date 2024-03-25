@@ -72,9 +72,11 @@ void destroy_session(lt::session* session) {
 }
 
 void set_event_callback(lt::session* session, cs_alert_callback callback, bool include_unmapped_events) {
-    session->set_alert_notify([session, callback, include_unmapped_events] () -> void {
-        on_events_available(session, callback, include_unmapped_events);
-    });
+    auto session_callback = [session, callback, include_unmapped_events] () -> void {
+        std::thread(on_events_available, session, callback, include_unmapped_events).detach();
+    };
+
+    session->set_alert_notify(session_callback);
 }
 
 void clear_event_callback(lt::session* session) {

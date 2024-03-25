@@ -27,7 +27,8 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   set(CMAKE_INSTALL_RPATH "$ORIGIN")
 endif()
 
-add_library(csdl SHARED native/src/library.cpp native/src/events.cpp)
+add_library(csdl SHARED native/src/library.cpp native/src/events.cpp
+        native/include/locks.hpp)
 generate_export_header(csdl EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/include/lib_export.h)
 
 # version.rc file for windows
