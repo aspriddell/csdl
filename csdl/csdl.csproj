@@ -14,7 +14,7 @@
         <Authors>Albie Spriddell</Authors>
         <Description>A .NET wrapper for libtorrent.</Description>
 
-        <PackageIcon>icon.jpg</PackageIcon>
+        <PackageIcon>icon.png</PackageIcon>
         <PackageTags>libtorrent, torrent, csdl</PackageTags>
         <PackageReadmeFile>docs/readme.md</PackageReadmeFile>
         <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
