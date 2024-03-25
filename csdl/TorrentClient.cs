@@ -6,7 +6,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using csdl.Alerts;
 using csdl.Enums;
 using csdl.Native;
@@ -264,6 +263,7 @@ public class TorrentClient : IDisposable
             return;
         }
 
-        Task.Run(() => AlertRaised?.Invoke(this, forwardAlert));
+        // the native library always invokes this from another thread
+        AlertRaised?.Invoke(this, forwardAlert);
     }
 }
