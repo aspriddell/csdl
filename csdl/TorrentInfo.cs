@@ -71,6 +71,34 @@ public class TorrentInfo
     }
 
     /// <summary>
+    /// Creates a new instance of <see cref="TorrentInfo"/> using the contents of a .torrent file from memory.
+    /// </summary>
+    /// <param name="memoryPtr">The pointer to the first byte of the file in memory</param>
+    /// <param name="length">The size of the file</param>
+    /// <exception cref="InvalidOperationException"></exception>
+    public TorrentInfo(IntPtr memoryPtr, int length)
+    {
+        InfoHandle = NativeMethods.CreateTorrentFromBytes(memoryPtr, length);
+
+        if (InfoHandle <= IntPtr.Zero)
+        {
+            throw new InvalidOperationException("Failed to create torrent from bytes provided.");
+        }
+    }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="TorrentInfo"/> using the contents of a .torrent file from memory.
+    /// </summary>
+    /// <param name="memoryPtr">The pointer to the first byte of the file in memory</param>
+    /// <param name="length">The size of the file</param>
+    /// <exception cref="InvalidOperationException"></exception>
+    [CLSCompliant(false)]
+    public unsafe TorrentInfo(void* memoryPtr, int length)
+        : this(new IntPtr(memoryPtr), length)
+    {
+    }
+
+    /// <summary>
     /// Gets metadata related to the torrent file.
     /// </summary>
     public TorrentMetadata Metadata => _metadata ??= GetInfo();

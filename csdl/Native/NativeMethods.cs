@@ -63,6 +63,15 @@ internal static partial class NativeMethods
     public static partial IntPtr CreateTorrentFromBytes(byte[] content, long length);
 
     /// <summary>
+    /// Create a torrent file from a byte array
+    /// </summary>
+    /// <param name="content">A byte pointer that locates the first byte of the torrent file</param>
+    /// <param name="length">The size of the region</param>
+    /// <returns>A handle to the torrent or <see cref="IntPtr.Zero"/> if there an error occurred</returns>
+    [LibraryImport(LibraryName, EntryPoint = "create_torrent_bytes")]
+    public static partial IntPtr CreateTorrentFromBytes(IntPtr content, long length);
+
+    /// <summary>
     /// Releases the unmanaged resources associated with a torrent.
     /// </summary>
     /// <param name="torrentHandle">
