@@ -28,7 +28,7 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif()
 
 add_library(csdl SHARED native/src/library.cpp native/src/events.cpp
-        native/include/locks.h)
+        native/include/locks.hpp)
 generate_export_header(csdl EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/include/lib_export.h)
 
 # version.rc file for windows

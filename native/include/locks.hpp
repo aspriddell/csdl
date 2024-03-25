@@ -2,8 +2,8 @@
 // Created by Albie Spriddell on 25/03/2024.
 //
 
-#ifndef CS_NATIVE_LOCKS_H
-#define CS_NATIVE_LOCKS_H
+#ifndef CS_NATIVE_LOCKS_HPP
+#define CS_NATIVE_LOCKS_HPP
 
 #include <mutex>
 
@@ -29,4 +29,4 @@ public:
     }
 };
 
-#endif //CS_NATIVE_LOCKS_H
+#endif //CS_NATIVE_LOCKS_HPP

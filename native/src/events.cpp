@@ -4,7 +4,7 @@
 //
 
 #include "events.h"
-#include "locks.h"
+#include "locks.hpp"
 
 #include <ctime>
 #include <libtorrent/session.hpp>
