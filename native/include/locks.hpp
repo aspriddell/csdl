@@ -14,7 +14,7 @@ private:
     bool lock_taken;
 
 public:
-    lock(std::mutex &m) : m_(m) {
+    explicit lock(std::mutex &m) : m_(m) {
         lock_taken = m.try_lock();
     }
 
