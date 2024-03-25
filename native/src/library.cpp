@@ -39,9 +39,6 @@ lt::session* create_session(session_config* config) {
     if (config->all_events) {
         auto mask = lt::alert_category::all;
         pack.set_int(lt::settings_pack::alert_mask, mask);
-    } else {
-        auto mask = lt::alert::peer_notification | lt::alert::performance_warning | lt::alert::status_notification | lt::alert::error_notification;
-        pack.set_int(lt::settings_pack::alert_mask, mask);
     }
 
     pack.set_bool(lt::settings_pack::anonymous_mode, config->private_mode);
