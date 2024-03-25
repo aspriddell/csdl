@@ -1,3 +1,6 @@
+// csdl - a cross-platform libtorrent wrapper for .NET
+// Licensed under Apache-2.0 - see the license file for more information
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -27,9 +30,9 @@ public record TorrentMetadata(string Name, string Creator, string Comment, int T
 public class TorrentInfo
 {
     internal readonly IntPtr InfoHandle;
+    private IReadOnlyCollection<TorrentFileInfo> _files;
 
     private TorrentMetadata _metadata;
-    private IReadOnlyCollection<TorrentFileInfo> _files;
 
     /// <summary>
     /// Creates a new instance of <see cref="TorrentInfo"/> using the contents of a .torrent file from disk.
@@ -67,13 +70,6 @@ public class TorrentInfo
         }
     }
 
-    // as TorrentInfo is shared a lot, we're not providing a dispose method
-    // and instead letting the garbage collector handle it
-    ~TorrentInfo()
-    {
-        NativeMethods.FreeTorrent(InfoHandle);
-    }
-
     /// <summary>
     /// Gets metadata related to the torrent file.
     /// </summary>
@@ -83,6 +79,13 @@ public class TorrentInfo
     /// Gets a list of files contained within the torrent.
     /// </summary>
     public IReadOnlyCollection<TorrentFileInfo> Files => _files ??= GetFiles();
+
+    // as TorrentInfo is shared a lot, we're not providing a dispose method
+    // and instead letting the garbage collector handle it
+    ~TorrentInfo()
+    {
+        NativeMethods.FreeTorrent(InfoHandle);
+    }
 
     private TorrentMetadata GetInfo()
     {

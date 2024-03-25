@@ -1,3 +1,6 @@
+// csdl - a cross-platform libtorrent wrapper for .NET
+// Licensed under Apache-2.0 - see the license file for more information
+
 using System;
 using System.IO;
 using System.Linq;
@@ -12,30 +15,37 @@ namespace csdl.Tests;
 [TestSubject(typeof(TorrentClient))]
 public class TorrentClientTests : IDisposable
 {
-    private readonly string _tempSavePath;
-    private readonly ITestOutputHelper _output;
     private readonly TorrentClient _client = new(new TorrentClientConfig
     {
         ForceEncryption = true,
         BlockSeeding = true
     });
-    
+
+    private readonly ITestOutputHelper _output;
+    private readonly string _tempSavePath;
+
     public TorrentClientTests(ITestOutputHelper output)
     {
         _output = output;
         _tempSavePath = Path.Combine(Path.GetTempPath(), "csdl-test");
-        
+
         Directory.CreateDirectory(_tempSavePath);
     }
-    
+
+    public void Dispose()
+    {
+        _client?.Dispose();
+        Directory.Delete(_tempSavePath, true);
+    }
+
     [Fact]
     public async Task TestTorrentDownloading()
     {
         var torrentInfo = new TorrentInfo(Path.GetFullPath(Path.Combine("files", "big-buck-bunny.torrent")));
         var torrentManager = _client.AttachTorrent(torrentInfo, _tempSavePath);
-        
+
         var tcs = new TaskCompletionSource();
-        
+
         // only download the non-video files (< 10mb)
         foreach (var file in torrentManager.Files.Where(x => x.Info.FileSize > 1e+7))
         {
@@ -74,11 +84,5 @@ public class TorrentClientTests : IDisposable
         }
 
         _output.WriteLine($"Progress: {status.State} {status.Progress * 100:F2}% ({status.SeedCount:N0} seeds)");
-    }
-
-    public void Dispose()
-    {
-        _client?.Dispose();
-        Directory.Delete(_tempSavePath, true);
     }
 }

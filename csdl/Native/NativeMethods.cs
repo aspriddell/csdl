@@ -1,3 +1,6 @@
+// csdl - a cross-platform libtorrent wrapper for .NET
+// Licensed under Apache-2.0 - see the license file for more information
+
 using System;
 using System.Runtime.InteropServices;
 using csdl.Enums;
@@ -6,10 +9,10 @@ namespace csdl.Native;
 
 internal static partial class NativeMethods
 {
-    private const string LibraryName = "csdl";
-
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void SessionEventCallback(IntPtr alertPtr);
+
+    private const string LibraryName = "csdl";
 
     /// <summary>
     /// Creates a session with the given configuration.

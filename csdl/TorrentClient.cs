@@ -1,3 +1,6 @@
+// csdl - a cross-platform libtorrent wrapper for .NET
+// Licensed under Apache-2.0 - see the license file for more information
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,14 +18,14 @@ namespace csdl;
 /// </summary>
 public class TorrentClient : IDisposable
 {
-    private readonly IntPtr _handle;
     private readonly ConcurrentDictionary<string, TorrentManager> _attachedManagers = new(StringComparer.OrdinalIgnoreCase);
-
-    private bool _disposed;
-    private bool _includeUnmappedEvents;
 
     // need to keep a reference to the delegate to prevent GC invalidating it
     private readonly NativeMethods.SessionEventCallback _eventCallback;
+    private readonly IntPtr _handle;
+
+    private bool _disposed;
+    private bool _includeUnmappedEvents;
 
     public TorrentClient()
         : this(new TorrentClientConfig())
@@ -50,17 +53,6 @@ public class TorrentClient : IDisposable
         _eventCallback = ProxyRaisedEvent;
         NativeMethods.SetEventCallback(_handle, _eventCallback, true);
     }
-
-    ~TorrentClient()
-    {
-        Dispose();
-    }
-
-    /// <summary>
-    /// Event invoked when a session alert is raised.
-    /// The underlying event collection system is unmanaged, and is started/shutdown on the first/last subscription to this event.
-    /// </summary>
-    public event EventHandler<SessionAlert> AlertRaised;
 
     /// <summary>
     /// Gets the active torrents currently attached to the session.
@@ -95,6 +87,44 @@ public class TorrentClient : IDisposable
     /// If a torrent is attached with a relative save path and this property is set, the save path will be combined with this property.
     /// </summary>
     public string DefaultDownloadPath { get; set; } = Path.Combine(Environment.CurrentDirectory, "downloads");
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        foreach (var session in ActiveTorrents)
+        {
+            try
+            {
+                DetachTorrent(session);
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        _disposed = true;
+
+        NativeMethods.ClearEventCallback(_handle);
+        NativeMethods.FreeSession(_handle);
+
+        GC.SuppressFinalize(this);
+    }
+
+    ~TorrentClient()
+    {
+        Dispose();
+    }
+
+    /// <summary>
+    /// Event invoked when a session alert is raised.
+    /// The underlying event collection system is unmanaged, and is started/shutdown on the first/last subscription to this event.
+    /// </summary>
+    public event EventHandler<SessionAlert> AlertRaised;
 
     /// <summary>
     /// Attaches a torrent to the session, allowing it to be downloaded/uploaded.
@@ -235,32 +265,5 @@ public class TorrentClient : IDisposable
         }
 
         Task.Run(() => AlertRaised?.Invoke(this, forwardAlert));
-    }
-
-    public void Dispose()
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        foreach (var session in ActiveTorrents)
-        {
-            try
-            {
-                DetachTorrent(session);
-            }
-            catch
-            {
-                // ignore
-            }
-        }
-
-        _disposed = true;
-
-        NativeMethods.ClearEventCallback(_handle);
-        NativeMethods.FreeSession(_handle);
-
-        GC.SuppressFinalize(this);
     }
 }

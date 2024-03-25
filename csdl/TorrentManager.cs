@@ -1,3 +1,6 @@
+// csdl - a cross-platform libtorrent wrapper for .NET
+// Licensed under Apache-2.0 - see the license file for more information
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +11,11 @@ namespace csdl;
 
 public class TorrentManager
 {
+    private readonly string _savePath;
     internal readonly IntPtr TorrentSessionHandle;
 
-    private readonly string _savePath;
-    private IReadOnlyCollection<TorrentManagerFile> _files;
-
     private bool _detached;
+    private IReadOnlyCollection<TorrentManagerFile> _files;
 
     internal TorrentManager(IntPtr torrentSessionHandle, string savePath, TorrentInfo info)
     {
@@ -74,8 +76,8 @@ public class TorrentManager
 
     public class TorrentManagerFile
     {
-        private readonly IntPtr _torrentSessionHandle;
         private readonly string _savePath;
+        private readonly IntPtr _torrentSessionHandle;
 
         internal TorrentManagerFile(IntPtr torrentSessionHandle, string savePath, TorrentFileInfo info)
         {
