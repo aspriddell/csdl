@@ -31,6 +31,10 @@ jobs:
         fail-fast: false
         matrix:
           include:
+            - { targetname: android, buildos: ubuntu-20.04, arch: x86, triplet: release-android-x86 }
+            - { targetname: android, buildos: ubuntu-20.04, arch: x86_64, triplet: release-android-x86_64 }
+            - { targetname: android, buildos: ubuntu-20.04, arch: arm, triplet: release-android-arm }
+            - { targetname: android, buildos: ubuntu-20.04, arch: arm64, triplet: release-android-arm64 }
             - { targetname: osx, buildos: macos-latest, arch: x64, triplet: release-osx-x64 }
             - { targetname: osx, buildos: macos-latest, arch: arm64, triplet: release-osx-arm64 }
             - { targetname: linux, buildos: ubuntu-20.04, arch: x64, triplet: release-linux-x64 }
@@ -51,6 +55,13 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y binutils-aarch64-linux-gnu g++-aarch64-linux-gnu gcc-aarch64-linux-gnu
 
+        - name: Install Additional Packages (Android)
+          if: matrix.targetname == 'android'
+          run: |
+            wget -nv -O android-ndk.zip https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
+            unzip -qq android-ndk.zip
+            mv android-ndk-r25c android-ndk
+
         - name: Setup VCPKG
           uses: lukka/run-vcpkg@v11
 
@@ -59,6 +70,13 @@ jobs:
           run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
             CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/native/build/linux-${{ matrix.arch }}.cmake
+
+        - name: Setup CMake (Android)
+          if: matrix.targetname == 'android'
+          run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+          env:
+            CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/native/build/android-${{ matrix.arch }}.cmake            
+            ANDROID_NDK_HOME: ${{ github.workspace }}/android-ndk
 
         - name: Setup CMake (Windows)
           if: matrix.targetname == 'windows'
@@ -85,6 +103,12 @@ jobs:
             cp ${{ env.BUILD_DIR }}/libcsdl.so ${{ env.ARCHIVE_DIR }}
             cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.so ${{ env.ARCHIVE_DIR }}/libtorrent-rasterbar.so.2.0
 
+        - name: Prepare Files (Android)
+          if: matrix.targetname == 'android'
+          run: |
+            ${{ github.workspace }}/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip --strip-unneeded -x ${{ env.BUILD_DIR }}/libcsdl.so
+            cp ${{ env.BUILD_DIR }}/libcsdl.so ${{ env.ARCHIVE_DIR }}
+        
         - name: Prepare Files (macOS)
           if: matrix.targetname == 'osx'
           run: |
@@ -138,6 +162,26 @@ jobs:
         with:
           name: linux-arm64
           path: native/nuget/runtimes/linux-arm64/native
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-x86
+          path: native/nuget/runtimes/android-x86/native
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-x86_64
+          path: native/nuget/runtimes/android-x86_64/native
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-arm
+          path: native/nuget/runtimes/android-arm/native
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-arm64
+          path: native/nuget/runtimes/android-arm64/native
 
       - name: Build Package
         run: dotnet pack -c Release -p:Version=${{ github.event.inputs.version }} -o ./packages native/nuget
