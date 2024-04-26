@@ -57,10 +57,13 @@ jobs:
 
         - name: Install Additional Packages (Android)
           if: matrix.targetname == 'android'
-          run: |
-            wget -nv -O android-ndk.zip https://dl.google.com/android/repository/android-ndk-r25c-linux.zip
-            unzip -qq android-ndk.zip
-            mv android-ndk-r25c android-ndk
+          uses: nttld/setup-ndk@v1
+          id: setup-ndk
+          with:
+            ndk-version: r26d
+            add-to-path: false
+          env:
+            ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
         - name: Setup VCPKG
           uses: lukka/run-vcpkg@v11
@@ -76,7 +79,7 @@ jobs:
           run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
             CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/native/build/android-${{ matrix.arch }}.cmake            
-            ANDROID_NDK_HOME: ${{ github.workspace }}/android-ndk
+            ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
         - name: Setup CMake (Windows)
           if: matrix.targetname == 'windows'
@@ -106,7 +109,7 @@ jobs:
         - name: Prepare Files (Android)
           if: matrix.targetname == 'android'
           run: |
-            ${{ github.workspace }}/android-ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip --strip-unneeded -x ${{ env.BUILD_DIR }}/libcsdl.so
+            ${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip --strip-unneeded -x ${{ env.BUILD_DIR }}/libcsdl.so
             cp ${{ env.BUILD_DIR }}/libcsdl.so ${{ env.ARCHIVE_DIR }}
         
         - name: Prepare Files (macOS)
