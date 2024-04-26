@@ -166,6 +166,25 @@ jobs:
           name: linux-arm64
           path: native/nuget/runtimes/linux-arm64/native
 
+      - name: Build Package
+        run: dotnet pack -c Release -p:Version=${{ github.event.inputs.version }} -o ./packages native/nuget
+
+      - name: Publish Package (NuGet)
+        if: github.event.inputs.nuget == 'true'
+        run: dotnet nuget push -s https://api.nuget.org/v3/index.json --skip-duplicate -k ${{ secrets.NUGET_KEY }} ./packages/*.nupkg
+
+      - name: Publish Package (GitHub)
+        if: github.event.inputs.nuget != 'true'
+        run: dotnet nuget push -s https://nuget.pkg.github.com/aspriddell/index.json --skip-duplicate -k ${{ github.token }} ./packages/*.nupkg
+        
+  package-android:
+    name: Build Package Android
+    runs-on: ubuntu-latest
+
+    needs: [build-platforms]
+
+    steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           name: android-x86
@@ -174,7 +193,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: android-x86_64
-          path: native/nuget/runtimes/android-x86_64/native
+          path: native/nuget/runtimes/android-x64/native
 
       - uses: actions/download-artifact@v4
         with:
@@ -187,7 +206,7 @@ jobs:
           path: native/nuget/runtimes/android-arm64/native
 
       - name: Build Package
-        run: dotnet pack -c Release -p:Version=${{ github.event.inputs.version }} -o ./packages native/nuget
+        run: dotnet pack -c Release -p:Version=${{ github.event.inputs.version }} -o ./packages -p:PackageId=csdl.Native.Android native/nuget
 
       - name: Publish Package (NuGet)
         if: github.event.inputs.nuget == 'true'
