@@ -152,4 +152,4 @@ jobs:
 
       - name: Publish Package (GitHub)
         if: github.event.inputs.nuget != 'true'
-        run: dotnet nuget push -s https://nuget.pkg.github.com/aspriddell/index.json --skip-duplicate -k ${{ github.token }} ./packages/*.nupkg
+        run: dotnet nuget push -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --skip-duplicate -k ${{ github.token }} ./packages/*.nupkg
