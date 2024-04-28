@@ -45,11 +45,15 @@ jobs:
             submodules: 'recursive'
             fetch-depth: 0
 
-        - name: Install Additional Packages (Ubuntu)
+        - name: Prepare Environment (Ubuntu arm64)
           if: matrix.buildos == 'ubuntu-20.04' && matrix.arch == 'arm64'
           run: |
             sudo apt-get update
             sudo apt-get install -y binutils-aarch64-linux-gnu g++-aarch64-linux-gnu gcc-aarch64-linux-gnu
+
+        - name: Prepare Environment (macOS)
+          if: matrix.buildos == 'macos-latest'
+          run: brew install ninja
 
         - name: Setup VCPKG
           uses: lukka/run-vcpkg@v11
@@ -148,4 +152,4 @@ jobs:
 
       - name: Publish Package (GitHub)
         if: github.event.inputs.nuget != 'true'
-        run: dotnet nuget push -s https://nuget.pkg.github.com/aspriddell/index.json --skip-duplicate -k ${{ github.token }} ./packages/*.nupkg
+        run: dotnet nuget push -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --skip-duplicate -k ${{ github.token }} ./packages/*.nupkg
