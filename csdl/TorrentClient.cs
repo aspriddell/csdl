@@ -50,7 +50,7 @@ public class TorrentClient : IDisposable
 
         if (_handle <= IntPtr.Zero)
         {
-            throw new InvalidOperationException("Failed to create session.");
+            throw new InvalidOperationException($"Failed to create session ({_handle}.");
         }
 
         _eventCallback = ProxyRaisedEvent;
@@ -180,17 +180,14 @@ public class TorrentClient : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        if (!_attachedManagers.TryRemove(manager.Info.Metadata.InfoHash, out _))
+        // the manager is fully removed via the alert callback (fires once the torrent is fully removed)
+        if (!_attachedManagers.ContainsKey(manager.Info.Metadata.InfoHash))
         {
-            throw new InvalidOperationException(
-                "Unable to detach torrent from session. Ensure the torrent is attached to this session.");
+            throw new InvalidOperationException("Unable to detach torrent from session. Ensure the torrent is attached to this session.");
         }
 
         manager.Stop();
         NativeMethods.DetachTorrent(_handle, manager.TorrentSessionHandle);
-
-        // mark as disposed/detached to stop usage of any remaining references to the manager
-        manager.MarkAsDetached();
     }
 
     /// <summary>
