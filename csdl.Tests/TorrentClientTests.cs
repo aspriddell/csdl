@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using csdl.Alerts;
 using csdl.Enums;
 using JetBrains.Annotations;
 using Xunit.Abstractions;
@@ -39,7 +40,7 @@ public class TorrentClientTests : IDisposable
     }
 
     [Fact]
-    public async Task TestTorrentDownloading()
+    public async Task TestTorrentDownload()
     {
         var torrentInfo = new TorrentInfo(Path.GetFullPath(Path.Combine("files", "big-buck-bunny.torrent")));
         var torrentManager = _client.AttachTorrent(torrentInfo, _tempSavePath);
@@ -59,18 +60,20 @@ public class TorrentClientTests : IDisposable
             {
                 await tcs.Task.WaitAsync(TimeSpan.FromMinutes(2));
             }
+
+            // check all files have been downloaded and are the correct size
+            foreach (var file in torrentManager.Files.Where(x => x.Priority != FileDownloadPriority.DoNotDownload))
+            {
+                Assert.True(File.Exists(file.Path));
+                Assert.Equal(file.Info.FileSize, new FileInfo(file.Path).Length);
+            }
         }
         finally
         {
-            torrentManager.Stop();
+            await PerformCleanup(torrentManager);
         }
 
-        // check all files have been downloaded and are the correct size
-        foreach (var file in torrentManager.Files.Where(x => x.Priority != FileDownloadPriority.DoNotDownload))
-        {
-            Assert.True(File.Exists(file.Path));
-            Assert.Equal(file.Info.FileSize, new FileInfo(file.Path).Length);
-        }
+        Assert.True(!_client.ActiveTorrents.Contains(torrentManager));
     }
 
     private void CheckProgress(object state)
@@ -84,5 +87,52 @@ public class TorrentClientTests : IDisposable
         }
 
         _output.WriteLine($"Progress: {status.State} {status.Progress * 100:F2}% ({status.SeedCount:N0} seeds)");
+    }
+
+    private async Task PerformCleanup(TorrentManager manager)
+    {
+        var cleanupTask = new TaskCompletionSource();
+
+        _client.AlertRaised += CheckAlert;
+
+        try
+        {
+            _client.DetachTorrent(manager);
+            await cleanupTask.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        }
+        catch
+        {
+            // log warning but don't fail
+            _output.WriteLine("Failed to cleanup torrent manager in time. The event may not have been raised.");
+        }
+        finally
+        {
+            _client.AlertRaised -= CheckAlert;
+        }
+
+        return;
+
+        void CheckAlert(object sender, SessionAlert alert)
+        {
+            if (alert is not TorrentRemovedAlert removedAlert || !ReferenceEquals(removedAlert.Subject, manager))
+            {
+                return;
+            }
+
+            foreach (var file in manager.Files)
+            {
+                try
+                {
+                    File.Delete(file.Path);
+                }
+                catch (Exception ex)
+                {
+                    // log the error but don't fail
+                    _output.WriteLine($"Failed to delete file {file.Path}. Error: {ex.Message}");
+                }
+            }
+
+            cleanupTask.TrySetResult();
+        }
     }
 }
