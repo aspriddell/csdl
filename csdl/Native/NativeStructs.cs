@@ -20,10 +20,12 @@ internal static class NativeStructs
         [MarshalAs(UnmanagedType.LPStr)]
         public string fingerprint;
 
-        public bool all_events;
         public bool private_mode;
         public bool block_seeding;
         public bool force_encryption;
+
+        public bool set_alert_flags;
+        public uint alert_flags;
 
         public int max_connections;
     }

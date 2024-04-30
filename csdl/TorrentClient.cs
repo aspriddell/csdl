@@ -17,6 +17,8 @@ namespace csdl;
 /// </summary>
 public class TorrentClient : IDisposable
 {
+    private const AlertCategories RequiredCategories = AlertCategories.Status | AlertCategories.Error;
+
     private readonly ConcurrentDictionary<string, TorrentManager> _attachedManagers = new(StringComparer.OrdinalIgnoreCase);
 
     // need to keep a reference to the delegate to prevent GC invalidating it
@@ -40,8 +42,10 @@ public class TorrentClient : IDisposable
             private_mode = config.PrivateMode,
             block_seeding = config.BlockSeeding,
             max_connections = config.MaxConnections,
-            all_events = config.IncludeAllAlertEvents,
-            force_encryption = config.ForceEncryption
+            force_encryption = config.ForceEncryption,
+
+            set_alert_flags = true,
+            alert_flags = (uint)(config.AlertCategories | RequiredCategories)
         });
 
         if (_handle <= IntPtr.Zero)
