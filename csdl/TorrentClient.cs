@@ -45,7 +45,7 @@ public class TorrentClient : IDisposable
             force_encryption = config.ForceEncryption,
 
             set_alert_flags = true,
-            alert_flags = (uint)(config.AlertCategories | RequiredCategories)
+            alert_flags = (int)(config.AlertCategories | RequiredCategories)
         });
 
         if (_handle <= IntPtr.Zero)
