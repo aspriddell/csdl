@@ -17,7 +17,7 @@ namespace csdl;
 /// </summary>
 public class TorrentClient : IDisposable
 {
-    private const AlertCategories RequiredCategories = AlertCategories.Status | AlertCategories.Error;
+    private const AlertCategories RequiredCategories = AlertCategories.Status;
 
     private readonly ConcurrentDictionary<string, TorrentManager> _attachedManagers = new(StringComparer.OrdinalIgnoreCase);
 
