@@ -37,8 +37,7 @@ lt::session* create_session(session_config* config) {
 
     // events
     if (config->set_alert_flags) {
-        auto mask = static_cast<lt::alert_category_t>(config->alert_flags);
-        pack.set_int(lt::settings_pack::alert_mask, mask);
+        pack.set_int(lt::settings_pack::alert_mask, config->alert_flags);
     }
 
     pack.set_bool(lt::settings_pack::anonymous_mode, config->private_mode);
