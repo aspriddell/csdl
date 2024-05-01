@@ -22,7 +22,7 @@ typedef struct cs_session_config {
     bool encrypted_peers_only;
 
     bool set_alert_flags;
-    uint32_t alert_flags;
+    int32_t alert_flags;
 
     int32_t max_connections;
 } session_config;
