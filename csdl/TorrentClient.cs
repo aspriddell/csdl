@@ -159,7 +159,7 @@ public class TorrentClient : IDisposable
             Directory.CreateDirectory(savePath);
         }
 
-        var handle = NativeMethods.AttachTorrent(_handle, torrent.InfoHandle, savePath);
+        var handle = NativeMethods.AttachTorrent(_handle, torrent.InfoHandle, Path.GetFullPath(savePath));
 
         if (handle <= IntPtr.Zero)
         {
