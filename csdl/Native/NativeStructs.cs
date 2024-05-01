@@ -11,7 +11,7 @@ internal static class NativeStructs
     /// <summary>
     /// Holds configuration information relating to a session.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public struct SessionConfig
     {
         [MarshalAs(UnmanagedType.LPStr)]
@@ -20,20 +20,26 @@ internal static class NativeStructs
         [MarshalAs(UnmanagedType.LPStr)]
         public string fingerprint;
 
+        [MarshalAs(UnmanagedType.I1)]
         public bool private_mode;
+
+        [MarshalAs(UnmanagedType.I1)]
         public bool block_seeding;
+
+        [MarshalAs(UnmanagedType.I1)]
         public bool force_encryption;
 
+        [MarshalAs(UnmanagedType.I1)]
         public bool set_alert_flags;
-        public uint alert_flags;
 
+        public int alert_flags;
         public int max_connections;
     }
 
     /// <summary>
     /// Represents a file contained within a torrent.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public readonly struct TorrentFile
     {
         public readonly int index;
@@ -49,14 +55,17 @@ internal static class NativeStructs
         [MarshalAs(UnmanagedType.LPUTF8Str)]
         public readonly string file_path;
 
+        [MarshalAs(UnmanagedType.I1)]
         public readonly bool file_path_is_absolute;
+
+        [MarshalAs(UnmanagedType.I1)]
         public readonly bool pad_file;
     }
 
     /// <summary>
     /// Represents a list of files contained within a torrent.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public readonly struct TorrentFileList
     {
         public readonly int length;
@@ -66,7 +75,7 @@ internal static class NativeStructs
     /// <summary>
     /// Represents a single file contained within a torrent.
     /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public readonly struct TorrentMetadata
     {
         [MarshalAs(UnmanagedType.LPUTF8Str)]

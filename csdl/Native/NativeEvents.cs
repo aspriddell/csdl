@@ -9,7 +9,7 @@ namespace csdl.Native;
 
 internal static class NativeEvents
 {
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public struct AlertBase
     {
         [MarshalAs(UnmanagedType.I4)]
@@ -22,7 +22,7 @@ internal static class NativeEvents
         public string message;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public struct TorrentStatusAlert
     {
         [MarshalAs(UnmanagedType.Struct)]
@@ -35,7 +35,7 @@ internal static class NativeEvents
         public byte[] info_hash;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public struct TorrentRemovedAlert
     {
         [MarshalAs(UnmanagedType.Struct)]
@@ -45,7 +45,7 @@ internal static class NativeEvents
         public byte[] info_hash;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public struct PerformanceWarningAlert
     {
         [MarshalAs(UnmanagedType.Struct)]
@@ -54,7 +54,7 @@ internal static class NativeEvents
         public PerformanceWarningType warning_code;
     }
 
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
     public struct PeerAlert
     {
         [MarshalAs(UnmanagedType.Struct)]
