@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="csdl.Native" Version="1.0.2"/>
+      <PackageReference Include="csdl.Native" Version="1.1.5" />
     </ItemGroup>
 
 </Project>
