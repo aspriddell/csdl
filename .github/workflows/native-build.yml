@@ -61,8 +61,6 @@ jobs:
           with:
             ndk-version: r26d
             add-to-path: false
-          env:
-            ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
         - name: Prepare Environment (macOS)
           if: matrix.buildos == 'macos-latest'
