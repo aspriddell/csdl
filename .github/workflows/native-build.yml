@@ -188,14 +188,14 @@ jobs:
       - name: Install Android workload
         run: sudo dotnet workload install android
 
-      - name: Install Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Install JDK
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'microsoft'
+
+      - name: Install Android SDK
+        uses: android-actions/setup-android@v3
       
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
