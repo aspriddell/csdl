@@ -101,4 +101,4 @@ void PerformDownload(TorrentClient client, TorrentInfo info, string savePath = n
 ### Supported Systems
 The native libraries, `csdl.Native`, are currently built for Windows, macOS and Linux for both x64 and arm64 architectures.
 
-Android support is also provided by an optional package, [csdl.Native.android](https://nuget.org/packages/csdl.Native.android), for `x86_64`, `armeabi-v7a` and `arm64-v8a` ABIs. Install this packe alongside `csdl` and it should "just work".
+Android support is also provided by an optional package, [csdl.Native.android](https://nuget.org/packages/csdl.Native.android) which can be installed alongside `csdl` to extend platform compatibility to Android 5.0+ devices with `x86_64`, `armeabi-v7a` and `arm64-v8a` ABIs.
