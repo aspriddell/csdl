@@ -186,6 +186,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install android workload
+        run: sudo dotnet workload install android
+      
       - uses: actions/download-artifact@v4
         with:
           name: android-x86_64
