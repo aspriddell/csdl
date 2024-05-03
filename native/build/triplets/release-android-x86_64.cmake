@@ -1,0 +1,5 @@
+set(VCPKG_TARGET_ARCHITECTURE x64)
+set(VCPKG_CMAKE_CONFIGURE_OPTIONS -DANDROID_ABI=x86_64)
+set(VCPKG_MAKE_BUILD_TRIPLET "--host=x86_64-linux-android")
+
+include("${CMAKE_CURRENT_LIST_DIR}/triplet-common-android.cmake")

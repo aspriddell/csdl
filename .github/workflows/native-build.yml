@@ -37,6 +37,9 @@ jobs:
             - { targetname: linux, buildos: ubuntu-20.04, arch: arm64, triplet: release-linux-arm64 }
             - { targetname: windows, buildos: windows-latest, arch: x64, triplet: x64-windows-release }
             - { targetname: windows, buildos: windows-latest,  arch: arm64, triplet: release-windows-arm64 }
+            - { targetname: android, buildos: ubuntu-20.04, arch: arm, triplet: release-android-arm }
+            - { targetname: android, buildos: ubuntu-20.04, arch: arm64, triplet: release-android-arm64 }
+            - { targetname: android, buildos: ubuntu-20.04, arch: x86_64, triplet: release-android-x86_64 }
 
       steps:
         - name: Checkout
@@ -45,11 +48,19 @@ jobs:
             submodules: 'recursive'
             fetch-depth: 0
 
-        - name: Prepare Environment (Ubuntu arm64)
+        - name: Prepare Environment (Ubuntu/arm64)
           if: matrix.buildos == 'ubuntu-20.04' && matrix.arch == 'arm64'
           run: |
             sudo apt-get update
             sudo apt-get install -y binutils-aarch64-linux-gnu g++-aarch64-linux-gnu gcc-aarch64-linux-gnu
+
+        - name: Prepare Environment (Android)
+          if: matrix.targetname == 'android'
+          uses: nttld/setup-ndk@v1
+          id: setup-ndk
+          with:
+            ndk-version: r26d
+            add-to-path: false
 
         - name: Prepare Environment (macOS)
           if: matrix.buildos == 'macos-latest'
@@ -63,6 +74,13 @@ jobs:
           run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
             CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/native/build/linux-${{ matrix.arch }}.cmake
+
+        - name: Setup CMake (Android)
+          if: matrix.targetname == 'android'
+          run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+          env:
+            CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/native/build/android-${{ matrix.arch }}.cmake            
+            ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
 
         - name: Setup CMake (Windows)
           if: matrix.targetname == 'windows'
@@ -89,6 +107,12 @@ jobs:
             cp ${{ env.BUILD_DIR }}/libcsdl.so ${{ env.ARCHIVE_DIR }}
             cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.so ${{ env.ARCHIVE_DIR }}/libtorrent-rasterbar.so.2.0
 
+        - name: Prepare Files (Android)
+          if: matrix.targetname == 'android'
+          run: |
+            ${{ steps.setup-ndk.outputs.ndk-path }}/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip --strip-unneeded -x ${{ env.BUILD_DIR }}/libcsdl.so
+            cp ${{ env.BUILD_DIR }}/libcsdl.so ${{ env.ARCHIVE_DIR }}
+        
         - name: Prepare Files (macOS)
           if: matrix.targetname == 'osx'
           run: |
@@ -145,6 +169,40 @@ jobs:
 
       - name: Build Package
         run: dotnet pack -c Release -p:Version=${{ github.event.inputs.version }} -o ./packages native/nuget
+
+      - name: Publish Package (NuGet)
+        if: github.event.inputs.nuget == 'true'
+        run: dotnet nuget push -s https://api.nuget.org/v3/index.json --skip-duplicate -k ${{ secrets.NUGET_KEY }} ./packages/*.nupkg
+
+      - name: Publish Package (GitHub)
+        if: github.event.inputs.nuget != 'true'
+        run: dotnet nuget push -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --skip-duplicate -k ${{ github.token }} ./packages/*.nupkg
+        
+  package-android:
+    name: Build Package (Android)
+    runs-on: ubuntu-latest
+
+    needs: [build-platforms]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-x86_64
+          path: native/nuget-android/lib/x86_64
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-arm
+          path: native/nuget-android/lib/armeabi-v7a
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-arm64
+          path: native/nuget-android/lib/arm64-v8a
+
+      - name: Build Package
+        run: dotnet pack -c Release -p:Version=${{ github.event.inputs.version }} -o ./packages native/nuget-android
 
       - name: Publish Package (NuGet)
         if: github.event.inputs.nuget == 'true'

@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <AssemblyName>csdl.Native.Android</AssemblyName>
+        <TargetFramework>net7.0-android</TargetFramework>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <IsPackable>true</IsPackable>
+        <PackageId>csdl.Native.android</PackageId>
+
+        <Authors>Albie Spriddell et al.</Authors>
+        <Title>csdl Native Libraries (Android)</Title>
+        <Description>Android-specific native libraries for csdl</Description>
+
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageReadmeFile>docs/readme.md</PackageReadmeFile>
+        <PackageLicenseFile>docs/license.md</PackageLicenseFile>    
+
+        <ProjectUrl>https://github.com/aspriddell/csdl</ProjectUrl>
+        <RepositoryUrl>https://github.com/aspriddell/csdl</RepositoryUrl>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AndroidNativeLibrary Include="lib/**/libcsdl.so"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="_._">
+            <!-- https://docs.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu5128#scenario-2 -->
+            <Pack>true</Pack>
+            <PackagePath>lib\$(TargetFramework)</PackagePath>
+        </None>
+    
+        <None Include="readme.md" Pack="true" PackagePath="docs" Visible="false"/>
+        <None Include="license.md" Pack="true" PackagePath="docs" Visible="false"/>
+        <None Include="..\..\icon.png" Pack="true" PackagePath="." Visible="false"/>
+    </ItemGroup>
+</Project>

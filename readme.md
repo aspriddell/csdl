@@ -1,5 +1,5 @@
 # csdl
-Providing libtorrent through a C++ library for use in .NET
+Providing libtorrent through a C++ library for use in .NET on Windows, Linux, macOS and Android.
 
 ## Usage
 [![Latest Nuget](https://img.shields.io/nuget/v/csdl.Native?label=csdl&logo=nuget)](https://nuget.org/packages/csdl)
@@ -101,7 +101,4 @@ void PerformDownload(TorrentClient client, TorrentInfo info, string savePath = n
 ### Supported Systems
 The native libraries, `csdl.Native`, are currently built for Windows, macOS and Linux for both x64 and arm64 architectures.
 
-Additionally, libtorrent is not required to be installed, a copy is also redistributed for convenience.
-
-> [!IMPORTANT]
-> musl Linux variants of the native libraries are not built but should work if built manually.
+Android support is also provided by an optional package, [csdl.Native.android](https://nuget.org/packages/csdl.Native.android) which can be installed alongside `csdl` to extend platform compatibility to Android 5.0+ devices with `x86_64`, `armeabi-v7a` and `arm64-v8a` ABIs.
