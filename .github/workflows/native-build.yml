@@ -201,17 +201,17 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: android-x86_64
-          path: native/nuget-android/lib/x86_64
+          path: native/nuget-android/runtimes/android-x64/native
 
       - uses: actions/download-artifact@v4
         with:
           name: android-arm
-          path: native/nuget-android/lib/armeabi-v7a
+          path: native/nuget-android/runtimes/android-arm/native
 
       - uses: actions/download-artifact@v4
         with:
           name: android-arm64
-          path: native/nuget-android/lib/arm64-v8a
+          path: native/nuget-android/runtimes/android-arm64/native
 
       - name: Build Package
         run: dotnet pack -c Release -p:Version=${{ github.event.inputs.version }} -o ./packages native/nuget-android
