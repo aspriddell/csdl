@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Library</OutputType>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
         <AssemblyName>csdl.Native.Android</AssemblyName>
         <TargetFramework>net7.0-android</TargetFramework>
-        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
     </PropertyGroup>
     
     <PropertyGroup>
@@ -26,13 +27,7 @@
         <AndroidNativeLibrary Include="lib/**/libcsdl.so"/>
     </ItemGroup>
     
-    <ItemGroup>
-        <None Include="_._">
-            <!-- https://docs.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu5128#scenario-2 -->
-            <Pack>true</Pack>
-            <PackagePath>lib\$(TargetFramework)</PackagePath>
-        </None>
-    
+    <ItemGroup>    
         <None Include="readme.md" Pack="true" PackagePath="docs" Visible="false"/>
         <None Include="license.md" Pack="true" PackagePath="docs" Visible="false"/>
         <None Include="..\..\icon.png" Pack="true" PackagePath="." Visible="false"/>
