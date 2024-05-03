@@ -1,18 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <OutputType>Library</OutputType>
-        <AssemblyName>csdl.Native</AssemblyName>
-        <TargetFramework>net7.0</TargetFramework>
+        <AssemblyName>csdl.Native.Android</AssemblyName>
+        <TargetFramework>net7.0-android</TargetFramework>
         <IncludeBuildOutput>false</IncludeBuildOutput>
     </PropertyGroup>
     
     <PropertyGroup>
         <IsPackable>true</IsPackable>
-        <PackageId>csdl.Native</PackageId>
+        <PackageId>csdl.Native.android</PackageId>
 
-        <Authors>Albie Spriddell</Authors>
-        <Title>csdl Native Libraries</Title>
-        <Description>Native libraries for csdl (libcsdl+libtorrent)</Description>
+        <Authors>Albie Spriddell et al.</Authors>
+        <Title>csdl Native Libraries (Android)</Title>
+        <Description>Android-specific native libraries for csdl</Description>
 
         <PackageIcon>icon.png</PackageIcon>
         <PackageReadmeFile>docs/readme.md</PackageReadmeFile>
@@ -21,13 +21,12 @@
         <ProjectUrl>https://github.com/aspriddell/csdl</ProjectUrl>
         <RepositoryUrl>https://github.com/aspriddell/csdl</RepositoryUrl>
     </PropertyGroup>
+
+    <ItemGroup>
+        <AndroidNativeLibrary Include="lib/**/libcsdl.so"/>
+    </ItemGroup>
     
     <ItemGroup>
-        <None Include="runtimes\**\native\*">
-            <Pack>true</Pack>
-            <PackagePath>runtimes</PackagePath>
-        </None>
-
         <None Include="_._">
             <!-- https://docs.microsoft.com/en-us/nuget/reference/errors-and-warnings/nu5128#scenario-2 -->
             <Pack>true</Pack>
