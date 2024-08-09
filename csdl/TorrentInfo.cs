@@ -49,7 +49,7 @@ public class TorrentInfo
 
         InfoHandle = NativeMethods.CreateTorrentFromFile(fileName);
 
-        if (InfoHandle <= IntPtr.Zero)
+        if (InfoHandle == IntPtr.Zero)
         {
             throw new InvalidOperationException("Failed to create torrent from file provided.");
         }
@@ -64,7 +64,7 @@ public class TorrentInfo
     {
         InfoHandle = NativeMethods.CreateTorrentFromBytes(fileBytes, fileBytes.Length);
 
-        if (InfoHandle <= IntPtr.Zero)
+        if (InfoHandle == IntPtr.Zero)
         {
             throw new InvalidOperationException("Failed to create torrent from bytes provided.");
         }
@@ -80,7 +80,7 @@ public class TorrentInfo
     {
         InfoHandle = NativeMethods.CreateTorrentFromBytes(memoryPtr, length);
 
-        if (InfoHandle <= IntPtr.Zero)
+        if (InfoHandle == IntPtr.Zero)
         {
             throw new InvalidOperationException("Failed to create torrent from bytes provided.");
         }
@@ -98,6 +98,13 @@ public class TorrentInfo
     {
     }
 
+    // as TorrentInfo is shared a lot, we're not providing a dispose method
+    // and instead letting the garbage collector handle it
+    ~TorrentInfo()
+    {
+        NativeMethods.FreeTorrent(InfoHandle);
+    }
+
     /// <summary>
     /// Gets metadata related to the torrent file.
     /// </summary>
@@ -107,13 +114,6 @@ public class TorrentInfo
     /// Gets a list of files contained within the torrent.
     /// </summary>
     public IReadOnlyCollection<TorrentFileInfo> Files => _files ??= GetFiles();
-
-    // as TorrentInfo is shared a lot, we're not providing a dispose method
-    // and instead letting the garbage collector handle it
-    ~TorrentInfo()
-    {
-        NativeMethods.FreeTorrent(InfoHandle);
-    }
 
     private TorrentMetadata GetInfo()
     {

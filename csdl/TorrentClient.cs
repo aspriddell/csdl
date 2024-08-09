@@ -48,9 +48,9 @@ public class TorrentClient : IDisposable
             alert_flags = (int)(config.AlertCategories | RequiredCategories)
         });
 
-        if (_handle <= IntPtr.Zero)
+        if (_handle == IntPtr.Zero)
         {
-            throw new InvalidOperationException($"Failed to create session ({_handle}.");
+            throw new InvalidOperationException("Failed to create session");
         }
 
         _eventCallback = ProxyRaisedEvent;
@@ -161,7 +161,7 @@ public class TorrentClient : IDisposable
 
         var handle = NativeMethods.AttachTorrent(_handle, torrent.InfoHandle, Path.GetFullPath(savePath));
 
-        if (handle <= IntPtr.Zero)
+        if (handle == IntPtr.Zero)
         {
             throw new InvalidOperationException("Failed to attach torrent to session.");
         }
