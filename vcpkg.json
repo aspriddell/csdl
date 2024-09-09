@@ -1,9 +1,12 @@
 {
   "name" : "cs-native",
-  "version-string" : "1.0.0",
-  "builtin-baseline" : "fbf25ddd1119211278c257f2e19c96a9d5a6ede7",
+  "version-string" : "1.2.0",
+  "builtin-baseline" : "eba7c6a894fce24146af4fdf161fef8e90dd6be3",
   "dependencies" : [ {
     "name" : "libtorrent",
     "version>=" : "2.0.10"
+  }, {
+    "name" : "magic-enum",
+    "version>=" : "0.9.5"
   } ]
 }
