@@ -18,10 +18,14 @@ extern "C" {
 
     // session control
     CSDL_EXPORT lt::session* create_session(session_config* config);
+    CSDL_EXPORT lt::session* create_session_from_pack(lt::settings_pack* pack);
+
     CSDL_EXPORT void destroy_session(lt::session* session);
 
     CSDL_EXPORT void set_event_callback(lt::session* session, cs_alert_callback callback, bool include_unmapped_events);
     CSDL_EXPORT void clear_event_callback(lt::session* session);
+
+    CSDL_EXPORT void apply_settings(lt::session* session, lt::settings_pack* settings);
 
     // torrent control
     CSDL_EXPORT lt::torrent_info* create_torrent_file(const char* file_path);
