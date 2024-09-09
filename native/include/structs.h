@@ -7,6 +7,7 @@
 #define CSDL_STRUCTS_HPP
 
 #include "struct_align.h"
+
 #include <libtorrent/session.hpp>
 
 #ifdef __cplusplus
