@@ -8,7 +8,8 @@
 #include <magic_enum.hpp>
 
 template <typename T>
-bool set_value(const char* key, std::function<bool(T)> setter);
+typename std::enable_if<std::is_enum<T>::value, bool>::type
+set_value(const char* key, std::function<bool(T)> setter);
 
 lt::settings_pack* create_settings_pack()
 {
