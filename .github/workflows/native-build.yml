@@ -59,7 +59,7 @@ jobs:
           uses: nttld/setup-ndk@v1
           id: setup-ndk
           with:
-            ndk-version: r26d
+            ndk-version: r27b
             add-to-path: false
 
         - name: Prepare Environment (macOS)
