@@ -9,10 +9,13 @@ namespace csdl.Native;
 
 internal static partial class NativeMethods
 {
+    private const string LibraryName = "csdl";
+
+    /// <summary>
+    /// Delegate representing the callback for session events.
+    /// </summary>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     public delegate void SessionEventCallback(IntPtr alertPtr);
-
-    private const string LibraryName = "csdl";
 
     /// <summary>
     /// Creates a session with the given configuration.
@@ -21,6 +24,14 @@ internal static partial class NativeMethods
     /// <returns>A handle to the session</returns>
     [DllImport(LibraryName, EntryPoint = "create_session")]
     public static extern IntPtr CreateSession(in NativeStructs.SessionConfig config);
+
+    /// <summary>
+    /// Creates a session, optionally using a provided settings pack.
+    /// </summary>
+    /// <param name="settingsPack">A settings pack handle, set to <see cref="IntPtr.Zero"/> to initialise without customisation</param>
+    /// <returns>A handle to the session</returns>
+    [LibraryImport(LibraryName, EntryPoint = "create_session_from_pack")]
+    public static partial IntPtr CreateSession(in IntPtr settingsPack);
 
     /// <summary>
     /// Releases the unmanaged resources associated with a session.
@@ -44,6 +55,14 @@ internal static partial class NativeMethods
     /// <param name="sessionHandle">The session handle to remove the registered callback from</param>
     [LibraryImport(LibraryName, EntryPoint = "clear_event_callback")]
     public static partial void ClearEventCallback(IntPtr sessionHandle);
+
+    /// <summary>
+    /// Applies a settings pack to a session.
+    /// </summary>
+    /// <param name="sessionHandle">The session handle to apply the pack to</param>
+    /// <param name="settingsPack">The pack handle to apply</param>
+    [LibraryImport(LibraryName, EntryPoint = "apply_settings")]
+    public static partial void ApplySettingsPack(IntPtr sessionHandle, IntPtr settingsPack);
 
     /// <summary>
     /// Create a torrent from a file on the local disk
@@ -171,4 +190,66 @@ internal static partial class NativeMethods
     /// <param name="status">Variable to populate with the new state</param>
     [LibraryImport(LibraryName, EntryPoint = "get_torrent_status")]
     public static partial void GetTorrentStatus(IntPtr torrentSessionHandle, out TorrentStatus status);
+
+    #region Settings Pack
+
+    /// <summary>
+    /// Creates an empty settings pack
+    /// </summary>
+    /// <remarks>
+    /// This method is used to create a settings pack that can be customised and applied to a session.
+    /// Add items using the SettingsPackAdd* methods, and apply it using either <see cref="ApplySettingsPack"/> or <see cref="CreateSession"/>.
+    /// Note this handle needs to be manually freed, even after applying it to a session.
+    /// </remarks>
+    /// <returns>A handle to the created settings pack</returns>
+    [LibraryImport(LibraryName, EntryPoint = "create_settings_pack")]
+    public static partial IntPtr CreateSettingsPack();
+
+    /// <summary>
+    /// Frees a settings pack by its handle.
+    /// </summary>
+    /// <param name="settingsPack">The pack to free</param>
+    [LibraryImport(LibraryName, EntryPoint = "destroy_settings_pack")]
+    public static partial void FreeSettingsPack(IntPtr settingsPack);
+
+    /// <summary>
+    /// Adds an <see cref="int"/> value to the settings pack
+    /// </summary>
+    /// <param name="settingsPack">The pack handle</param>
+    /// <param name="key">The configuration key to set</param>
+    /// <param name="value">The integer value to apply</param>
+    /// <returns>
+    /// Whether the value was successfully added.
+    /// If false, either the configuration does not exist or is the wrong type.
+    /// </returns>
+    [LibraryImport(LibraryName, EntryPoint = "settings_pack_set_int", StringMarshalling = StringMarshalling.Utf8)]
+    public static partial bool SettingsPackSetInt(IntPtr settingsPack, string key, int value);
+
+    /// <summary>
+    /// Adds a <see cref="bool"/> value to the settings pack
+    /// </summary>
+    /// <param name="settingsPack">The pack handle</param>
+    /// <param name="key">The configuration key to set</param>
+    /// <param name="value">The boolean value to apply</param>
+    /// <returns>
+    /// Whether the value was successfully added.
+    /// If false, either the configuration does not exist or is the wrong type.
+    /// </returns>
+    [LibraryImport(LibraryName, EntryPoint = "settings_pack_set_bool", StringMarshalling = StringMarshalling.Utf8)]
+    public static partial bool SettingsPackSetBool(IntPtr settingsPack, string key, bool value);
+
+    /// <summary>
+    /// Adds a <see cref="string"/> to the settings pack
+    /// </summary>
+    /// <param name="settingsPack">The pack handle</param>
+    /// <param name="key">The configuration key to set</param>
+    /// <param name="value">The value to apply</param>
+    /// <returns>
+    /// Whether the value was successfully added.
+    /// If false, either the configuration does not exist or is the wrong type.
+    /// </returns>
+    [LibraryImport(LibraryName, EntryPoint = "settings_pack_set_str", StringMarshalling = StringMarshalling.Utf8)]
+    public static partial bool SettingsPackSetString(IntPtr settingsPack, string key, string value);
+
+    #endregion
 }
