@@ -184,6 +184,15 @@ internal static partial class NativeMethods
     public static partial void StopTorrent(IntPtr torrentSessionHandle);
 
     /// <summary>
+    /// Re-announce the torrent to all trackers.
+    /// </summary>
+    /// <param name="torrentSessionHandle">The torrent session handle to apply the reannounce to</param>
+    /// <param name="seconds">The delay, in seconds, before performing the reannouncement</param>
+    /// <param name="force">Whether to ignore min times between reannounces</param>
+    [LibraryImport(LibraryName, EntryPoint = "reannounce_torrent")]
+    public static partial void ReannounceTorrent(IntPtr torrentSessionHandle, int seconds, [MarshalAs(UnmanagedType.I1)] bool force);
+
+    /// <summary>
     /// Gets the status of a torrent.
     /// </summary>
     /// <param name="torrentSessionHandle">The torrent session handle to retrieve status information for</param>
