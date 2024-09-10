@@ -31,10 +31,9 @@ public class TorrentClient : IDisposable
     /// <summary>
     /// Creates a new instance of <see cref="TorrentClient"/> with default settings.
     /// </summary>
-    /// <exception cref="InvalidOperationException"></exception>
-    public TorrentClient()
+    public unsafe TorrentClient()
     {
-        _handle = NativeMethods.CreateSession(IntPtr.Zero);
+        _handle = NativeMethods.CreateSession(null);
 
         if (_handle == IntPtr.Zero)
         {
@@ -48,7 +47,7 @@ public class TorrentClient : IDisposable
     /// <summary>
     /// Creates a new instance of <see cref="TorrentClient"/> with the provided settings pack (advanced usage).
     /// </summary>
-    public TorrentClient(SettingsPack pack)
+    public unsafe TorrentClient(SettingsPack pack)
     {
         ValidateSettingsPack(pack);
 
@@ -56,7 +55,7 @@ public class TorrentClient : IDisposable
 
         try
         {
-            _handle = NativeMethods.CreateSession(packHandle);
+            _handle = NativeMethods.CreateSession(packHandle.ToPointer());
 
             if (_handle == IntPtr.Zero)
             {
@@ -257,7 +256,6 @@ public class TorrentClient : IDisposable
     private static void ValidateSettingsPack(SettingsPack settingsPack)
     {
         // ensure the alert mask is set to include the required categories
-        settingsPack.Set("set_alert_flags", true);
         settingsPack.Set("alert_mask", settingsPack.Get<int>("alert_mask").GetValueOrDefault(0) | (int)RequiredAlertCategories);
     }
 

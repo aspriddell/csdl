@@ -31,7 +31,7 @@ internal static partial class NativeMethods
     /// <param name="settingsPack">A settings pack handle, set to <see cref="IntPtr.Zero"/> to initialise without customisation</param>
     /// <returns>A handle to the session</returns>
     [LibraryImport(LibraryName, EntryPoint = "create_session_from_pack")]
-    public static partial IntPtr CreateSession(in IntPtr settingsPack);
+    public static unsafe partial IntPtr CreateSession(void* settingsPack);
 
     /// <summary>
     /// Releases the unmanaged resources associated with a session.
@@ -222,6 +222,7 @@ internal static partial class NativeMethods
     /// Whether the value was successfully added.
     /// If false, either the configuration does not exist or is the wrong type.
     /// </returns>
+    [return: MarshalAs(UnmanagedType.Bool)]
     [LibraryImport(LibraryName, EntryPoint = "settings_pack_set_int", StringMarshalling = StringMarshalling.Utf8)]
     public static partial bool SettingsPackSetInt(IntPtr settingsPack, string key, int value);
 
@@ -235,8 +236,9 @@ internal static partial class NativeMethods
     /// Whether the value was successfully added.
     /// If false, either the configuration does not exist or is the wrong type.
     /// </returns>
+    [return: MarshalAs(UnmanagedType.Bool)]
     [LibraryImport(LibraryName, EntryPoint = "settings_pack_set_bool", StringMarshalling = StringMarshalling.Utf8)]
-    public static partial bool SettingsPackSetBool(IntPtr settingsPack, string key, bool value);
+    public static partial bool SettingsPackSetBool(IntPtr settingsPack, string key, [MarshalAs(UnmanagedType.Bool)] bool value);
 
     /// <summary>
     /// Adds a <see cref="string"/> to the settings pack
@@ -248,6 +250,7 @@ internal static partial class NativeMethods
     /// Whether the value was successfully added.
     /// If false, either the configuration does not exist or is the wrong type.
     /// </returns>
+    [return: MarshalAs(UnmanagedType.Bool)]
     [LibraryImport(LibraryName, EntryPoint = "settings_pack_set_str", StringMarshalling = StringMarshalling.Utf8)]
     public static partial bool SettingsPackSetString(IntPtr settingsPack, string key, string value);
 
