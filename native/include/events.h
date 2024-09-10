@@ -39,7 +39,7 @@ enum cs_alert_type : int32_t {
 };
 
 // base format for all alerts
-struct CSDLSTRUCT cs_alert {
+struct CSDL_STRUCT cs_alert {
     cs_alert_type type;
 
     int32_t category;
@@ -48,7 +48,7 @@ struct CSDLSTRUCT cs_alert {
     const char *message;
 };
 
-struct CSDLSTRUCT cs_torrent_status_alert {
+struct CSDL_STRUCT cs_torrent_status_alert {
     cs_alert alert;
 
     uint32_t old_state;
@@ -57,13 +57,13 @@ struct CSDLSTRUCT cs_torrent_status_alert {
     char info_hash[20];
 };
 
-struct CSDLSTRUCT cs_torrent_remove_alert {
+struct CSDL_STRUCT cs_torrent_remove_alert {
     cs_alert alert;
 
     char info_hash[20];
 };
 
-struct CSDLSTRUCT cs_client_performance_alert {
+struct CSDL_STRUCT cs_client_performance_alert {
     cs_alert alert;
 
     uint8_t warning_type;
@@ -79,7 +79,7 @@ enum cs_peer_alert_type : uint8_t {
     errored = 6
 };
 
-struct CSDLSTRUCT cs_peer_alert {
+struct CSDL_STRUCT cs_peer_alert {
     cs_alert alert;
 
     lt::torrent_handle *handle;

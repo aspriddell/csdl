@@ -14,7 +14,7 @@ lt::session* create_session(session_config* config)
 {
     if (config == nullptr)
     {
-        return nullptr;
+        return new lt::session;
     }
 
     lt::settings_pack pack;
@@ -84,17 +84,37 @@ lt::session* create_session_from_pack(lt::settings_pack* pack)
 
 void destroy_session(lt::session* session)
 {
+    if (session == nullptr)
+    {
+        return;
+    }
+
     session->abort();
     delete session;
 }
 
 void apply_settings(lt::session* session, lt::settings_pack* settings)
 {
+    if (session == nullptr || settings == nullptr)
+    {
+        return;
+    }
+
     session->apply_settings(*settings);
 }
 
 void set_event_callback(lt::session* session, cs_alert_callback callback, bool include_unmapped_events)
 {
+    if (session == nullptr)
+    {
+        return;
+    }
+    else if (callback == nullptr)
+    {
+        clear_event_callback(session);
+        return;
+    }
+
     auto session_callback = [session, callback, include_unmapped_events]() -> void
     {
         std::thread(on_events_available, session, callback, include_unmapped_events).detach();
@@ -105,6 +125,11 @@ void set_event_callback(lt::session* session, cs_alert_callback callback, bool i
 
 void clear_event_callback(lt::session* session)
 {
+    if (session == nullptr)
+    {
+        return;
+    }
+
     session->set_alert_notify(nullptr);
 }
 
@@ -123,13 +148,21 @@ lt::torrent_info* create_torrent_file(const char* file_path)
 
 void destroy_torrent(lt::torrent_info* torrent)
 {
-    delete torrent;
+    if (torrent != nullptr)
+    {
+        delete torrent;
+    }
 }
 
 // attach a torrent to the session, returning a handle that can be used to control the download.
 // the torrent info handle is copied, and can be freed after the call to attach_torrent with a call to destroy_torrent_info.
 lt::torrent_handle* attach_torrent(lt::session* session, lt::torrent_info* torrent, const char* save_path)
 {
+    if (session == nullptr || torrent == nullptr)
+    {
+        return nullptr;
+    }
+
     lt::add_torrent_params params;
     std::string save_path_copy(save_path);
 
@@ -159,6 +192,11 @@ lt::torrent_handle* attach_torrent(lt::session* session, lt::torrent_info* torre
 // additionally, a call to destroy_torrent is not needed.
 void detach_torrent(lt::session* session, lt::torrent_handle* torrent)
 {
+    if (session == nullptr || torrent == nullptr)
+    {
+        return;
+    }
+
     torrent->pause();
     session->remove_torrent(*torrent);
 
@@ -169,6 +207,11 @@ void detach_torrent(lt::session* session, lt::torrent_handle* torrent)
 // the torrent_info struct is allocated on the heap and must be freed with a call to destroy_torrent_info.
 torrent_metadata* get_torrent_info(lt::torrent_info* torrent)
 {
+    if (torrent == nullptr)
+    {
+        return nullptr;
+    }
+
     auto name = torrent->name();
     auto author = torrent->creator();
     auto comment = torrent->comment();
@@ -218,6 +261,11 @@ torrent_metadata* get_torrent_info(lt::torrent_info* torrent)
 
 void destroy_torrent_info(torrent_metadata* info)
 {
+    if (info == nullptr)
+    {
+        return;
+    }
+
     delete[] info->name;
     delete[] info->creator;
     delete[] info->comment;
@@ -228,6 +276,11 @@ void destroy_torrent_info(torrent_metadata* info)
 // given a torrent handle, get the list of files in the torrent.
 void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_list)
 {
+    if (torrent == nullptr || file_list == nullptr)
+    {
+        return;
+    }
+
     const auto& files = torrent->files();
 
     auto num_files = files.num_files();
@@ -262,6 +315,11 @@ void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_li
 
 void destroy_torrent_file_list(torrent_file_list* file_list)
 {
+    if (file_list == nullptr || file_list->files == nullptr)
+    {
+        return;
+    }
+
     for (int i = 0; i < file_list->length; i++)
     {
         delete[] file_list->files[i].file_name;
@@ -274,30 +332,55 @@ void destroy_torrent_file_list(torrent_file_list* file_list)
 // set the download priority for a file in a torrent.
 void set_file_dl_priority(lt::torrent_handle* torrent, const lt::file_index_t file_index, const uint8_t priority)
 {
+    if (torrent == nullptr)
+    {
+        return;
+    }
+
     torrent->file_priority(file_index, (lt::download_priority_t)priority);
 }
 
 // get the download priority for a file in a torrent.
 uint8_t get_file_dl_priority(lt::torrent_handle* torrent, const lt::file_index_t file_index)
 {
+    if (torrent == nullptr)
+    {
+        return 0;
+    }
+
     return (uint8_t)torrent->file_priority(file_index);
 }
 
 // start and stop the download of a torrent.
 void start_torrent(lt::torrent_handle* torrent)
 {
+    if (torrent == nullptr)
+    {
+        return;
+    }
+
     torrent->resume();
 }
 
 // start and stop the download of a torrent.
 void stop_torrent(lt::torrent_handle* torrent)
 {
+    if (torrent == nullptr)
+    {
+        return;
+    }
+
     torrent->pause();
 }
 
 // get the progress of a torrent.
 void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_status)
 {
+    if (torrent == nullptr || torrent_status == nullptr)
+    {
+        return;
+    }
+
     auto s = torrent->status();
 
     if (s.errc != lt::error_code())
