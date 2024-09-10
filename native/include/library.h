@@ -50,6 +50,7 @@ extern "C" {
     // download control
     CSDL_EXPORT void start_torrent(lt::torrent_handle* torrent);
     CSDL_EXPORT void stop_torrent(lt::torrent_handle* torrent);
+    CSDL_EXPORT void reannounce_torrent(lt::torrent_handle* torrent, const int32_t seconds, const uint8_t ignore_min_interval);
 
     CSDL_EXPORT void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_status);
 

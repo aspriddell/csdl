@@ -372,6 +372,16 @@ void stop_torrent(lt::torrent_handle* torrent)
     torrent->pause();
 }
 
+void reannounce_torrent(lt::torrent_handle* torrent, const int32_t seconds, const uint8_t ignore_min_interval)
+{
+    if (torrent == nullptr)
+    {
+        return;
+    }
+
+    torrent->force_reannounce(seconds, ignore_min_interval ? lt::torrent_handle::ignore_min_interval : 0);
+}
+
 // get the progress of a torrent.
 void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_status)
 {
