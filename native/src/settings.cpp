@@ -83,7 +83,7 @@ uint8_t settings_pack_set_str(lt::settings_pack* pack, const char* key, const ch
     });
 }
 
-uint8_t settings_pack_set_bool(lt::settings_pack* pack, const char* key, bool value)
+uint8_t settings_pack_set_bool(lt::settings_pack* pack, const char* key, uint8_t value)
 {
     if (pack == nullptr)
     {

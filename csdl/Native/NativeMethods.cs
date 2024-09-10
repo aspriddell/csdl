@@ -222,7 +222,7 @@ internal static partial class NativeMethods
     /// Whether the value was successfully added.
     /// If false, either the configuration does not exist or is the wrong type.
     /// </returns>
-    [return: MarshalAs(UnmanagedType.Bool)]
+    [return: MarshalAs(UnmanagedType.I1)]
     [LibraryImport(LibraryName, EntryPoint = "settings_pack_set_int", StringMarshalling = StringMarshalling.Utf8)]
     public static partial bool SettingsPackSetInt(IntPtr settingsPack, string key, int value);
 
@@ -236,9 +236,9 @@ internal static partial class NativeMethods
     /// Whether the value was successfully added.
     /// If false, either the configuration does not exist or is the wrong type.
     /// </returns>
-    [return: MarshalAs(UnmanagedType.Bool)]
+    [return: MarshalAs(UnmanagedType.I1)]
     [LibraryImport(LibraryName, EntryPoint = "settings_pack_set_bool", StringMarshalling = StringMarshalling.Utf8)]
-    public static partial bool SettingsPackSetBool(IntPtr settingsPack, string key, [MarshalAs(UnmanagedType.Bool)] bool value);
+    public static partial bool SettingsPackSetBool(IntPtr settingsPack, string key, [MarshalAs(UnmanagedType.I1)] bool value);
 
     /// <summary>
     /// Adds a <see cref="string"/> to the settings pack
@@ -250,7 +250,7 @@ internal static partial class NativeMethods
     /// Whether the value was successfully added.
     /// If false, either the configuration does not exist or is the wrong type.
     /// </returns>
-    [return: MarshalAs(UnmanagedType.Bool)]
+    [return: MarshalAs(UnmanagedType.I1)]
     [LibraryImport(LibraryName, EntryPoint = "settings_pack_set_str", StringMarshalling = StringMarshalling.Utf8)]
     public static partial bool SettingsPackSetString(IntPtr settingsPack, string key, string value);
 
