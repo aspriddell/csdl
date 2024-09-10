@@ -56,10 +56,14 @@ public class TorrentClientTests : IDisposable
         try
         {
             torrentManager.Start();
+
             await using (new Timer(CheckProgress, (torrentManager, tcs), TimeSpan.Zero, TimeSpan.FromSeconds(5)))
             {
                 await tcs.Task.WaitAsync(TimeSpan.FromMinutes(2));
             }
+
+            // perform reannouncement
+            torrentManager.ReannounceAllTrackers(TimeSpan.Zero);
 
             // check all files have been downloaded and are the correct size
             foreach (var file in torrentManager.Files.Where(x => x.Priority != FileDownloadPriority.DoNotDownload))

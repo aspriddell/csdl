@@ -5,8 +5,8 @@ include_directories(${CMAKE_BINARY_DIR}/include native/include)
 
 set(CMAKE_CXX_STANDARD 20)
 set(PRODUCT_VERSION_MAJOR 1)
-set(PRODUCT_VERSION_MINOR 1)
-set(PRODUCT_VERSION_PATCH 6)
+set(PRODUCT_VERSION_MINOR 2)
+set(PRODUCT_VERSION_PATCH 0)
 
 # build target versions
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -16,7 +16,9 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif()
 
 project(cs_native LANGUAGES CXX VERSION ${PRODUCT_VERSION_MAJOR}.${PRODUCT_VERSION_MINOR}.${PRODUCT_VERSION_PATCH})
-find_package(LibtorrentRasterbar CONFIG REQUIRED)
+
+find_package(LibtorrentRasterbar 2.0 CONFIG REQUIRED)
+find_package(magic_enum CONFIG REQUIRED)
 
 # rpath fixes (needs to go after project but before add_library)
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -27,10 +29,13 @@ elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   set(CMAKE_INSTALL_RPATH "$ORIGIN")
 endif()
 
-add_library(csdl SHARED native/src/library.cpp native/src/events.cpp
-        native/include/locks.hpp
-        native/include/struct_align.h)
-generate_export_header(csdl EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/include/lib_export.h)
+add_library(csdl SHARED
+        native/src/settings.cpp
+        native/src/library.cpp
+        native/src/events.cpp
+        native/include/struct_align.h
+        native/include/settings.h
+        native/include/locks.hpp)
 
 # version.rc file for windows
 if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
@@ -39,4 +44,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif()
 
 set_target_properties(csdl PROPERTIES SOVERSION ${PRODUCT_VERSION_MAJOR} VERSION ${PRODUCT_VERSION_MAJOR}.${PRODUCT_VERSION_MINOR}.${PRODUCT_VERSION_PATCH})
+generate_export_header(csdl EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/include/lib_export.h)
+
 target_link_libraries(csdl PUBLIC LibtorrentRasterbar::torrent-rasterbar)
+target_link_libraries(csdl PRIVATE magic_enum::magic_enum)

@@ -7,13 +7,14 @@
 #define CSDL_STRUCTS_HPP
 
 #include "struct_align.h"
+
 #include <libtorrent/session.hpp>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-CSDLSTRUCT typedef struct cs_session_config {
+CSDL_STRUCT typedef struct cs_session_config {
     // see https://www.libtorrent.org/reference-Settings.html#settings_pack
     char* user_agent;
     char* fingerprint;
@@ -28,7 +29,7 @@ CSDLSTRUCT typedef struct cs_session_config {
     int32_t max_connections;
 } session_config;
 
-CSDLSTRUCT typedef struct cs_torrent_file_information {
+CSDL_STRUCT typedef struct cs_torrent_file_information {
     lt::file_index_t index;
 
     int64_t offset;
@@ -43,7 +44,7 @@ CSDLSTRUCT typedef struct cs_torrent_file_information {
     bool pad_file;
 } torrent_file_information;
 
-CSDLSTRUCT typedef struct cs_torrent_meta {
+CSDL_STRUCT typedef struct cs_torrent_meta {
     char* name;
     char* creator;
     char* comment;
@@ -57,7 +58,7 @@ CSDLSTRUCT typedef struct cs_torrent_meta {
     uint8_t info_hash_v2[32];
 } torrent_metadata;
 
-CSDLSTRUCT typedef struct cs_torrent_file_list {
+CSDL_STRUCT typedef struct cs_torrent_file_list {
     int32_t length;
     torrent_file_information* files;
 } torrent_file_list;
@@ -73,7 +74,7 @@ enum cs_torrent_state : int32_t {
     torrent_error = 7
 };
 
-CSDLSTRUCT typedef struct cs_torrent_status {
+CSDL_STRUCT typedef struct cs_torrent_status {
     cs_torrent_state state;
 
     float_t progress;

@@ -17,7 +17,7 @@ namespace csdl;
 /// </summary>
 public class TorrentClient : IDisposable
 {
-    private const AlertCategories RequiredCategories = AlertCategories.Status;
+    private const AlertCategories RequiredAlertCategories = AlertCategories.Status;
 
     private readonly ConcurrentDictionary<string, TorrentManager> _attachedManagers = new(StringComparer.OrdinalIgnoreCase);
 
@@ -28,11 +28,52 @@ public class TorrentClient : IDisposable
     private bool _disposed;
     private bool _includeUnmappedEvents;
 
-    public TorrentClient()
-        : this(new TorrentClientConfig())
+    /// <summary>
+    /// Creates a new instance of <see cref="TorrentClient"/> with default settings.
+    /// </summary>
+    public unsafe TorrentClient()
     {
+        _handle = NativeMethods.CreateSession(null);
+
+        if (_handle == IntPtr.Zero)
+        {
+            throw new InvalidOperationException("Failed to create session.");
+        }
+
+        _eventCallback = ProxyRaisedEvent;
+        NativeMethods.SetEventCallback(_handle, _eventCallback, true);
     }
 
+    /// <summary>
+    /// Creates a new instance of <see cref="TorrentClient"/> with the provided settings pack (advanced usage).
+    /// </summary>
+    public unsafe TorrentClient(SettingsPack pack)
+    {
+        ValidateSettingsPack(pack);
+
+        var packHandle = pack.BuildNative();
+
+        try
+        {
+            _handle = NativeMethods.CreateSession(packHandle.ToPointer());
+
+            if (_handle == IntPtr.Zero)
+            {
+                throw new InvalidOperationException("Failed to create session.");
+            }
+
+            _eventCallback = ProxyRaisedEvent;
+            NativeMethods.SetEventCallback(_handle, _eventCallback, true);
+        }
+        finally
+        {
+            NativeMethods.FreeSettingsPack(packHandle);
+        }
+    }
+
+    /// <summary>
+    /// Creates a new instance of <see cref="TorrentClient"/> with the provided configuration.
+    /// </summary>
     public TorrentClient(TorrentClientConfig config)
     {
         _handle = NativeMethods.CreateSession(new NativeStructs.SessionConfig
@@ -45,16 +86,21 @@ public class TorrentClient : IDisposable
             force_encryption = config.ForceEncryption,
 
             set_alert_flags = true,
-            alert_flags = (int)(config.AlertCategories | RequiredCategories)
+            alert_flags = (int)(config.AlertCategories | RequiredAlertCategories)
         });
 
         if (_handle == IntPtr.Zero)
         {
-            throw new InvalidOperationException("Failed to create session");
+            throw new InvalidOperationException("Failed to create session.");
         }
 
         _eventCallback = ProxyRaisedEvent;
         NativeMethods.SetEventCallback(_handle, _eventCallback, true);
+    }
+
+    ~TorrentClient()
+    {
+        Dispose();
     }
 
     /// <summary>
@@ -91,43 +137,30 @@ public class TorrentClient : IDisposable
     /// </summary>
     public string DefaultDownloadPath { get; set; } = Path.Combine(Environment.CurrentDirectory, "downloads");
 
-    public void Dispose()
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        foreach (var session in ActiveTorrents)
-        {
-            try
-            {
-                DetachTorrent(session);
-            }
-            catch
-            {
-                // ignore
-            }
-        }
-
-        _disposed = true;
-
-        NativeMethods.ClearEventCallback(_handle);
-        NativeMethods.FreeSession(_handle);
-
-        GC.SuppressFinalize(this);
-    }
-
-    ~TorrentClient()
-    {
-        Dispose();
-    }
-
     /// <summary>
     /// Event invoked when a session alert is raised.
     /// The underlying event collection system is unmanaged, and is started/shutdown on the first/last subscription to this event.
     /// </summary>
     public event EventHandler<SessionAlert> AlertRaised;
+
+    /// <summary>
+    /// Applies a settings pack to the session, updating the current configuration at some point in the future.
+    /// </summary>
+    public void UpdateSettings(SettingsPack pack)
+    {
+        ValidateSettingsPack(pack);
+
+        var packHandle = pack.BuildNative();
+
+        try
+        {
+            NativeMethods.ApplySettingsPack(_handle, packHandle);
+        }
+        finally
+        {
+            NativeMethods.FreeSettingsPack(packHandle);
+        }
+    }
 
     /// <summary>
     /// Attaches a torrent to the session, allowing it to be downloaded/uploaded.
@@ -188,6 +221,42 @@ public class TorrentClient : IDisposable
 
         manager.Stop();
         NativeMethods.DetachTorrent(_handle, manager.TorrentSessionHandle);
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+        {
+            return;
+        }
+
+        foreach (var session in ActiveTorrents)
+        {
+            try
+            {
+                DetachTorrent(session);
+            }
+            catch
+            {
+                // ignore
+            }
+        }
+
+        _disposed = true;
+
+        NativeMethods.ClearEventCallback(_handle);
+        NativeMethods.FreeSession(_handle);
+
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Performs a validation check on the current settings pack, updating any values to values required by this library to function
+    /// </summary>
+    private static void ValidateSettingsPack(SettingsPack settingsPack)
+    {
+        // ensure the alert mask is set to include the required categories
+        settingsPack.Set("alert_mask", settingsPack.Get<int>("alert_mask").GetValueOrDefault(0) | (int)RequiredAlertCategories);
     }
 
     /// <summary>

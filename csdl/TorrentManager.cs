@@ -68,6 +68,23 @@ public class TorrentManager
         NativeMethods.StopTorrent(TorrentSessionHandle);
     }
 
+    /// <summary>
+    /// Reannounces the torrent to all trackers.
+    /// </summary>
+    /// <param name="interval">The delay between making this call and the announcement taking place</param>
+    /// <param name="force">Whether to ignore any internal cooldowns between announcements</param>
+    /// <exception cref="ArgumentOutOfRangeException"><see cref="interval"/> was not valid</exception>
+    public void ReannounceAllTrackers(TimeSpan interval, bool force = false)
+    {
+        if (interval.Seconds <= -1)
+        {
+            throw new ArgumentOutOfRangeException(nameof(interval), "Interval must be a positive value.");
+        }
+
+        ObjectDisposedException.ThrowIf(_detached, this);
+        NativeMethods.ReannounceTorrent(TorrentSessionHandle, (int)interval.TotalSeconds, force);
+    }
+
     // internal method to trigger a detached status, essentially making the object functionally unusable.
     internal void MarkAsDetached()
     {

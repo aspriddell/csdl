@@ -18,10 +18,14 @@ extern "C" {
 
     // session control
     CSDL_EXPORT lt::session* create_session(session_config* config);
+    CSDL_EXPORT lt::session* create_session_from_pack(lt::settings_pack* pack);
+
     CSDL_EXPORT void destroy_session(lt::session* session);
 
     CSDL_EXPORT void set_event_callback(lt::session* session, cs_alert_callback callback, bool include_unmapped_events);
     CSDL_EXPORT void clear_event_callback(lt::session* session);
+
+    CSDL_EXPORT void apply_settings(lt::session* session, lt::settings_pack* settings);
 
     // torrent control
     CSDL_EXPORT lt::torrent_info* create_torrent_file(const char* file_path);
@@ -46,6 +50,7 @@ extern "C" {
     // download control
     CSDL_EXPORT void start_torrent(lt::torrent_handle* torrent);
     CSDL_EXPORT void stop_torrent(lt::torrent_handle* torrent);
+    CSDL_EXPORT void reannounce_torrent(lt::torrent_handle* torrent, const int32_t seconds, const uint8_t ignore_min_interval);
 
     CSDL_EXPORT void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_status);
 
