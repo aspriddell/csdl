@@ -6,133 +6,132 @@ using System.Collections;
 using System.Collections.Specialized;
 using csdl.Native;
 
-namespace csdl
+namespace csdl;
+
+/// <summary>
+/// Represents a collection used to store arbitrary configuration values for passing to the underlying libtorrent instance.
+/// </summary>
+/// <remarks>
+/// Find the full list of configuration keys in the libtorrent documentation (https://www.libtorrent.org/reference-Settings.html).
+/// </remarks>
+public class SettingsPack
 {
+    private readonly HybridDictionary _dictionary = new(true);
+
     /// <summary>
-    /// Represents a collection used to store arbitrary configuration values for passing to the underlying libtorrent instance.
+    /// Gets a string configuration value by key
     /// </summary>
-    /// <remarks>
-    /// Find the full list of configuration keys in the libtorrent documentation (https://www.libtorrent.org /reference-Settings.html).
-    /// </remarks>
-    public class SettingsPack
+    /// <param name="key">The key to retrieve</param>
+    /// <returns>The string value, null if it is not present</returns>
+    public string Get(string key)
     {
-        private readonly HybridDictionary _dictionary = new(true);
-
-        /// <summary>
-        /// Gets a string configuration value by key
-        /// </summary>
-        /// <param name="key">The key to retrieve</param>
-        /// <returns>The string value, null if it is not present</returns>
-        public string Get(string key)
+        var value = _dictionary[key];
+        switch (value)
         {
-            var value = _dictionary[key];
-            switch (value)
-            {
-                case string s:
-                    return s;
+            case string s:
+                return s;
 
-                case null:
-                    return null;
+            case null:
+                return null;
 
-                default:
-                    throw new ArgumentException($"Type mismatch, expected string, got {value.GetType().Name}");
-            }
+            default:
+                throw new ArgumentException($"Type mismatch, expected string, got {value.GetType().Name}");
+        }
+    }
+
+    /// <summary>
+    /// Gets a configuration value by key
+    /// </summary>
+    /// <param name="key">The key to retrieve</param>
+    /// <typeparam name="T">The type of value to get. Can be either <see cref="int"/> or <see cref="bool"/></typeparam>
+    /// <returns>The value from the configuration store</returns>
+    /// <exception cref="ArgumentException">An invalid type was presented</exception>
+    public T? Get<T>(string key) where T : struct
+    {
+        if (typeof(T) != typeof(bool) && typeof(T) != typeof(int))
+        {
+            throw new ArgumentException("Only bool and int types are supported");
         }
 
-        /// <summary>
-        /// Gets a configuration value by key
-        /// </summary>
-        /// <param name="key">The key to retrieve</param>
-        /// <typeparam name="T">The type of value to get. Can be either <see cref="int"/> or <see cref="bool"/></typeparam>
-        /// <returns>The value from the configuration store</returns>
-        /// <exception cref="ArgumentException">An invalid type was presented</exception>
-        public T? Get<T>(string key) where T : struct
+        var value = _dictionary[key];
+        switch (value)
         {
-            if (typeof(T) != typeof(bool) && typeof(T) != typeof(int))
-            {
-                throw new ArgumentException("Only bool and int types are supported");
-            }
+            case T casted:
+                return casted;
 
-            var value = _dictionary[key];
-            switch (value)
-            {
-                case T casted:
-                    return casted;
+            case null:
+                return null;
 
-                case null:
-                    return null;
+            default:
+                throw new ArgumentException($"Type mismatch, expected {value.GetType().Name}, got {typeof(T).Name}");
+        }
+    }
 
-                default:
-                    throw new ArgumentException($"Type mismatch, expected {value.GetType().Name}, got {typeof(T).Name}");
-            }
+    /// <summary>
+    /// Applies a <see cref="string"/> configuration key to the store
+    /// </summary>
+    public void Set(string key, string value)
+    {
+        _dictionary[key] = value;
+    }
+
+    /// <summary>
+    /// Applies an <see cref="int"/> configuration key to the store
+    /// </summary>
+    public void Set(string key, int value)
+    {
+        _dictionary[key] = value;
+    }
+
+    /// <summary>
+    /// Applies a <see cref="bool"/> configuration key to the store
+    /// </summary>
+    public void Set(string key, bool value)
+    {
+        _dictionary[key] = value;
+    }
+
+    /// <summary>
+    /// Builds a native settings pack from the current configuration store
+    /// </summary>
+    /// <returns>The handle to the built pack.</returns>
+    internal IntPtr BuildNative()
+    {
+        var pack = NativeMethods.CreateSettingsPack();
+
+        if (pack == IntPtr.Zero)
+        {
+            throw new ApplicationException("Failed to create settings pack container");
         }
 
-        /// <summary>
-        /// Applies a <see cref="string"/> configuration key to the store
-        /// </summary>
-        public void Set(string key, string value)
+        try
         {
-            _dictionary[key] = value;
-        }
-
-        /// <summary>
-        /// Applies an <see cref="int"/> configuration key to the store
-        /// </summary>
-        public void Set(string key, int value)
-        {
-            _dictionary[key] = value;
-        }
-
-        /// <summary>
-        /// Applies a <see cref="bool"/> configuration key to the store
-        /// </summary>
-        public void Set(string key, bool value)
-        {
-            _dictionary[key] = value;
-        }
-
-        /// <summary>
-        /// Builds a native settings pack from the current configuration store
-        /// </summary>
-        /// <returns>The handle to the built pack.</returns>
-        internal IntPtr BuildNative()
-        {
-            var pack = NativeMethods.CreateSettingsPack();
-
-            if (pack == IntPtr.Zero)
+            foreach (DictionaryEntry entry in _dictionary)
             {
-                throw new ApplicationException("Failed to create settings pack container");
-            }
+                var key = (string)entry.Key;
+                var value = entry.Value;
 
-            try
-            {
-                foreach (DictionaryEntry entry in _dictionary)
+                var success = value switch
                 {
-                    var key = (string)entry.Key;
-                    var value = entry.Value;
+                    int i => NativeMethods.SettingsPackSetInt(pack, key, i),
+                    bool b => NativeMethods.SettingsPackSetBool(pack, key, b),
+                    string s => NativeMethods.SettingsPackSetString(pack, key, s),
 
-                    var success = value switch
-                    {
-                        int i => NativeMethods.SettingsPackSetInt(pack, key, i),
-                        bool b => NativeMethods.SettingsPackSetBool(pack, key, b),
-                        string s => NativeMethods.SettingsPackSetString(pack, key, s),
+                    _ => throw new ArgumentException($"{value?.GetType().Name} type is not supported")
+                };
 
-                        _ => throw new ArgumentException($"{value?.GetType().Name} type is not supported")
-                    };
-
-                    if (!success)
-                    {
-                        throw new ArgumentException($"Failed to set key {key} in settings pack. Ensure the key exists and the value is the correct type.");
-                    }
+                if (!success)
+                {
+                    throw new ArgumentException($"Failed to set key {key} in settings pack. Ensure the key exists and the value is the correct type.");
                 }
             }
-            catch
-            {
-                NativeMethods.FreeSettingsPack(pack);
-                throw;
-            }
-
-            return pack;
         }
+        catch
+        {
+            NativeMethods.FreeSettingsPack(pack);
+            throw;
+        }
+
+        return pack;
     }
 }
