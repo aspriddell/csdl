@@ -3,8 +3,8 @@
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <AssemblyName>csdl-net</AssemblyName>
-        <TargetFramework>net7.0</TargetFramework>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="csdl.Native" Version="1.1.5" />
+      <PackageReference Include="csdl.Native" Version="1.2.0-pre" />
     </ItemGroup>
 
 </Project>

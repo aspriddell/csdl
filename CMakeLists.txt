@@ -17,7 +17,7 @@ endif()
 
 project(cs_native LANGUAGES CXX VERSION ${PRODUCT_VERSION_MAJOR}.${PRODUCT_VERSION_MINOR}.${PRODUCT_VERSION_PATCH})
 
-find_package(LibtorrentRasterbar CONFIG REQUIRED)
+find_package(LibtorrentRasterbar 2.0 CONFIG REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
 
 # rpath fixes (needs to go after project but before add_library)

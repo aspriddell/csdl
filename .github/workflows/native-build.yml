@@ -117,7 +117,7 @@ jobs:
           if: matrix.targetname == 'osx'
           run: |
             cp ${{ env.BUILD_DIR }}/Release/libcsdl.dylib ${{ env.ARCHIVE_DIR }}
-            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.dylib ${{ env.ARCHIVE_DIR }}/libtorrent-rasterbar.2.0.dylib
+            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.2.0.10.dylib ${{ env.ARCHIVE_DIR }}/libtorrent-rasterbar.2.0.10.dylib
 
         - name: Prepare Files (Windows)
           if: matrix.targetname == 'windows'
