@@ -31,9 +31,13 @@
         <None Include="..\icon.png" Pack="true" PackagePath="." Visible="false"/>
         <None Include="..\readme.md" Pack="true" PackagePath="docs" Visible="false"/>
     </ItemGroup>
-
+    
     <ItemGroup>
-      <PackageReference Include="csdl.Native" Version="1.2.0-pre" />
+        <InternalsVisibleTo Include="csdl.Tests"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="csdl.Native" Version="1.2.0-pre4" />
     </ItemGroup>
 
 </Project>
