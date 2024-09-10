@@ -379,7 +379,14 @@ void reannounce_torrent(lt::torrent_handle* torrent, const int32_t seconds, cons
         return;
     }
 
-    torrent->force_reannounce(seconds, ignore_min_interval ? lt::torrent_handle::ignore_min_interval : 0);
+    lt::reannounce_flags_t flags = {};
+
+    if (ignore_min_interval)
+    {
+        flags |= lt::torrent_handle::ignore_min_interval;
+    }
+
+    torrent->force_reannounce(seconds, -1, flags);
 }
 
 // get the progress of a torrent.
