@@ -58,10 +58,13 @@ lt::settings_pack* create_settings_pack()
 
 void destroy_settings_pack(lt::settings_pack* pack)
 {
-    delete pack;
+    if (pack != nullptr)
+    {
+        delete pack;
+    }
 }
 
-bool set_str(lt::settings_pack* pack, const char* key, const char* value)
+bool settings_pack_set_str(lt::settings_pack* pack, const char* key, const char* value)
 {
     if (pack == nullptr)
     {
@@ -80,7 +83,7 @@ bool set_str(lt::settings_pack* pack, const char* key, const char* value)
     });
 }
 
-bool set_bool(lt::settings_pack* pack, const char* key, bool value)
+bool settings_pack_set_bool(lt::settings_pack* pack, const char* key, bool value)
 {
     if (pack == nullptr)
     {
@@ -94,7 +97,7 @@ bool set_bool(lt::settings_pack* pack, const char* key, bool value)
     });
 }
 
-bool set_int(lt::settings_pack* pack, const char* key, int value)
+bool settings_pack_set_int(lt::settings_pack* pack, const char* key, int value)
 {
     if (pack == nullptr)
     {
