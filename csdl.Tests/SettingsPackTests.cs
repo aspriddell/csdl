@@ -2,6 +2,9 @@
 // Licensed under Apache-2.0 - see the license file for more information
 
 using System;
+using System.Net;
+using csdl.Native;
+using csdl.Utils;
 using JetBrains.Annotations;
 
 namespace csdl.Tests
@@ -9,12 +12,7 @@ namespace csdl.Tests
     [TestSubject(typeof(SettingsPack))]
     public class SettingsPackTests : IDisposable
     {
-        private readonly TorrentClient _client;
-
-        public SettingsPackTests()
-        {
-            _client = new TorrentClient();
-        }
+        private readonly TorrentClient _client = new();
 
         [Fact]
         public void TestSettingsPack()
@@ -35,6 +33,27 @@ namespace csdl.Tests
 
             Assert.Throws<ArgumentException>(() => pack.Get<bool>("invalid_data"));
             Assert.Throws<ArgumentException>(() => pack.BuildNative());
+        }
+
+        [Fact]
+        public void TestListenInterfaces()
+        {
+            var pack = new SettingsPack();
+            var interfaces = new[]
+            {
+                new IPInterface(new IPEndPoint(IPAddress.IPv6Any, 6001)),
+                new IPInterface(new IPEndPoint(IPAddress.Loopback, 10001), ListenInterface.ListenFlags.ListenSSL)
+            };
+
+            pack.UseListenInterfaces(interfaces);
+
+            Assert.Equal("[::]:6001", interfaces[0].ToString());
+            Assert.Equal("127.0.0.1:10001s", interfaces[1].ToString());
+            Assert.Contains("[::]:6001", pack.Get("listen_interfaces"));
+
+            // test native pack compatibility
+            var nativePack = pack.BuildNative();
+            NativeMethods.FreeSettingsPack(nativePack);
         }
 
         public void Dispose()
