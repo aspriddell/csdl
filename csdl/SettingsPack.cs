@@ -9,8 +9,11 @@ using csdl.Native;
 namespace csdl
 {
     /// <summary>
-    /// Represents the settings_pack in libtorrent.
+    /// Represents a collection used to store arbitrary configuration values for passing to the underlying libtorrent instance.
     /// </summary>
+    /// <remarks>
+    /// Find the full list of configuration keys in the libtorrent documentation (https://www.libtorrent.org /reference-Settings.html).
+    /// </remarks>
     public class SettingsPack
     {
         private readonly HybridDictionary _dictionary = new(true);
