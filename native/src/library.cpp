@@ -14,7 +14,7 @@ lt::session* create_session(session_config* config)
 {
     if (config == nullptr)
     {
-        return new lt::session;
+        return create_session_from_pack(nullptr);
     }
 
     lt::settings_pack pack;
@@ -71,13 +71,12 @@ lt::session* create_session(session_config* config)
 
 lt::session* create_session_from_pack(lt::settings_pack* pack)
 {
-    if (pack == nullptr)
-    {
-        return new lt::session;
-    }
-
     lt::session_params params;
-    params.settings = *pack;
+
+    if (pack != nullptr)
+    {
+        params.settings = *pack;
+    }
 
     return new lt::session(params);
 }
