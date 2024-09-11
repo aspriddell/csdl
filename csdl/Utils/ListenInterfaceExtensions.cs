@@ -17,6 +17,7 @@ public static class ListenInterfaceExtensions
         foreach (var iface in interfaces)
         {
             stringBuilder.Append(iface);
+            stringBuilder.Append(',');
         }
 
         // stop if nothing was written
