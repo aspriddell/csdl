@@ -3,7 +3,7 @@
         <OutputType>Library</OutputType>
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <AssemblyName>csdl.Native.Android</AssemblyName>
-        <TargetFramework>net7.0-android</TargetFramework>
+        <TargetFramework>net8.0-android</TargetFramework>
         <SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
     </PropertyGroup>
     

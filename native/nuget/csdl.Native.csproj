@@ -2,7 +2,7 @@
     <PropertyGroup>
         <OutputType>Library</OutputType>
         <AssemblyName>csdl.Native</AssemblyName>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <IncludeBuildOutput>false</IncludeBuildOutput>
     </PropertyGroup>
     
