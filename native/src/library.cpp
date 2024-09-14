@@ -9,67 +9,8 @@
 #include <libtorrent/torrent_handle.hpp>
 
 extern "C" {
-// given a config, create a session
-lt::session* create_session(session_config* config)
-{
-    if (config == nullptr)
-    {
-        return create_session_from_pack(nullptr);
-    }
 
-    lt::settings_pack pack;
-
-    // user-agent
-    if (config->user_agent != nullptr)
-    {
-        auto useragent = std::string(config->user_agent);
-        if (!useragent.empty())
-        {
-            pack.set_str(lt::settings_pack::user_agent, useragent);
-        }
-    }
-
-    // fingerprint
-    if (config->fingerprint != nullptr)
-    {
-        auto fingerprint = std::string(config->fingerprint);
-        if (!fingerprint.empty())
-        {
-            pack.set_str(lt::settings_pack::peer_fingerprint, fingerprint);
-        }
-    }
-
-    // events
-    if (config->set_alert_flags)
-    {
-        pack.set_int(lt::settings_pack::alert_mask, config->alert_flags);
-    }
-
-    pack.set_bool(lt::settings_pack::anonymous_mode, config->private_mode);
-
-    // disable seeding
-    if (config->block_seeding)
-    {
-        pack.set_bool(lt::settings_pack::seeding_outgoing_connections, false);
-    }
-
-    // max connections
-    if (config->max_connections > 0)
-    {
-        pack.set_int(lt::settings_pack::connections_limit, config->max_connections);
-    }
-
-    // encryption
-    if (config->encrypted_peers_only)
-    {
-        pack.set_int(lt::settings_pack::out_enc_policy, lt::settings_pack::pe_forced);
-        pack.set_int(lt::settings_pack::in_enc_policy, lt::settings_pack::pe_forced);
-    }
-
-    return create_session_from_pack(&pack);
-}
-
-lt::session* create_session_from_pack(lt::settings_pack* pack)
+lt::session* create_session(lt::settings_pack* pack)
 {
     lt::session_params params;
 

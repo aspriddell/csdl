@@ -18,19 +18,11 @@ internal static partial class NativeMethods
     public delegate void SessionEventCallback(IntPtr alertPtr);
 
     /// <summary>
-    /// Creates a session with the given configuration.
-    /// </summary>
-    /// <param name="config">The configuration to apply</param>
-    /// <returns>A handle to the session</returns>
-    [DllImport(LibraryName, EntryPoint = "create_session")]
-    public static extern IntPtr CreateSession(in NativeStructs.SessionConfig config);
-
-    /// <summary>
     /// Creates a session, optionally using a provided settings pack.
     /// </summary>
-    /// <param name="settingsPack">A settings pack handle, set to <see cref="IntPtr.Zero"/> to initialise without customisation</param>
+    /// <param name="settingsPack">A settings pack handle, set to <c>null</c> to initialise without customisation</param>
     /// <returns>A handle to the session</returns>
-    [LibraryImport(LibraryName, EntryPoint = "create_session_from_pack")]
+    [LibraryImport(LibraryName, EntryPoint = "create_session")]
     public static unsafe partial IntPtr CreateSession(void* settingsPack);
 
     /// <summary>

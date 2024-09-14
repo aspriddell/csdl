@@ -17,9 +17,7 @@ extern "C" {
 #endif
 
     // session control
-    CSDL_EXPORT lt::session* create_session(session_config* config);
-    CSDL_EXPORT lt::session* create_session_from_pack(lt::settings_pack* pack);
-
+    CSDL_EXPORT lt::session* create_session(lt::settings_pack* pack)
     CSDL_EXPORT void destroy_session(lt::session* session);
 
     CSDL_EXPORT void set_event_callback(lt::session* session, cs_alert_callback callback, bool include_unmapped_events);
