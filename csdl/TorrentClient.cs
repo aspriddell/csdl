@@ -17,7 +17,7 @@ namespace csdl;
 /// </summary>
 public class TorrentClient : IDisposable
 {
-    private const AlertCategories RequiredAlertCategories = AlertCategories.Status;
+    internal const AlertCategories RequiredAlertCategories = AlertCategories.Status;
 
     private readonly ConcurrentDictionary<string, TorrentManager> _attachedManagers = new(StringComparer.OrdinalIgnoreCase);
 
@@ -31,17 +31,15 @@ public class TorrentClient : IDisposable
     /// <summary>
     /// Creates a new instance of <see cref="TorrentClient"/> with default settings.
     /// </summary>
-    public unsafe TorrentClient()
+    public TorrentClient() : this(new SettingsPack())
     {
-        _handle = NativeMethods.CreateSession(null);
+    }
 
-        if (_handle == IntPtr.Zero)
-        {
-            throw new InvalidOperationException("Failed to create session.");
-        }
-
-        _eventCallback = ProxyRaisedEvent;
-        NativeMethods.SetEventCallback(_handle, _eventCallback, true);
+    /// <summary>
+    /// Creates a new instance of <see cref="TorrentClient"/> with the provided configuration.
+    /// </summary>
+    public TorrentClient(TorrentClientConfig config) : this(config.Build())
+    {
     }
 
     /// <summary>
@@ -69,33 +67,6 @@ public class TorrentClient : IDisposable
         {
             NativeMethods.FreeSettingsPack(packHandle);
         }
-    }
-
-    /// <summary>
-    /// Creates a new instance of <see cref="TorrentClient"/> with the provided configuration.
-    /// </summary>
-    public TorrentClient(TorrentClientConfig config)
-    {
-        _handle = NativeMethods.CreateSession(new NativeStructs.SessionConfig
-        {
-            user_agent = config.UserAgent,
-            fingerprint = config.Fingerprint,
-            private_mode = config.PrivateMode,
-            block_seeding = config.BlockSeeding,
-            max_connections = config.MaxConnections,
-            force_encryption = config.ForceEncryption,
-
-            set_alert_flags = true,
-            alert_flags = (int)(config.AlertCategories | RequiredAlertCategories)
-        });
-
-        if (_handle == IntPtr.Zero)
-        {
-            throw new InvalidOperationException("Failed to create session.");
-        }
-
-        _eventCallback = ProxyRaisedEvent;
-        NativeMethods.SetEventCallback(_handle, _eventCallback, true);
     }
 
     ~TorrentClient()
