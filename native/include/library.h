@@ -29,6 +29,7 @@ extern "C" {
 
     // torrent control
     CSDL_EXPORT lt::torrent_info* create_torrent_file(const char* file_path);
+    CSDL_EXPORT lt::torrent_info* create_torrent_magnet(const char* magnet);
     CSDL_EXPORT lt::torrent_info* create_torrent_bytes(const char* data, long length);
     CSDL_EXPORT void destroy_torrent(lt::torrent_info* torrent);
 

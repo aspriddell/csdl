@@ -145,6 +145,11 @@ lt::torrent_info* create_torrent_file(const char* file_path)
     return new lt::torrent_info(std::string(file_path));
 }
 
+lt::torrent_info* create_torrent_magnet(const char* magnet)
+{
+    return new lt::parse_magnet_uri(std::string(magnet));
+}
+
 void destroy_torrent(lt::torrent_info* torrent)
 {
     if (torrent != nullptr)

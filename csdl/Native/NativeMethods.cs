@@ -73,6 +73,14 @@ internal static partial class NativeMethods
     public static partial IntPtr CreateTorrentFromFile([MarshalAs(UnmanagedType.LPUTF8Str)] string path);
 
     /// <summary>
+    /// Create a torrent from a magnet link
+    /// </summary>
+    /// <param name="magnet">The magnet link to parse</param>
+    /// <returns>A handle to the torrent or <see cref="IntPtr.Zero"/> if there an error occurred</returns>
+    [LibraryImport(LibraryName, EntryPoint = "create_torrent_magnet", StringMarshalling = StringMarshalling.Utf8)]
+    public static partial IntPtr CreateTorrentFromMagnet([MarshalAs(UnmanagedType.LPUTF8Str)] string magnet);
+
+    /// <summary>
     /// Create a torrent file from a byte array
     /// </summary>
     /// <param name="content">The memory region containing the torrent file</param>
