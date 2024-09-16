@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 CSDL_STRUCT typedef struct cs_torrent_file_information {
-    lt::file_index_t index;
+    int32_t index;
 
     int64_t offset;
     int64_t file_size;

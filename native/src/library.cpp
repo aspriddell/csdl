@@ -228,14 +228,16 @@ void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_li
 
     for (lt::file_index_t i(0); i != files.end_file(); i++)
     {
+        auto index = static_cast<int32_t>(i);
+
         auto name = files.file_name(i);
         auto path = files.file_path(i);
 
         char* file_name = new char[name.size() + 1]();
         char* file_path = new char[path.size() + 1]();
 
-        list[(int)i] = {
-            i,
+        list[index] = {
+            index,
             files.file_offset(i),
             files.file_size(i),
             files.mtime(i),
@@ -270,25 +272,25 @@ void destroy_torrent_file_list(torrent_file_list* file_list)
 }
 
 // set the download priority for a file in a torrent.
-void set_file_dl_priority(lt::torrent_handle* torrent, const lt::file_index_t file_index, const uint8_t priority)
+void set_file_dl_priority(lt::torrent_handle* torrent, const int32_t file_index, const uint8_t priority)
 {
     if (torrent == nullptr)
     {
         return;
     }
 
-    torrent->file_priority(file_index, (lt::download_priority_t)priority);
+    torrent->file_priority(static_cast<lt::file_index_t>(file_index), static_cast<lt::download_priority_t>(priority));
 }
 
 // get the download priority for a file in a torrent.
-uint8_t get_file_dl_priority(lt::torrent_handle* torrent, const lt::file_index_t file_index)
+uint8_t get_file_dl_priority(lt::torrent_handle* torrent, const int32_t file_index)
 {
     if (torrent == nullptr)
     {
         return 0;
     }
 
-    return (uint8_t)torrent->file_priority(file_index);
+    return static_cast<uint8_t>(torrent->file_priority(static_cast<lt::file_index_t>(file_index)));
 }
 
 // start and stop the download of a torrent.
