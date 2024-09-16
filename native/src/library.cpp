@@ -115,7 +115,7 @@ lt::torrent_handle* attach_torrent(lt::session* session, lt::torrent_info* torre
 
     // set torrent info - make_shared creates a copy
     params.ti = std::make_shared<lt::torrent_info>(*torrent);
-    auto handle = new lt::torrent_handle(session->add_torrent(params));
+    const auto handle = new lt::torrent_handle(session->add_torrent(params));
 
     if (handle->is_valid())
     {
@@ -154,15 +154,15 @@ torrent_metadata* get_torrent_info(lt::torrent_info* torrent)
     auto author = torrent->creator();
     auto comment = torrent->comment();
 
-    auto torrent_name = new char[name.size() + 1]();
-    auto torrent_author = new char[author.size() + 1]();
-    auto torrent_comment = new char[comment.size() + 1]();
+    const auto torrent_name = new char[name.size() + 1]();
+    const auto torrent_author = new char[author.size() + 1]();
+    const auto torrent_comment = new char[comment.size() + 1]();
 
     std::ranges::copy(name, torrent_name);
     std::ranges::copy(author, torrent_author);
     std::ranges::copy(comment, torrent_comment);
 
-    auto info = new torrent_metadata();
+    const auto info = new torrent_metadata();
 
     info->name = torrent_name;
     info->creator = torrent_author;
@@ -221,8 +221,8 @@ void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_li
 
     const auto& files = torrent->files();
 
-    auto num_files = files.num_files();
-    auto list = new torrent_file_information[num_files];
+    const auto num_files = files.num_files();
+    const auto list = new torrent_file_information[num_files];
 
     for (lt::file_index_t i(0); i != files.end_file(); i++)
     {
@@ -231,8 +231,8 @@ void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_li
         auto name = files.file_name(i);
         auto path = files.file_path(i);
 
-        char* file_name = new char[name.size() + 1]();
-        char* file_path = new char[path.size() + 1]();
+        auto file_name = new char[name.size() + 1]();
+        auto file_path = new char[path.size() + 1]();
 
         list[index] = {
             index,
@@ -338,7 +338,7 @@ void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_sta
         return;
     }
 
-    auto s = torrent->status();
+    const auto s = torrent->status();
 
     if (s.errc != lt::error_code())
     {
