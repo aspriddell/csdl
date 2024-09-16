@@ -14,21 +14,6 @@
 extern "C" {
 #endif
 
-CSDL_STRUCT typedef struct cs_session_config {
-    // see https://www.libtorrent.org/reference-Settings.html#settings_pack
-    char* user_agent;
-    char* fingerprint;
-
-    bool private_mode;
-    bool block_seeding;
-    bool encrypted_peers_only;
-
-    bool set_alert_flags;
-
-    int32_t alert_flags;
-    int32_t max_connections;
-} session_config;
-
 CSDL_STRUCT typedef struct cs_torrent_file_information {
     lt::file_index_t index;
 
