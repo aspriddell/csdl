@@ -49,10 +49,10 @@ jobs:
             fetch-depth: 0
 
         - name: Prepare Environment (Ubuntu)
-          if:  matrix.buildos == 'ubuntu-20.04' && matrix.arch != 'arm64'
+          if:  matrix.buildos == 'ubuntu-20.04' && matrix.arch != 'arm64' && matrix.targetname == 'linux'
           run: |
             sudo apt-get update
-            sudo apt-get install -y binutils-x86-64-linux-gnu g++-10-x86-64-linux-gnu gcc-10-x86-64-linux-gnu
+            sudo apt-get install -y binutils-x86-64-linux-gnu g++-10 gcc-10
 
         - name: Prepare Environment (Ubuntu/arm64)
           if: matrix.buildos == 'ubuntu-20.04' && matrix.arch == 'arm64'
