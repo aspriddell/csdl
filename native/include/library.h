@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
     // session control
-    CSDL_EXPORT lt::session* create_session(lt::settings_pack* pack)
+    CSDL_EXPORT lt::session* create_session(lt::settings_pack* pack);
     CSDL_EXPORT void destroy_session(lt::session* session);
 
     CSDL_EXPORT void set_event_callback(lt::session* session, cs_alert_callback callback, bool include_unmapped_events);
@@ -42,8 +42,8 @@ extern "C" {
     CSDL_EXPORT void destroy_torrent_file_list(torrent_file_list* file_list);
 
     // priority control
-    CSDL_EXPORT uint8_t get_file_dl_priority(lt::torrent_handle* torrent, lt::file_index_t file_index);
-    CSDL_EXPORT void set_file_dl_priority(lt::torrent_handle* torrent, lt::file_index_t file_index, uint8_t priority);
+    CSDL_EXPORT uint8_t get_file_dl_priority(lt::torrent_handle* torrent, int32_t file_index);
+    CSDL_EXPORT void set_file_dl_priority(lt::torrent_handle* torrent, int32_t file_index, uint8_t priority);
 
     // download control
     CSDL_EXPORT void start_torrent(lt::torrent_handle* torrent);

@@ -49,7 +49,8 @@ void set_event_callback(lt::session* session, cs_alert_callback callback, bool i
     {
         return;
     }
-    else if (callback == nullptr)
+
+    if (callback == nullptr)
     {
         clear_event_callback(session);
         return;
@@ -75,8 +76,8 @@ void clear_event_callback(lt::session* session)
 
 lt::torrent_info* create_torrent_bytes(const char* data, long length)
 {
-    lt::span<char const> buffer(data, length);
-    lt::load_torrent_limits cfg;
+    const lt::span buffer(data, length);
+    const lt::load_torrent_limits cfg;
 
     return new lt::torrent_info(buffer, cfg, lt::from_span);
 }
@@ -88,10 +89,7 @@ lt::torrent_info* create_torrent_file(const char* file_path)
 
 void destroy_torrent(lt::torrent_info* torrent)
 {
-    if (torrent != nullptr)
-    {
-        delete torrent;
-    }
+    delete torrent;
 }
 
 // attach a torrent to the session, returning a handle that can be used to control the download.
@@ -117,7 +115,7 @@ lt::torrent_handle* attach_torrent(lt::session* session, lt::torrent_info* torre
 
     // set torrent info - make_shared creates a copy
     params.ti = std::make_shared<lt::torrent_info>(*torrent);
-    auto handle = new lt::torrent_handle(session->add_torrent(params));
+    const auto handle = new lt::torrent_handle(session->add_torrent(params));
 
     if (handle->is_valid())
     {
@@ -156,15 +154,15 @@ torrent_metadata* get_torrent_info(lt::torrent_info* torrent)
     auto author = torrent->creator();
     auto comment = torrent->comment();
 
-    auto torrent_name = new char[name.size() + 1]();
-    auto torrent_author = new char[author.size() + 1]();
-    auto torrent_comment = new char[comment.size() + 1]();
+    const auto torrent_name = new char[name.size() + 1]();
+    const auto torrent_author = new char[author.size() + 1]();
+    const auto torrent_comment = new char[comment.size() + 1]();
 
-    std::copy(name.begin(), name.end(), torrent_name);
-    std::copy(author.begin(), author.end(), torrent_author);
-    std::copy(comment.begin(), comment.end(), torrent_comment);
+    std::ranges::copy(name, torrent_name);
+    std::ranges::copy(author, torrent_author);
+    std::ranges::copy(comment, torrent_comment);
 
-    auto info = new torrent_metadata();
+    const auto info = new torrent_metadata();
 
     info->name = torrent_name;
     info->creator = torrent_author;
@@ -179,21 +177,21 @@ torrent_metadata* get_torrent_info(lt::torrent_info* torrent)
     // fill in the info hash
     if (hash.has_v1())
     {
-        std::copy(hash.v1.begin(), hash.v1.end(), info->info_hash_v1);
+        std::ranges::copy(hash.v1, info->info_hash_v1);
     }
     else
     {
-        std::fill(info->info_hash_v1, info->info_hash_v1 + 20, 0);
+        std::fill_n(info->info_hash_v1, 20, 0);
     }
 
     // fill in the info hash v2
     if (hash.has_v2())
     {
-        std::copy(hash.v2.begin(), hash.v2.end(), info->info_hash_v2);
+        std::ranges::copy(hash.v2, info->info_hash_v2);
     }
     else
     {
-        std::fill(info->info_hash_v2, info->info_hash_v2 + 32, 0);
+        std::fill_n(info->info_hash_v2, 32, 0);
     }
 
     return info;
@@ -223,19 +221,21 @@ void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_li
 
     const auto& files = torrent->files();
 
-    auto num_files = files.num_files();
-    auto list = new torrent_file_information[num_files];
+    const auto num_files = files.num_files();
+    const auto list = new torrent_file_information[num_files];
 
     for (lt::file_index_t i(0); i != files.end_file(); i++)
     {
+        auto index = static_cast<int32_t>(i);
+
         auto name = files.file_name(i);
         auto path = files.file_path(i);
 
-        char* file_name = new char[name.size() + 1]();
-        char* file_path = new char[path.size() + 1]();
+        auto file_name = new char[name.size() + 1]();
+        auto file_path = new char[path.size() + 1]();
 
-        list[(int)i] = {
-            i,
+        list[index] = {
+            index,
             files.file_offset(i),
             files.file_size(i),
             files.mtime(i),
@@ -245,8 +245,8 @@ void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_li
             files.pad_file_at(i)
         };
 
-        std::copy(name.begin(), name.end(), file_name);
-        std::copy(path.begin(), path.end(), file_path);
+        std::ranges::copy(name, file_name);
+        std::ranges::copy(path, file_path);
     }
 
     file_list->files = list;
@@ -270,25 +270,25 @@ void destroy_torrent_file_list(torrent_file_list* file_list)
 }
 
 // set the download priority for a file in a torrent.
-void set_file_dl_priority(lt::torrent_handle* torrent, const lt::file_index_t file_index, const uint8_t priority)
+void set_file_dl_priority(lt::torrent_handle* torrent, const int32_t file_index, const uint8_t priority)
 {
     if (torrent == nullptr)
     {
         return;
     }
 
-    torrent->file_priority(file_index, (lt::download_priority_t)priority);
+    torrent->file_priority(static_cast<lt::file_index_t>(file_index), static_cast<lt::download_priority_t>(priority));
 }
 
 // get the download priority for a file in a torrent.
-uint8_t get_file_dl_priority(lt::torrent_handle* torrent, const lt::file_index_t file_index)
+uint8_t get_file_dl_priority(lt::torrent_handle* torrent, const int32_t file_index)
 {
     if (torrent == nullptr)
     {
         return 0;
     }
 
-    return (uint8_t)torrent->file_priority(file_index);
+    return static_cast<uint8_t>(torrent->file_priority(static_cast<lt::file_index_t>(file_index)));
 }
 
 // start and stop the download of a torrent.
@@ -338,7 +338,7 @@ void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_sta
         return;
     }
 
-    auto s = torrent->status();
+    const auto s = torrent->status();
 
     if (s.errc != lt::error_code())
     {
