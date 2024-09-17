@@ -52,7 +52,7 @@ jobs:
           if: matrix.buildos == 'ubuntu-22.04' && matrix.arch == 'arm64'
           run: |
             sudo apt-get update
-            sudo apt-get install -y binutils-aarch64-linux-gnu g++-10-aarch64-linux-gnu gcc-10-aarch64-linux-gnu
+            sudo apt-get install -y binutils-aarch64-linux-gnu g++-12-aarch64-linux-gnu gcc-12-aarch64-linux-gnu
 
         - name: Prepare Environment (Android)
           if: matrix.targetname == 'android'
