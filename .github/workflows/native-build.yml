@@ -33,13 +33,13 @@ jobs:
           include:
             - { targetname: osx, buildos: macos-latest, arch: x64, triplet: release-osx-x64 }
             - { targetname: osx, buildos: macos-latest, arch: arm64, triplet: release-osx-arm64 }
-            - { targetname: linux, buildos: ubuntu-20.04, arch: x64, triplet: release-linux-x64 }
-            - { targetname: linux, buildos: ubuntu-20.04, arch: arm64, triplet: release-linux-arm64 }
+            - { targetname: linux, buildos: ubuntu-22.04, arch: x64, triplet: release-linux-x64 }
+            - { targetname: linux, buildos: ubuntu-22.04, arch: arm64, triplet: release-linux-arm64 }
             - { targetname: windows, buildos: windows-latest, arch: x64, triplet: x64-windows-release }
             - { targetname: windows, buildos: windows-latest,  arch: arm64, triplet: release-windows-arm64 }
-            - { targetname: android, buildos: ubuntu-20.04, arch: arm, triplet: release-android-arm }
-            - { targetname: android, buildos: ubuntu-20.04, arch: arm64, triplet: release-android-arm64 }
-            - { targetname: android, buildos: ubuntu-20.04, arch: x86_64, triplet: release-android-x86_64 }
+            - { targetname: android, buildos: ubuntu-22.04, arch: arm, triplet: release-android-arm }
+            - { targetname: android, buildos: ubuntu-22.04, arch: arm64, triplet: release-android-arm64 }
+            - { targetname: android, buildos: ubuntu-22.04, arch: x86_64, triplet: release-android-x86_64 }
 
       steps:
         - name: Checkout
@@ -49,10 +49,10 @@ jobs:
             fetch-depth: 0
 
         - name: Prepare Environment (Ubuntu/arm64)
-          if: matrix.buildos == 'ubuntu-20.04' && matrix.arch == 'arm64'
+          if: matrix.buildos == 'ubuntu-22.04' && matrix.arch == 'arm64'
           run: |
             sudo apt-get update
-            sudo apt-get install -y binutils-aarch64-linux-gnu g++-aarch64-linux-gnu gcc-aarch64-linux-gnu
+            sudo apt-get install -y binutils-aarch64-linux-gnu g++-12-aarch64-linux-gnu gcc-12-aarch64-linux-gnu
 
         - name: Prepare Environment (Android)
           if: matrix.targetname == 'android'
