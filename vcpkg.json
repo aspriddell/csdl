@@ -1,12 +1,15 @@
 {
-  "name" : "cs-native",
-  "version-string" : "1.2.0",
-  "builtin-baseline" : "eba7c6a894fce24146af4fdf161fef8e90dd6be3",
-  "dependencies" : [ {
-    "name" : "libtorrent",
-    "version>=" : "2.0.10"
-  }, {
-    "name" : "magic-enum",
-    "version>=" : "0.9.5"
-  } ]
+  "name": "csdl-native",
+  "version-string": "1.2.2",
+  "builtin-baseline": "bc3512a509f9d29b37346a7e7e929f9a26e66c7e",
+  "dependencies": [
+    {
+      "name": "libtorrent",
+      "version>=": "2.0.11"
+    },
+    {
+      "name": "magic-enum",
+      "version>=": "0.9.7"
+    }
+  ]
 }
