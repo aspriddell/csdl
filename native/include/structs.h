@@ -62,7 +62,7 @@ enum cs_torrent_state : int32_t {
 CSDL_STRUCT typedef struct cs_torrent_status {
     cs_torrent_state state;
 
-    float_t progress;
+    float progress;
 
     int32_t count_peers;
     int32_t count_seeds;
