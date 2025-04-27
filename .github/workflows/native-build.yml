@@ -180,7 +180,7 @@ jobs:
         
   package-android:
     name: Build Package (Android)
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     needs: [build-platforms]
 
@@ -188,18 +188,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-
-      - name: Install Android workload
-        run: dotnet workload install android
-
-      - name: Install JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '21'
-          distribution: 'microsoft'
-
-      - name: Install Android SDK
-        uses: android-actions/setup-android@v3
       
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
