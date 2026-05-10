@@ -103,6 +103,34 @@ internal static partial class NativeMethods
     public static partial IntPtr AttachTorrent(IntPtr sessionHandle, IntPtr torrentHandle, [MarshalAs(UnmanagedType.LPUTF8Str)] string savePath);
 
     /// <summary>
+    /// Attaches a magnet URI to a session. The torrent metadata will be fetched from peers.
+    /// A <see cref="Enums.AlertType.MetadataReceived"/> alert fires once metadata is available.
+    /// </summary>
+    /// <param name="sessionHandle">The session handle to attach to</param>
+    /// <param name="magnetUri">The magnet URI to parse and attach</param>
+    /// <param name="savePath">The path to save the contents of the torrent to</param>
+    /// <returns>A torrent-session handle, or <see cref="IntPtr.Zero"/> if the URI was invalid</returns>
+    [LibraryImport(LibraryName, EntryPoint = "attach_magnet", StringMarshalling = StringMarshalling.Utf8)]
+    public static partial IntPtr AttachMagnet(IntPtr sessionHandle, [MarshalAs(UnmanagedType.LPUTF8Str)] string magnetUri, [MarshalAs(UnmanagedType.LPUTF8Str)] string savePath);
+
+    /// <summary>
+    /// Returns the torrent info from a torrent handle once metadata has been received.
+    /// The returned handle must be freed with <see cref="FreeTorrent"/>.
+    /// </summary>
+    /// <param name="torrentSessionHandle">The torrent session handle</param>
+    /// <returns>A handle to a <c>lt::torrent_info</c>, or <see cref="IntPtr.Zero"/> if metadata is not yet available</returns>
+    [LibraryImport(LibraryName, EntryPoint = "get_handle_torrent_info")]
+    public static partial IntPtr GetHandleTorrentInfo(IntPtr torrentSessionHandle);
+
+    /// <summary>
+    /// Fills a 20-byte buffer with the v1 info-hash of the torrent associated with the given handle.
+    /// </summary>
+    /// <param name="torrentSessionHandle">The torrent session handle</param>
+    /// <param name="hashOut">A 20-byte buffer to receive the info-hash</param>
+    [LibraryImport(LibraryName, EntryPoint = "get_torrent_handle_info_hash")]
+    public static partial void GetTorrentHandleInfoHash(IntPtr torrentSessionHandle, byte[] hashOut);
+
+    /// <summary>
     /// Detaches a torrent from a session, stopping the download.
     /// </summary>
     /// <param name="sessionHandle">The session handle to detach from</param>
