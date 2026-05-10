@@ -158,6 +158,33 @@ internal static partial class NativeMethods
     public static partial void FreeTorrentInfo(IntPtr torrentInfoHandle);
 
     /// <summary>
+    /// Saves the torrent metadata to a file at the specified path.
+    /// </summary>
+    /// <param name="torrentHandle">The handle of the torrent</param>
+    /// <param name="filePath">The path to write the .torrent file to</param>
+    /// <returns><c>true</c> if the file was written successfully; otherwise <c>false</c></returns>
+    [return: MarshalAs(UnmanagedType.I1)]
+    [LibraryImport(LibraryName, EntryPoint = "save_torrent_to_file", StringMarshalling = StringMarshalling.Utf8)]
+    public static partial bool SaveTorrentToFile(IntPtr torrentHandle, [MarshalAs(UnmanagedType.LPUTF8Str)] string filePath);
+
+    /// <summary>
+    /// Returns the torrent metadata as a byte array allocated by the native library.
+    /// The returned buffer must be freed with <see cref="FreeTorrentBytes"/>.
+    /// </summary>
+    /// <param name="torrentHandle">The handle of the torrent</param>
+    /// <param name="data">Receives a pointer to the allocated buffer</param>
+    /// <param name="size">Receives the size of the buffer in bytes</param>
+    [LibraryImport(LibraryName, EntryPoint = "get_torrent_bytes")]
+    public static partial void GetTorrentBytes(IntPtr torrentHandle, out IntPtr data, out long size);
+
+    /// <summary>
+    /// Frees a buffer previously returned by <see cref="GetTorrentBytes"/>.
+    /// </summary>
+    /// <param name="data">The buffer to free</param>
+    [LibraryImport(LibraryName, EntryPoint = "free_torrent_bytes")]
+    public static partial void FreeTorrentBytes(IntPtr data);
+
+    /// <summary>
     /// Request a list of files contained within a torrent.
     /// </summary>
     /// <param name="torrentHandle">Handle of the torrent file to get info for</param>

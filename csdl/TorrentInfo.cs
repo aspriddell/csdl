@@ -124,6 +124,41 @@ public class TorrentInfo
     /// </summary>
     public IReadOnlyCollection<TorrentFileInfo> Files => field ??= GetFiles();
 
+    /// <summary>
+    /// Returns the .torrent file as a byte array.
+    /// </summary>
+    public byte[] GetBytes()
+    {
+        NativeMethods.GetTorrentBytes(InfoHandle, out var data, out var size);
+
+        if (data == IntPtr.Zero || size <= 0)
+        {
+            throw new InvalidOperationException("Failed to serialise torrent to bytes.");
+        }
+
+        try
+        {
+            var result = new byte[size];
+            Marshal.Copy(data, result, 0, (int)size);
+            return result;
+        }
+        finally
+        {
+            NativeMethods.FreeTorrentBytes(data);
+        }
+    }
+
+    /// <summary>
+    /// Saves the .torrent file to the specified path.
+    /// </summary>
+    public void SaveToFile(string path)
+    {
+        if (!NativeMethods.SaveTorrentToFile(InfoHandle, path))
+        {
+            throw new InvalidOperationException($"Failed to save torrent file to '{path}'.");
+        }
+    }
+
     private TorrentMetadata GetInfo()
     {
         var infoHandle = NativeMethods.GetTorrentInfo(InfoHandle);
