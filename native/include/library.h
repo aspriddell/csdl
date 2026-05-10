@@ -31,7 +31,11 @@ extern "C" {
     CSDL_EXPORT void destroy_torrent(lt::torrent_info* torrent);
 
     CSDL_EXPORT lt::torrent_handle* attach_torrent(lt::session* session, lt::torrent_info* torrent, const char* save_path);
+    CSDL_EXPORT lt::torrent_handle* attach_magnet(lt::session* session, const char* magnet_uri, const char* save_path);
     CSDL_EXPORT void detach_torrent(lt::session* session, lt::torrent_handle* torrent);
+
+    CSDL_EXPORT lt::torrent_info* get_handle_torrent_info(lt::torrent_handle* handle);
+    CSDL_EXPORT void get_torrent_handle_info_hash(lt::torrent_handle* handle, char* hash_out);
 
     // torrent info
     CSDL_EXPORT torrent_metadata* get_torrent_info(lt::torrent_info* torrent);

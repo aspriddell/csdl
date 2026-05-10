@@ -6,6 +6,7 @@
 #include "library.h"
 
 #include <libtorrent/fingerprint.hpp>
+#include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/torrent_handle.hpp>
 
 extern "C" {
@@ -126,6 +127,40 @@ lt::torrent_handle* attach_torrent(lt::session* session, lt::torrent_info* torre
     return nullptr;
 }
 
+lt::torrent_handle* attach_magnet(lt::session* session, const char* magnet_uri, const char* save_path)
+{
+    if (session == nullptr || magnet_uri == nullptr)
+    {
+        return nullptr;
+    }
+
+    lt::error_code ec;
+    lt::add_torrent_params params = lt::parse_magnet_uri(std::string(magnet_uri), ec);
+
+    if (ec)
+    {
+        return nullptr;
+    }
+
+    if (save_path != nullptr)
+    {
+        params.save_path = std::string(save_path);
+    }
+
+    params.flags |= lt::torrent_flags::paused;
+    params.flags &= ~lt::torrent_flags::auto_managed;
+
+    const auto handle = new lt::torrent_handle(session->add_torrent(params));
+
+    if (handle->is_valid())
+    {
+        return handle;
+    }
+
+    delete handle;
+    return nullptr;
+}
+
 // after detaching the torrent, the torrent handle is no longer valid.
 // additionally, a call to destroy_torrent is not needed.
 void detach_torrent(lt::session* session, lt::torrent_handle* torrent)
@@ -139,6 +174,44 @@ void detach_torrent(lt::session* session, lt::torrent_handle* torrent)
     session->remove_torrent(*torrent);
 
     delete torrent;
+}
+
+// returns a heap-allocated copy of the torrent_info from a torrent_handle (available after metadata is fetched).
+// the returned pointer must be freed with destroy_torrent.
+lt::torrent_info* get_handle_torrent_info(lt::torrent_handle* handle)
+{
+    if (handle == nullptr)
+    {
+        return nullptr;
+    }
+
+    const auto ti = handle->torrent_file();
+
+    if (!ti)
+    {
+        return nullptr;
+    }
+
+    return new lt::torrent_info(*ti);
+}
+
+void get_torrent_handle_info_hash(lt::torrent_handle* handle, char* hash_out)
+{
+    if (handle == nullptr || hash_out == nullptr)
+    {
+        return;
+    }
+
+    const auto& hashes = handle->info_hashes();
+
+    if (hashes.has_v1())
+    {
+        std::copy(hashes.v1.begin(), hashes.v1.end(), hash_out);
+    }
+    else
+    {
+        std::fill_n(hash_out, 20, static_cast<char>(0xFF));
+    }
 }
 
 // get the info for a torrent.
