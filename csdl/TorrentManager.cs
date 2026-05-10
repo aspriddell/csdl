@@ -4,6 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using csdl.Enums;
 using csdl.Native;
 
@@ -13,8 +15,10 @@ namespace csdl;
 
 public class TorrentManager
 {
-    private readonly string _savePath;
     internal readonly IntPtr TorrentSessionHandle;
+
+    private readonly string _savePath;
+    private readonly TaskCompletionSource? _metadataTaskSrc;
 
     private bool _detached;
     private IReadOnlyList<TorrentManagerFile>? _files;
@@ -26,6 +30,7 @@ public class TorrentManager
         TorrentSessionHandle = torrentSessionHandle;
 
         _savePath = savePath;
+        _metadataTaskSrc = info == null ? new TaskCompletionSource() : null;
     }
 
     /// <summary>
@@ -34,8 +39,8 @@ public class TorrentManager
     public string InfoHash { get; }
 
     /// <summary>
-    /// Information about the .torrent file. For magnet links, this is <c>null</c> until the
-    /// <see cref="MetadataReceived"/> event fires.
+    /// Information about the torrent.
+    /// For magnet links, this is <c>null</c> until the metadata has been populated (use <see cref="WaitForMetadata"/>)
     /// </summary>
     public TorrentInfo? Info { get; private set; }
 
@@ -47,14 +52,8 @@ public class TorrentManager
     public bool PauseAfterMetadata { get; set; } = true;
 
     /// <summary>
-    /// Raised when torrent metadata has been fetched from peers (magnet links only).
-    /// <see cref="Info"/> and <see cref="Files"/> are available after this event fires.
-    /// </summary>
-    public event EventHandler<TorrentInfo>? MetadataReceived;
-
-    /// <summary>
     /// Information about the files contained within the torrent, with additional properties including file priorities and target save paths.
-    /// Returns an empty list for magnet links before <see cref="MetadataReceived"/> fires.
+    /// Returns an empty list for magnet links that haven't had their metadata fetched yet.
     /// </summary>
     public IReadOnlyList<TorrentManagerFile> Files
     {
@@ -103,6 +102,26 @@ public class TorrentManager
     }
 
     /// <summary>
+    /// Waits for the torrent metadata to be populated, using a <see cref="CancellationToken"/> as a timeout mechanism.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token to cancel the waiting</param>
+    public async Task WaitForMetadata(CancellationToken cancellationToken)
+    {
+        var task = _metadataTaskSrc?.Task ?? Task.CompletedTask;
+        await task.WaitAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Waits for the torrent metadata to be populated, using a <see cref="TimeSpan"/> as a timeout mechanism.
+    /// </summary>
+    /// <param name="timeout">How long to wait for the task to complete</param>
+    public async Task WaitForMetadata(TimeSpan timeout)
+    {
+        var task = _metadataTaskSrc?.Task ?? Task.CompletedTask;
+        await task.WaitAsync(timeout).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Reannounces the torrent to all trackers.
     /// </summary>
     /// <param name="interval">The delay between making this call and the announcement taking place</param>
@@ -122,10 +141,10 @@ public class TorrentManager
     // internal method to set the torrent info and signal to any event handlers the info is available.
     internal void OnMetadataReceived(TorrentInfo info)
     {
-        _files = null;
-
         Info = info;
-        MetadataReceived?.Invoke(this, info);
+
+        _files = null;
+        _metadataTaskSrc?.TrySetResult();
     }
 
     // internal method to trigger a detached status, essentially making the object functionally unusable.

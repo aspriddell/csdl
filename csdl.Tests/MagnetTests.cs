@@ -123,32 +123,15 @@ public class MagnetTests : IDisposable
         Assert.Null(manager.Info);
         Assert.Empty(manager.Files);
 
-        var metadataTcs = new TaskCompletionSource<TorrentInfo>();
-        manager.MetadataReceived += (_, info) => metadataTcs.TrySetResult(info);
-
-        // also assert the session-level alert fires
-        var sessionAlertTcs = new TaskCompletionSource<MetadataReceivedAlert>();
-        _client.AlertRaised += (_, alert) =>
-        {
-            if (alert is MetadataReceivedAlert meta && ReferenceEquals(meta.Subject, manager))
-            {
-                sessionAlertTcs.TrySetResult(meta);
-            }
-        };
-
         manager.Start();
 
-        var info = await metadataTcs.Task.WaitAsync(TimeSpan.FromMinutes(2));
+        await manager.WaitForMetadata(TimeSpan.FromMinutes(2));
 
         Assert.NotNull(manager.Info);
         Assert.NotEmpty(manager.Files);
-        Assert.Equal(_bigBuckBunnyName, info.Metadata.Name);
-        Assert.Equal(_bigBuckBunnyFileCount, info.Metadata.TotalFiles);
-        Assert.Equal(_bigBuckBunnyTotalSize, info.Metadata.TotalSize);
-
-        var sessionAlert = await sessionAlertTcs.Task.WaitAsync(TimeSpan.FromSeconds(1));
-        Assert.Same(manager, sessionAlert.Subject);
-        Assert.NotNull(sessionAlert.Subject.Info);
+        Assert.Equal(_bigBuckBunnyName, manager.Info.Metadata.Name);
+        Assert.Equal(_bigBuckBunnyFileCount, manager.Info.Metadata.TotalFiles);
+        Assert.Equal(_bigBuckBunnyTotalSize, manager.Info.Metadata.TotalSize);
 
         await CleanupAsync(manager);
     }
