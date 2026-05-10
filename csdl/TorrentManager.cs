@@ -17,23 +17,48 @@ public class TorrentManager
     private bool _detached;
     private IReadOnlyList<TorrentManagerFile> _files;
 
-    internal TorrentManager(IntPtr torrentSessionHandle, string savePath, TorrentInfo info)
+    internal TorrentManager(IntPtr torrentSessionHandle, string savePath, TorrentInfo info, string infoHash)
     {
         Info = info;
+        InfoHash = infoHash;
         TorrentSessionHandle = torrentSessionHandle;
 
         _savePath = savePath;
     }
 
     /// <summary>
-    /// Information about the .torrent file
+    /// The v1 info-hash of the torrent, always available even before metadata is fetched for magnet links.
     /// </summary>
-    public TorrentInfo Info { get; }
+    public string InfoHash { get; }
+
+    /// <summary>
+    /// Information about the .torrent file. For magnet links, this is <c>null</c> until the
+    /// <see cref="MetadataReceived"/> event fires.
+    /// </summary>
+    public TorrentInfo? Info { get; private set; }
+
+    /// <summary>
+    /// Raised when torrent metadata has been fetched from peers (magnet links only).
+    /// <see cref="Info"/> and <see cref="Files"/> are available after this event fires.
+    /// </summary>
+    public event EventHandler<TorrentInfo>? MetadataReceived;
 
     /// <summary>
     /// Information about the files contained within the torrent, with additional properties including file priorities and target save paths.
+    /// Returns an empty list for magnet links before <see cref="MetadataReceived"/> fires.
     /// </summary>
-    public IReadOnlyList<TorrentManagerFile> Files => _files ??= Info.Files.Select(x => new TorrentManagerFile(TorrentSessionHandle, _savePath, x)).ToList();
+    public IReadOnlyList<TorrentManagerFile> Files
+    {
+        get
+        {
+            if (Info == null)
+            {
+                return Array.Empty<TorrentManagerFile>();
+            }
+
+            return _files ??= Info.Files.Select(x => new TorrentManagerFile(TorrentSessionHandle, _savePath, x)).ToList();
+        }
+    }
 
     /// <summary>
     /// Gets the current status of the torrent.
@@ -83,6 +108,15 @@ public class TorrentManager
 
         ObjectDisposedException.ThrowIf(_detached, this);
         NativeMethods.ReannounceTorrent(TorrentSessionHandle, (int)interval.TotalSeconds, force);
+    }
+
+    // internal method to set the torrent info and signal to any event handlers the info is available.
+    internal void OnMetadataReceived(TorrentInfo info)
+    {
+        _files = null;
+
+        Info = info;
+        MetadataReceived?.Invoke(this, info);
     }
 
     // internal method to trigger a detached status, essentially making the object functionally unusable.

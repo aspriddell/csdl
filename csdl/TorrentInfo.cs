@@ -30,9 +30,9 @@ public record TorrentMetadata(string Name, string Creator, string Comment, int T
 public class TorrentInfo
 {
     internal readonly IntPtr InfoHandle;
-    private IReadOnlyCollection<TorrentFileInfo> _files;
 
     private TorrentMetadata _metadata;
+    private IReadOnlyCollection<TorrentFileInfo> _files;
 
     /// <summary>
     /// Creates a new instance of <see cref="TorrentInfo"/> using the contents of a .torrent file from disk.
@@ -96,6 +96,18 @@ public class TorrentInfo
     public unsafe TorrentInfo(void* memoryPtr, int length)
         : this(new IntPtr(memoryPtr), length)
     {
+    }
+
+    // takes ownership of an already-allocated lt::torrent_info* without calling any create function.
+    // used when extracting torrent_info from a handle after magnet metadata is received.
+    internal TorrentInfo(IntPtr existingHandle)
+    {
+        InfoHandle = existingHandle;
+
+        if (InfoHandle == IntPtr.Zero)
+        {
+            throw new InvalidOperationException("Failed to create torrent from handle.");
+        }
     }
 
     // as TorrentInfo is shared a lot, we're not providing a dispose method

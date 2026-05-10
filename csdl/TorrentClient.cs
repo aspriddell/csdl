@@ -144,34 +144,62 @@ public class TorrentClient : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        if (_attachedManagers.ContainsKey(torrent.Metadata.InfoHash))
+        var infoHash = torrent.Metadata.InfoHash;
+
+        if (_attachedManagers.ContainsKey(infoHash))
         {
             throw new InvalidOperationException("Torrent is already attached to this session.");
         }
 
-        savePath ??= DefaultDownloadPath;
+        savePath = ResolveSavePath(savePath);
 
-        // relative paths will be combined with the default download path
-        if (!Path.IsPathRooted(savePath))
-        {
-            savePath = Path.Combine(DefaultDownloadPath, savePath);
-        }
-
-        // ensure the save path exists
-        if (!Directory.Exists(savePath))
-        {
-            Directory.CreateDirectory(savePath);
-        }
-
-        var handle = NativeMethods.AttachTorrent(_handle, torrent.InfoHandle, Path.GetFullPath(savePath));
+        var handle = NativeMethods.AttachTorrent(_handle, torrent.InfoHandle, savePath);
 
         if (handle == IntPtr.Zero)
         {
             throw new InvalidOperationException("Failed to attach torrent to session.");
         }
 
-        var manager = new TorrentManager(handle, savePath, torrent);
-        _attachedManagers.TryAdd(manager.Info.Metadata.InfoHash, manager);
+        var manager = new TorrentManager(handle, savePath, torrent, infoHash);
+        _attachedManagers.TryAdd(infoHash, manager);
+
+        return manager;
+    }
+
+    /// <summary>
+    /// Attaches a magnet URI to the session. Metadata is fetched from peers; subscribe to
+    /// <see cref="TorrentManager.MetadataReceived"/> or <see cref="AlertRaised"/> to know when
+    /// <see cref="TorrentManager.Info"/> and <see cref="TorrentManager.Files"/> become available.
+    /// </summary>
+    /// <param name="magnetUri">The magnet URI to attach</param>
+    /// <param name="savePath">The path to save the downloaded content to</param>
+    /// <returns>A <see cref="TorrentManager"/> allowing the download to be controlled</returns>
+    /// <exception cref="InvalidOperationException">The URI was invalid or could not be attached to the session</exception>
+    public TorrentManager AttachMagnet(string magnetUri, string savePath = null)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
+        savePath = ResolveSavePath(savePath);
+
+        var handle = NativeMethods.AttachMagnet(_handle, magnetUri, savePath);
+
+        if (handle == IntPtr.Zero)
+        {
+            throw new InvalidOperationException("Failed to attach magnet URI to session. Ensure the URI is valid.");
+        }
+
+        var hashBytes = new byte[20];
+        NativeMethods.GetTorrentHandleInfoHash(handle, hashBytes);
+        var infoHash = Convert.ToHexString(hashBytes);
+
+        if (_attachedManagers.ContainsKey(infoHash))
+        {
+            NativeMethods.DetachTorrent(_handle, handle);
+            throw new InvalidOperationException("A torrent with the same info-hash is already attached to this session.");
+        }
+
+        var manager = new TorrentManager(handle, savePath, null, infoHash);
+        _attachedManagers.TryAdd(infoHash, manager);
 
         return manager;
     }
@@ -185,7 +213,7 @@ public class TorrentClient : IDisposable
         ObjectDisposedException.ThrowIf(_disposed, this);
 
         // the manager is fully removed via the alert callback (fires once the torrent is fully removed)
-        if (!_attachedManagers.ContainsKey(manager.Info.Metadata.InfoHash))
+        if (!_attachedManagers.ContainsKey(manager.InfoHash))
         {
             throw new InvalidOperationException("Unable to detach torrent from session. Ensure the torrent is attached to this session.");
         }
@@ -219,6 +247,23 @@ public class TorrentClient : IDisposable
         NativeMethods.FreeSession(_handle);
 
         GC.SuppressFinalize(this);
+    }
+
+    private string ResolveSavePath(string savePath)
+    {
+        savePath ??= DefaultDownloadPath;
+
+        if (!Path.IsPathRooted(savePath))
+        {
+            savePath = Path.Combine(DefaultDownloadPath, savePath);
+        }
+
+        if (!Directory.Exists(savePath))
+        {
+            Directory.CreateDirectory(savePath);
+        }
+
+        return Path.GetFullPath(savePath);
     }
 
     /// <summary>
@@ -295,6 +340,24 @@ public class TorrentClient : IDisposable
                 manager.MarkAsDetached();
 
                 forwardAlert = new TorrentRemovedAlert(removedAlert, manager);
+                break;
+            }
+
+            case AlertType.MetadataReceived:
+            {
+                var metaAlert = Marshal.PtrToStructure<NativeEvents.MetadataReceivedAlert>(eventPtr);
+                if (!_attachedManagers.TryGetValue(Convert.ToHexString(metaAlert.info_hash), out var metaSubject))
+                {
+                    return;
+                }
+
+                var infoHandle = NativeMethods.GetHandleTorrentInfo(metaSubject.TorrentSessionHandle);
+                if (infoHandle != IntPtr.Zero)
+                {
+                    metaSubject.OnMetadataReceived(new TorrentInfo(infoHandle));
+                }
+
+                forwardAlert = new MetadataReceivedAlert(metaAlert, metaSubject);
                 break;
             }
         }
