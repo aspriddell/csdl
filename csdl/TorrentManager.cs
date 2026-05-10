@@ -9,15 +9,17 @@ using csdl.Native;
 
 namespace csdl;
 
+#nullable enable
+
 public class TorrentManager
 {
     private readonly string _savePath;
     internal readonly IntPtr TorrentSessionHandle;
 
     private bool _detached;
-    private IReadOnlyList<TorrentManagerFile> _files;
+    private IReadOnlyList<TorrentManagerFile>? _files;
 
-    internal TorrentManager(IntPtr torrentSessionHandle, string savePath, TorrentInfo info, string infoHash)
+    internal TorrentManager(IntPtr torrentSessionHandle, string savePath, TorrentInfo? info, string infoHash)
     {
         Info = info;
         InfoHash = infoHash;
