@@ -61,7 +61,7 @@ public class TorrentManager
         {
             if (Info == null)
             {
-                return Array.Empty<TorrentManagerFile>();
+                return [];
             }
 
             return _files ??= Info.Files.Select(x => new TorrentManagerFile(TorrentSessionHandle, _savePath, x)).ToList();

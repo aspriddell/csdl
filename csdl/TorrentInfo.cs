@@ -31,9 +31,6 @@ public class TorrentInfo
 {
     internal readonly IntPtr InfoHandle;
 
-    private TorrentMetadata _metadata;
-    private IReadOnlyCollection<TorrentFileInfo> _files;
-
     /// <summary>
     /// Creates a new instance of <see cref="TorrentInfo"/> using the contents of a .torrent file from disk.
     /// </summary>
@@ -120,12 +117,12 @@ public class TorrentInfo
     /// <summary>
     /// Gets metadata related to the torrent file.
     /// </summary>
-    public TorrentMetadata Metadata => _metadata ??= GetInfo();
+    public TorrentMetadata Metadata => field ??= GetInfo();
 
     /// <summary>
     /// Gets a list of files contained within the torrent.
     /// </summary>
-    public IReadOnlyCollection<TorrentFileInfo> Files => _files ??= GetFiles();
+    public IReadOnlyCollection<TorrentFileInfo> Files => field ??= GetFiles();
 
     private TorrentMetadata GetInfo()
     {
