@@ -129,7 +129,7 @@ public class TorrentManager
     /// <exception cref="ArgumentOutOfRangeException"><see cref="interval"/> was not valid</exception>
     public void ReannounceAllTrackers(TimeSpan interval, bool force = false)
     {
-        if (interval.Seconds <= -1)
+        if (Math.Sign((int)interval.TotalSeconds) == -1)
         {
             throw new ArgumentOutOfRangeException(nameof(interval), "Interval must be a positive value.");
         }
