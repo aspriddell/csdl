@@ -159,7 +159,7 @@ public class TorrentClient : IDisposable
             throw new InvalidOperationException("Failed to attach torrent to session.");
         }
 
-        var manager = new TorrentManager(handle, savePath, torrent, infoHash);
+        var manager = new TorrentManager(handle, savePath, infoHash, torrent);
         _attachedManagers.TryAdd(infoHash, manager);
 
         return manager;
@@ -195,7 +195,7 @@ public class TorrentClient : IDisposable
             throw new InvalidOperationException("A torrent with the same info-hash is already attached to this session.");
         }
 
-        var manager = new TorrentManager(handle, savePath, null, infoHash);
+        var manager = new TorrentManager(handle, savePath, infoHash, null);
         _attachedManagers.TryAdd(infoHash, manager);
 
         return manager;

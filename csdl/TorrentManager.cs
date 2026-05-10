@@ -23,7 +23,7 @@ public class TorrentManager
     private bool _detached;
     private IReadOnlyList<TorrentManagerFile>? _files;
 
-    internal TorrentManager(IntPtr torrentSessionHandle, string savePath, TorrentInfo? info, string infoHash)
+    internal TorrentManager(IntPtr torrentSessionHandle, string savePath, string infoHash, TorrentInfo? info)
     {
         Info = info;
         InfoHash = infoHash;
@@ -40,7 +40,7 @@ public class TorrentManager
 
     /// <summary>
     /// Information about the torrent.
-    /// For magnet links, this is <c>null</c> until the metadata has been populated (use <see cref="WaitForMetadata"/>)
+    /// For magnet links, this is <c>null</c> until the metadata has been populated.
     /// </summary>
     public TorrentInfo? Info { get; private set; }
 
