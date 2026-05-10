@@ -154,7 +154,6 @@ public class TorrentClient : IDisposable
         savePath = ResolveSavePath(savePath);
 
         var handle = NativeMethods.AttachTorrent(_handle, torrent.InfoHandle, savePath);
-
         if (handle == IntPtr.Zero)
         {
             throw new InvalidOperationException("Failed to attach torrent to session.");
@@ -167,9 +166,7 @@ public class TorrentClient : IDisposable
     }
 
     /// <summary>
-    /// Attaches a magnet URI to the session. Metadata is fetched from peers; subscribe to
-    /// <see cref="TorrentManager.MetadataReceived"/> or <see cref="AlertRaised"/> to know when
-    /// <see cref="TorrentManager.Info"/> and <see cref="TorrentManager.Files"/> become available.
+    /// Attaches a magnet URI to the session.
     /// </summary>
     /// <param name="magnetUri">The magnet URI to attach</param>
     /// <param name="savePath">The path to save the downloaded content to</param>
@@ -182,14 +179,14 @@ public class TorrentClient : IDisposable
         savePath = ResolveSavePath(savePath);
 
         var handle = NativeMethods.AttachMagnet(_handle, magnetUri, savePath);
-
         if (handle == IntPtr.Zero)
         {
             throw new InvalidOperationException("Failed to attach magnet URI to session. Ensure the URI is valid.");
         }
 
-        var hashBytes = new byte[20];
+        Span<byte> hashBytes = stackalloc byte[20];
         NativeMethods.GetTorrentHandleInfoHash(handle, hashBytes);
+
         var infoHash = Convert.ToHexString(hashBytes);
 
         if (_attachedManagers.ContainsKey(infoHash))

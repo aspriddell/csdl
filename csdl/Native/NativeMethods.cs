@@ -128,7 +128,7 @@ internal static partial class NativeMethods
     /// <param name="torrentSessionHandle">The torrent session handle</param>
     /// <param name="hashOut">A 20-byte buffer to receive the info-hash</param>
     [LibraryImport(LibraryName, EntryPoint = "get_torrent_handle_info_hash")]
-    public static partial void GetTorrentHandleInfoHash(IntPtr torrentSessionHandle, byte[] hashOut);
+    public static partial void GetTorrentHandleInfoHash(IntPtr torrentSessionHandle, Span<byte> hashOut);
 
     /// <summary>
     /// Detaches a torrent from a session, stopping the download.
