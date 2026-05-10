@@ -37,7 +37,7 @@
     </ItemGroup>
     
     <ItemGroup>
-      <PackageReference Include="csdl.Native" Version="1.2.2" />
+      <PackageReference Include="csdl.Native" Version="2.0.0" />
     </ItemGroup>
 
 </Project>
