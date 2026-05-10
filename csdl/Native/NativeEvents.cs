@@ -69,4 +69,14 @@ internal static class NativeEvents
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
         public byte[] v6_address;
     }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 8)]
+    public struct MetadataReceivedAlert
+    {
+        [MarshalAs(UnmanagedType.Struct)]
+        public AlertBase info;
+
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
+        public byte[] info_hash;
+    }
 }
