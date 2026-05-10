@@ -43,7 +43,7 @@ jobs:
 
       steps:
         - name: Checkout
-          uses: actions/checkout@v4
+          uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
           with:
             submodules: 'recursive'
             fetch-depth: 0
@@ -56,7 +56,7 @@ jobs:
 
         - name: Prepare Environment (Android)
           if: matrix.targetname == 'android'
-          uses: nttld/setup-ndk@v1
+          uses: nttld/setup-ndk@ed92fe6cadad69be94a966a7ee3271275e62f779
           id: setup-ndk
           with:
             ndk-version: r27c
@@ -67,7 +67,7 @@ jobs:
           run: brew install ninja
 
         - name: Setup VCPKG
-          uses: lukka/run-vcpkg@v11
+          uses: lukka/run-vcpkg@b1a0dd252f06b9e25b3c022a9a03bd7a427fb6a2
 
         - name: Setup CMake (Linux)
           if: matrix.targetname == 'linux'
@@ -124,7 +124,7 @@ jobs:
           run: cp ${{ env.BUILD_DIR }}/Release/*.dll ${{ env.ARCHIVE_DIR }}
 
         - name: Upload
-          uses: actions/upload-artifact@v4
+          uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
           with:
             name: ${{ matrix.targetname }}-${{ matrix.arch }}
             path: ${{ env.ARCHIVE_DIR }}/*
@@ -136,33 +136,33 @@ jobs:
     needs: [build-platforms]
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: osx-x64
           path: native/nuget/runtimes/osx-x64/native
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: osx-arm64
           path: native/nuget/runtimes/osx-arm64/native
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: windows-x64
           path: native/nuget/runtimes/win-x64/native
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: windows-arm64
           path: native/nuget/runtimes/win-arm64/native
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: linux-x64
           path: native/nuget/runtimes/linux-x64/native
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: linux-arm64
           path: native/nuget/runtimes/linux-arm64/native
@@ -185,22 +185,22 @@ jobs:
     needs: [build-platforms]
 
     steps:
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
       
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: android-x64
           path: native/nuget-android/runtimes/android-x64/native
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: android-arm
           path: native/nuget-android/runtimes/android-arm/native
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           name: android-arm64
           path: native/nuget-android/runtimes/android-arm64/native
