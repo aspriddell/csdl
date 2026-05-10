@@ -354,6 +354,11 @@ public class TorrentClient : IDisposable
                 var infoHandle = NativeMethods.GetHandleTorrentInfo(metaSubject.TorrentSessionHandle);
                 if (infoHandle != IntPtr.Zero)
                 {
+                    if (metaSubject.PauseAfterMetadata)
+                    {
+                        NativeMethods.StopTorrent(metaSubject.TorrentSessionHandle);
+                    }
+
                     metaSubject.OnMetadataReceived(new TorrentInfo(infoHandle));
                 }
 

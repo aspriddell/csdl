@@ -38,6 +38,13 @@ public class TorrentManager
     public TorrentInfo? Info { get; private set; }
 
     /// <summary>
+    /// Whether to automatically pause the torrent once metadata has been fetched, giving the caller a chance to
+    /// configure file priorities before content downloading begins. Defaults to <c>true</c>.
+    /// (only relevant for magnet links as the metadata is available instantly with standard torrent files)
+    /// </summary>
+    public bool PauseAfterMetadata { get; set; } = true;
+
+    /// <summary>
     /// Raised when torrent metadata has been fetched from peers (magnet links only).
     /// <see cref="Info"/> and <see cref="Files"/> are available after this event fires.
     /// </summary>
