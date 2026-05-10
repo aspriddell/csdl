@@ -41,6 +41,10 @@ extern "C" {
     CSDL_EXPORT torrent_metadata* get_torrent_info(lt::torrent_info* torrent);
     CSDL_EXPORT void destroy_torrent_info(torrent_metadata* info);
 
+    CSDL_EXPORT bool save_torrent_to_file(lt::torrent_info* torrent, const char* file_path);
+    CSDL_EXPORT void get_torrent_bytes(lt::torrent_info* torrent, char** out_data, long* out_size);
+    CSDL_EXPORT void free_torrent_bytes(char* data);
+
     // file listing
     CSDL_EXPORT void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_list);
     CSDL_EXPORT void destroy_torrent_file_list(torrent_file_list* file_list);

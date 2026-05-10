@@ -5,9 +5,11 @@
 
 #include "library.h"
 
+#include <fstream>
 #include <libtorrent/fingerprint.hpp>
 #include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/torrent_handle.hpp>
+#include <libtorrent/write_resume_data.hpp>
 
 extern "C" {
 
@@ -284,6 +286,69 @@ void destroy_torrent_info(torrent_metadata* info)
     delete info;
 }
 
+bool save_torrent_to_file(lt::torrent_info* torrent, const char* file_path)
+{
+    if (torrent == nullptr || file_path == nullptr)
+    {
+        return false;
+    }
+
+    try
+    {
+        lt::add_torrent_params params;
+        params.ti = std::make_shared<lt::torrent_info>(*torrent);
+
+        const auto buf = lt::write_torrent_file_buf(params, {});
+
+        std::ofstream out(file_path, std::ios::binary);
+
+        if (!out)
+        {
+            return false;
+        }
+
+        out.write(buf.data(), static_cast<std::streamsize>(buf.size()));
+
+        return out.good();
+    }
+    catch (const std::exception&)
+    {
+        return false;
+    }
+}
+
+void get_torrent_bytes(lt::torrent_info* torrent, char** out_data, long* out_size)
+{
+    if (torrent == nullptr || out_data == nullptr || out_size == nullptr)
+    {
+        return;
+    }
+
+    try
+    {
+        lt::add_torrent_params params;
+        params.ti = std::make_shared<lt::torrent_info>(*torrent);
+
+        const auto buf = lt::write_torrent_file_buf(params, {});
+
+        const auto alloc = new char[buf.size()];
+        std::copy(buf.begin(), buf.end(), alloc);
+
+        *out_data = alloc;
+        *out_size = static_cast<long>(buf.size());
+    }
+    catch (const std::exception&)
+    {
+        *out_data = nullptr;
+        *out_size = 0;
+    }
+}
+
+void free_torrent_bytes(char* data)
+{
+    delete[] data;
+}
+
 // given a torrent handle, get the list of files in the torrent.
 void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_list)
 {
@@ -462,4 +527,5 @@ void get_torrent_status(lt::torrent_handle* torrent, torrent_status* torrent_sta
     torrent_status->upload_rate = s.upload_payload_rate;
     torrent_status->download_rate = s.download_payload_rate;
 }
+
 }
