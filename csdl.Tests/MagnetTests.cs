@@ -136,6 +136,35 @@ public class MagnetTests : IDisposable
         await CleanupAsync(manager);
     }
 
+    [Fact]
+    public async Task TestMagnetSaveTorrentFile()
+    {
+        var manager = _client.AttachMagnet(_bigBuckBunnyMagnet, _tempSavePath);
+        var savedPath = Path.Combine(_tempSavePath, "saved.torrent");
+
+        manager.Start();
+
+        await manager.WaitForMetadata(TimeSpan.FromMinutes(2));
+
+        manager.Info?.SaveToFile(savedPath);
+        Assert.True(File.Exists(savedPath));
+
+        var loaded = new TorrentInfo(savedPath);
+        Assert.Equal(_bigBuckBunnyName, loaded.Metadata.Name);
+        Assert.Equal(_bigBuckBunnyFileCount, loaded.Metadata.TotalFiles);
+        Assert.Equal(_bigBuckBunnyTotalSize, loaded.Metadata.TotalSize);
+
+        await CleanupAsync(manager);
+    }
+
+    [Fact]
+    public void SaveTorrentFile_ThrowsIfNoMetadata()
+    {
+        var manager = _client.AttachMagnet(_bigBuckBunnyMagnet, _tempSavePath);
+
+        Assert.Throws<NullReferenceException>(() => manager.Info!.SaveToFile("ignored.torrent"));
+    }
+
     private async Task CleanupAsync(TorrentManager manager)
     {
         var removedTcs = new TaskCompletionSource();
