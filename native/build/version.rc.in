@@ -13,11 +13,11 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "Albie Spriddell\0"
-            VALUE "FileDescription", "csdl Native interface library\0"
+            VALUE "CompanyName", "Albie Spriddell et al.\0"
+            VALUE "FileDescription", "csdl (native library)\0"
             VALUE "FileVersion", "@PRODUCT_VERSION_MAJOR@.@PRODUCT_VERSION_MINOR@.@PRODUCT_VERSION_PATCH@\0"
             VALUE "InternalName", "csdl\0"
-            VALUE "LegalCopyright", "Copyright (c) Albie Spriddell 2024\0"
+            VALUE "LegalCopyright", "Copyright (c) Albie Spriddell et al. 2024-26\0"
             VALUE "OriginalFilename", "csdl\0"
             VALUE "ProductName", "csdl\0"
             VALUE "ProductVersion", "@PRODUCT_VERSION_MAJOR@.@PRODUCT_VERSION_MINOR@.@PRODUCT_VERSION_PATCH@\0"
