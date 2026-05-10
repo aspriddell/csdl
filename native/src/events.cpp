@@ -158,6 +158,16 @@ void on_events_available(lt::session* session, cs_alert_callback callback, bool 
                 break;
             }
 
+            case lt::metadata_received_alert::alert_type: {
+                auto* meta_alert = lt::alert_cast<lt::metadata_received_alert>(alert);
+                cs_metadata_received_alert metadata_alert{};
+
+                fill_info_hash(meta_alert->handle.info_hashes(), metadata_alert.info_hash);
+                fill_event_info(&metadata_alert.alert, alert, cs_alert_type::alert_metadata_received, &message_temp);
+                callback(&metadata_alert);
+                break;
+            }
+
             default: {
                 if (!include_unmapped) {
                     break;

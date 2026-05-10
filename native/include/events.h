@@ -35,7 +35,8 @@ enum cs_alert_type : int32_t {
     alert_torrent_status = 1,
     alert_client_performance = 2,
     alert_peer_notification = 3,
-    alert_torrent_removed = 4
+    alert_torrent_removed = 4,
+    alert_metadata_received = 5
 };
 
 // base format for all alerts
@@ -87,6 +88,12 @@ struct CSDL_STRUCT cs_peer_alert {
 
     char info_hash[20];
     char ipv6_address[16];
+};
+
+struct CSDL_STRUCT cs_metadata_received_alert {
+    cs_alert alert;
+
+    char info_hash[20];
 };
 
 #ifdef __cplusplus
