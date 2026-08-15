@@ -48,11 +48,9 @@ jobs:
             submodules: 'recursive'
             fetch-depth: 0
 
-        - name: Prepare Environment (Ubuntu)
+        - name: Prepare Environment (Ubuntu/CMake+Ninja)
           if: matrix.buildos == 'ubuntu-22.04'
-          run: |
-            sudo apt-get update
-            sudo apt-get install -y build-essential ninja-build
+          uses: lukka/get-cmake@fffaaafeea488556c2c12dad60690008bc1caacb
 
         - name: Prepare Environment (Ubuntu/arm64)
           if: matrix.buildos == 'ubuntu-22.04' && matrix.arch == 'arm64'
