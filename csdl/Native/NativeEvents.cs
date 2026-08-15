@@ -62,12 +62,13 @@ internal static class NativeEvents
 
         public IntPtr handle;
         public PeerAlertType alert_type;
+        public EndpointType endpoint_type;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 20)]
         public byte[] info_hash;
 
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-        public byte[] v6_address;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+        public byte[] address;  // IPv6 (16 bytes) or I2P hash (32 bytes)
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 8)]
