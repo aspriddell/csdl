@@ -34,9 +34,21 @@ void populate_peer_alert(cs_peer_alert* peer_alert, lt::peer_alert* alert, cs_pe
 
     peer_alert->type = alert_type;
     peer_alert->handle = &alert->handle;
+    peer_alert->endpoint_type = cs_endpoint_type::ip_endpoint;
 
-    auto v6_mapped_addr = alert->endpoint.address().to_v6().to_bytes();
-    std::copy(v6_mapped_addr.begin(), v6_mapped_addr.end(), peer_alert->ipv6_address);
+    // Handle both IP endpoints (tcp::endpoint) and I2P endpoints (sha256_hash)
+    if (std::holds_alternative<lt::aux::noexcept_movable<lt::tcp::endpoint>>(alert->ep)) {
+        auto tcp_ep = std::get<lt::aux::noexcept_movable<lt::tcp::endpoint>>(alert->ep);
+        auto v6_addr = static_cast<lt::tcp::endpoint>(tcp_ep).address().to_v6().to_bytes();
+
+        peer_alert->endpoint_type = cs_endpoint_type::ip_endpoint;
+        std::copy(v6_addr.begin(), v6_addr.end(), peer_alert->address);
+    } else if (std::holds_alternative<lt::sha256_hash>(alert->ep)) {
+        auto i2p_hash = std::get<lt::sha256_hash>(alert->ep);
+
+        peer_alert->endpoint_type = cs_endpoint_type::i2p_endpoint;
+        std::copy(i2p_hash.begin(), i2p_hash.end(), peer_alert->address);
+    }
 
     fill_info_hash(alert->handle.info_hashes(), peer_alert->info_hash);
 }

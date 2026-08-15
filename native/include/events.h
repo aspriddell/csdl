@@ -80,14 +80,20 @@ enum cs_peer_alert_type : uint8_t {
     errored = 6
 };
 
+enum cs_endpoint_type : uint8_t {
+    ip_endpoint = 0,
+    i2p_endpoint = 1
+};
+
 struct CSDL_STRUCT cs_peer_alert {
     cs_alert alert;
 
     lt::torrent_handle *handle;
     cs_peer_alert_type type;
+    cs_endpoint_type endpoint_type;
 
     char info_hash[20];
-    char ipv6_address[16];
+    char address[32];  // IPv6 (16 bytes) or I2P hash (32 bytes)
 };
 
 struct CSDL_STRUCT cs_metadata_received_alert {
