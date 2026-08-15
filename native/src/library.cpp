@@ -5,11 +5,35 @@
 
 #include "library.h"
 
+#include <cstring>
 #include <fstream>
+#include <libtorrent/add_torrent_params.hpp>
 #include <libtorrent/fingerprint.hpp>
+#include <libtorrent/load_torrent.hpp>
 #include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/torrent_handle.hpp>
 #include <libtorrent/write_resume_data.hpp>
+
+namespace {
+
+lt::torrent_handle* create_attached_handle(lt::session* session, lt::add_torrent_params& params)
+{
+    // enable paused-by-default, disable auto-management
+    params.flags |= lt::torrent_flags::paused;
+    params.flags &= ~lt::torrent_flags::auto_managed;
+
+    const auto handle = new lt::torrent_handle(session->add_torrent(params));
+
+    if (handle->is_valid())
+    {
+        return handle;
+    }
+
+    delete handle;
+    return nullptr;
+}
+
+}
 
 extern "C" {
 
@@ -77,56 +101,62 @@ void clear_event_callback(lt::session* session)
     session->set_alert_notify(nullptr);
 }
 
-lt::torrent_info* create_torrent_bytes(const char* data, long length)
+lt::add_torrent_params* create_torrent_bytes(const char* data, long length)
 {
-    const lt::span buffer(data, length);
-    const lt::load_torrent_limits cfg;
+    if (data == nullptr || length <= 0)
+    {
+        return nullptr;
+    }
 
-    return new lt::torrent_info(buffer, cfg, lt::from_span);
+    try
+    {
+        const lt::span<char const> buffer(data, static_cast<std::size_t>(length));
+
+        auto loaded_torrent = lt::load_torrent_buffer(buffer);
+        return new lt::add_torrent_params(std::move(loaded_torrent));
+    }
+    catch (const std::exception&)
+    {
+        return nullptr;
+    }
 }
 
-lt::torrent_info* create_torrent_file(const char* file_path)
+lt::add_torrent_params* create_torrent_file(const char* file_path)
 {
-    return new lt::torrent_info(std::string(file_path));
+    try
+    {
+        auto loaded_torrent = lt::load_torrent_file(std::string(file_path));
+        return new lt::add_torrent_params(std::move(loaded_torrent));
+    }
+    catch (const std::exception&)
+    {
+        return nullptr;
+    }
 }
 
-void destroy_torrent(lt::torrent_info* torrent)
+void destroy_torrent(lt::add_torrent_params* torrent)
 {
     delete torrent;
 }
 
 // attach a torrent to the session, returning a handle that can be used to control the download.
 // the torrent info handle is copied, and can be freed after the call to attach_torrent with a call to destroy_torrent_info.
-lt::torrent_handle* attach_torrent(lt::session* session, lt::torrent_info* torrent, const char* save_path)
+lt::torrent_handle* attach_torrent(lt::session* session, lt::add_torrent_params* torrent, const char* save_path)
 {
     if (session == nullptr || torrent == nullptr)
     {
         return nullptr;
     }
 
-    lt::add_torrent_params params;
-    std::string save_path_copy(save_path);
+    // Copy caller-owned params so this call remains safe if caller frees theirs.
+    lt::add_torrent_params params(*torrent);
 
-    if (!save_path_copy.empty())
+    if (save_path != nullptr && save_path[0] != '\0')
     {
-        params.save_path = save_path_copy;
+        params.save_path = std::string(save_path);
     }
 
-    // enable paused-by-default, disable auto-management
-    params.flags |= lt::torrent_flags::paused;
-    params.flags &= ~lt::torrent_flags::auto_managed;
-
-    // set torrent info - make_shared creates a copy
-    params.ti = std::make_shared<lt::torrent_info>(*torrent);
-    const auto handle = new lt::torrent_handle(session->add_torrent(params));
-
-    if (handle->is_valid())
-    {
-        return handle;
-    }
-
-    delete handle;
-    return nullptr;
+    return create_attached_handle(session, params);
 }
 
 lt::torrent_handle* attach_magnet(lt::session* session, const char* magnet_uri, const char* save_path)
@@ -149,18 +179,7 @@ lt::torrent_handle* attach_magnet(lt::session* session, const char* magnet_uri, 
         params.save_path = std::string(save_path);
     }
 
-    params.flags |= lt::torrent_flags::paused;
-    params.flags &= ~lt::torrent_flags::auto_managed;
-
-    const auto handle = new lt::torrent_handle(session->add_torrent(params));
-
-    if (handle->is_valid())
-    {
-        return handle;
-    }
-
-    delete handle;
-    return nullptr;
+    return create_attached_handle(session, params);
 }
 
 // after detaching the torrent, the torrent handle is no longer valid.
@@ -180,7 +199,7 @@ void detach_torrent(lt::session* session, lt::torrent_handle* torrent)
 
 // returns a heap-allocated copy of the torrent_info from a torrent_handle (available after metadata is fetched).
 // the returned pointer must be freed with destroy_torrent.
-lt::torrent_info* get_handle_torrent_info(lt::torrent_handle* handle)
+lt::add_torrent_params* get_handle_torrent_info(lt::torrent_handle* handle)
 {
     if (handle == nullptr)
     {
@@ -194,7 +213,9 @@ lt::torrent_info* get_handle_torrent_info(lt::torrent_handle* handle)
         return nullptr;
     }
 
-    return new lt::torrent_info(*ti);
+    auto* params = new lt::add_torrent_params();
+    params->ti = std::make_shared<lt::torrent_info>(*ti);
+    return params;
 }
 
 void get_torrent_handle_info_hash(lt::torrent_handle* handle, char* hash_out)
@@ -218,24 +239,24 @@ void get_torrent_handle_info_hash(lt::torrent_handle* handle, char* hash_out)
 
 // get the info for a torrent.
 // the torrent_info struct is allocated on the heap and must be freed with a call to destroy_torrent_info.
-torrent_metadata* get_torrent_info(lt::torrent_info* torrent)
+torrent_metadata* get_torrent_info(lt::add_torrent_params* torrent)
 {
-    if (torrent == nullptr)
+    if (torrent == nullptr || !torrent->ti)
     {
         return nullptr;
     }
 
-    auto name = torrent->name();
-    auto author = torrent->creator();
-    auto comment = torrent->comment();
+    auto name = torrent->name;
+    auto author = torrent->created_by;
+    auto comment = torrent->comment;
 
-    const auto torrent_name = new char[name.size() + 1]();
-    const auto torrent_author = new char[author.size() + 1]();
-    const auto torrent_comment = new char[comment.size() + 1]();
+    const auto torrent_name = new char[name.size() + 1];
+    const auto torrent_author = new char[author.size() + 1];
+    const auto torrent_comment = new char[comment.size() + 1];
 
-    std::ranges::copy(name, torrent_name);
-    std::ranges::copy(author, torrent_author);
-    std::ranges::copy(comment, torrent_comment);
+    std::memcpy(torrent_name, name.c_str(), name.size() + 1);
+    std::memcpy(torrent_author, author.c_str(), author.size() + 1);
+    std::memcpy(torrent_comment, comment.c_str(), comment.size() + 1);
 
     const auto info = new torrent_metadata();
 
@@ -243,16 +264,16 @@ torrent_metadata* get_torrent_info(lt::torrent_info* torrent)
     info->creator = torrent_author;
     info->comment = torrent_comment;
 
-    info->total_files = torrent->num_files();
-    info->total_size = torrent->total_size();
-    info->creation_date = torrent->creation_date();
+    info->total_files = torrent->ti->num_files();
+    info->total_size = torrent->ti->total_size();
+    info->creation_date = torrent->creation_date;
 
-    auto hash = torrent->info_hashes();
+    const auto& hash = torrent->ti->info_hashes();
 
     // fill in the info hash
     if (hash.has_v1())
     {
-        std::ranges::copy(hash.v1, info->info_hash_v1);
+        std::copy(hash.v1.begin(), hash.v1.end(), info->info_hash_v1);
     }
     else
     {
@@ -262,7 +283,7 @@ torrent_metadata* get_torrent_info(lt::torrent_info* torrent)
     // fill in the info hash v2
     if (hash.has_v2())
     {
-        std::ranges::copy(hash.v2, info->info_hash_v2);
+        std::copy(hash.v2.begin(), hash.v2.end(), info->info_hash_v2);
     }
     else
     {
@@ -286,7 +307,7 @@ void destroy_torrent_info(torrent_metadata* info)
     delete info;
 }
 
-bool save_torrent_to_file(lt::torrent_info* torrent, const char* file_path)
+bool save_torrent_to_file(lt::add_torrent_params* torrent, const char* file_path)
 {
     if (torrent == nullptr || file_path == nullptr)
     {
@@ -296,7 +317,7 @@ bool save_torrent_to_file(lt::torrent_info* torrent, const char* file_path)
     try
     {
         lt::add_torrent_params params;
-        params.ti = std::make_shared<lt::torrent_info>(*torrent);
+        params = *torrent;
 
         const auto buf = lt::write_torrent_file_buf(params, {});
 
@@ -317,7 +338,7 @@ bool save_torrent_to_file(lt::torrent_info* torrent, const char* file_path)
     }
 }
 
-void get_torrent_bytes(lt::torrent_info* torrent, char** out_data, long* out_size)
+void get_torrent_bytes(lt::add_torrent_params* torrent, char** out_data, long* out_size)
 {
     if (torrent == nullptr || out_data == nullptr || out_size == nullptr)
     {
@@ -327,7 +348,7 @@ void get_torrent_bytes(lt::torrent_info* torrent, char** out_data, long* out_siz
     try
     {
         lt::add_torrent_params params;
-        params.ti = std::make_shared<lt::torrent_info>(*torrent);
+        params = *torrent;
 
         const auto buf = lt::write_torrent_file_buf(params, {});
 
@@ -350,14 +371,14 @@ void free_torrent_bytes(char* data)
 }
 
 // given a torrent handle, get the list of files in the torrent.
-void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_list)
+void get_torrent_file_list(lt::add_torrent_params* torrent, torrent_file_list* file_list)
 {
-    if (torrent == nullptr || file_list == nullptr)
+    if (torrent == nullptr || file_list == nullptr || !torrent->ti)
     {
         return;
     }
 
-    const auto& files = torrent->files();
+    const auto& files = torrent->ti->layout();
 
     const auto num_files = files.num_files();
     const auto list = new torrent_file_information[num_files];
@@ -369,8 +390,13 @@ void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_li
         auto name = files.file_name(i);
         auto path = files.file_path(i);
 
-        auto file_name = new char[name.size() + 1]();
-        auto file_path = new char[path.size() + 1]();
+        auto file_name = new char[name.size() + 1];
+        auto file_path = new char[path.size() + 1];
+
+        std::memcpy(file_name, name.data(), name.size());
+        std::memcpy(file_path, path.data(), path.size());
+        file_name[name.size()] = '\0';
+        file_path[path.size()] = '\0';
 
         list[index] = {
             index,
@@ -382,9 +408,6 @@ void get_torrent_file_list(lt::torrent_info* torrent, torrent_file_list* file_li
             files.file_absolute_path(i),
             files.pad_file_at(i)
         };
-
-        std::ranges::copy(name, file_name);
-        std::ranges::copy(path, file_path);
     }
 
     file_list->files = list;
