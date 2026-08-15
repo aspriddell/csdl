@@ -48,6 +48,12 @@ jobs:
             submodules: 'recursive'
             fetch-depth: 0
 
+        - name: Prepare Environment (Ubuntu)
+          if: matrix.buildos == 'ubuntu-22.04'
+          run: |
+            sudo apt-get update
+            sudo apt-get install -y build-essential ninja-build
+
         - name: Prepare Environment (Ubuntu/arm64)
           if: matrix.buildos == 'ubuntu-22.04' && matrix.arch == 'arm64'
           run: |
@@ -71,13 +77,13 @@ jobs:
 
         - name: Setup CMake (Linux)
           if: matrix.targetname == 'linux'
-          run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+          run: cmake -B ${{ env.BUILD_DIR }} -G "Ninja" -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
             CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/native/build/linux-${{ matrix.arch }}.cmake
 
         - name: Setup CMake (Android)
           if: matrix.targetname == 'android'
-          run: cmake -B ${{ env.BUILD_DIR }} -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+          run: cmake -B ${{ env.BUILD_DIR }} -G "Ninja" -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
             CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/native/build/android-${{ matrix.arch }}.cmake            
             ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
@@ -117,7 +123,7 @@ jobs:
           if: matrix.targetname == 'osx'
           run: |
             cp ${{ env.BUILD_DIR }}/Release/libcsdl.dylib ${{ env.ARCHIVE_DIR }}
-            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.2.0.11.dylib ${{ env.ARCHIVE_DIR }}/libtorrent-rasterbar.2.0.11.dylib
+            cp ${{ env.BUILD_DIR }}/vcpkg_installed/${{ matrix.triplet }}/lib/libtorrent-rasterbar.2.1.1.dylib ${{ env.ARCHIVE_DIR }}/libtorrent-rasterbar.2.1.1.dylib
 
         - name: Prepare Files (Windows)
           if: matrix.targetname == 'windows'
