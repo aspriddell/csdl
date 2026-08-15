@@ -90,7 +90,7 @@ jobs:
 
         - name: Setup CMake (Windows)
           if: matrix.targetname == 'windows'
-          run: cmake -B ${{ env.BUILD_DIR }} -G "Visual Studio 17 2022" -A ${{ matrix.arch == 'arm64' && 'ARM64' || 'x64' }} -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+          run: cmake -B ${{ env.BUILD_DIR }} -G "Visual Studio 18 2026" -A ${{ matrix.arch == 'arm64' && 'ARM64' || 'x64' }} -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
           env:
             CMAKE_TOOLCHAIN_FILE: ${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake
               
