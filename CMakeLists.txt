@@ -5,7 +5,7 @@ include_directories(${CMAKE_BINARY_DIR}/include native/include)
 
 set(CMAKE_CXX_STANDARD 20)
 set(PRODUCT_VERSION_MAJOR 2)
-set(PRODUCT_VERSION_MINOR 0)
+set(PRODUCT_VERSION_MINOR 3)
 set(PRODUCT_VERSION_PATCH 0)
 
 # build target versions
