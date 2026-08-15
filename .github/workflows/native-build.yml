@@ -81,7 +81,8 @@ jobs:
 
         - name: Setup CMake (Android)
           if: matrix.targetname == 'android'
-          run: cmake -B ${{ env.BUILD_DIR }} -G "Ninja" -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+          # set sctp_build_programs to disable building programs that can't be built for android
+          run: cmake -B ${{ env.BUILD_DIR }} -G "Ninja" -S . -DVCPKG_OVERLAY_TRIPLETS=${{ env.TRIPLETS_DIR }} -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }} -Dsctp_build_programs=0
           env:
             CMAKE_TOOLCHAIN_FILE: ${{ github.workspace }}/native/build/android-${{ matrix.arch }}.cmake            
             ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
